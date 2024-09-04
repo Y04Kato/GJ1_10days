@@ -18,9 +18,17 @@ void GamePlayScene::Initialize() {
 
 	viewProjection_.Initialize();
 
-	//CollisionManager
-	collisionManager_ = CollisionManager::GetInstance();
+	//
+	model_.reset(Model::CreateModel("project/gamedata/resources/block", "block.obj"));
+	worldTransformModel_.Initialize();
+	modelMaterial_ = { 1.0f,1.0f,1.0f,1.0f };
+	model_->SetDirectionalLightFlag(true, 3);
 
+	//ブロックのモデル&テクスチャ読み込み
+	ObjModelData_ = model_->LoadModelFile("project/gamedata/resources/block", "block.obj");
+	ObjTexture_ = textureManager_->Load(ObjModelData_.material.textureFilePath);
+
+	//
 	GlobalVariables* globalVariables{};
 	globalVariables = GlobalVariables::GetInstance();
 
@@ -32,8 +40,10 @@ void GamePlayScene::Initialize() {
 void GamePlayScene::Update() {
 	ApplyGlobalVariables();
 
-	collisionManager_->ClearColliders();
-	collisionManager_->CheckAllCollision();
+	if (input_->TriggerKey(DIK_0)) {
+		
+	}
+
 
 	debugCamera_->Update();
 
@@ -50,6 +60,11 @@ void GamePlayScene::Draw() {
 
 #pragma region 3Dオブジェクト描画
 	CJEngine_->renderer_->Draw(PipelineType::Standard3D);
+
+	//ブロック描画
+	for (Block &block : blocks_) {
+		block.model.Draw(block.world, viewProjection_, block.material);
+	}
 
 #pragma endregion
 
@@ -76,10 +91,33 @@ void GamePlayScene::DrawPostEffect() {
 }
 
 void GamePlayScene::Finalize() {
-
+	blocks_.clear();
 }
 
 void GamePlayScene::ApplyGlobalVariables() {
 	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
 	const char* groupName = "GamePlayScene";
+}
+
+void GamePlayScene::GameStartProcessing() {
+
+}
+
+void GamePlayScene::SpawnBlock(ModelData ObjModelData, uint32_t ObjTexture, EulerTransform transform) {
+	Block block;
+	block.model.Initialize(ObjModelData_, ObjTexture_);
+	block.model.SetDirectionalLightFlag(true, 3);
+
+	block.world.Initialize();
+	block.world.translation_ = transform.translate;
+	block.world.rotation_ = transform.rotate;
+	block.world.scale_ = transform.scale;
+
+	block.material = { 1.0f,1.0f,1.0f,1.0f };
+
+	blocks_.push_back(block);
+}
+
+void GamePlayScene::CollisionConclusion() {
+
 }
