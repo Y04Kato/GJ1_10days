@@ -250,5 +250,6 @@ bool IsCollision(const AABB& aabb1, const AABB& aabb2);
 
 bool IsCollision(const OBB& obb, const StructSphere& sphere);
 bool IsCollision(const OBB& obb, const Segment& segment);
+bool IsCollision(const OBB& obb1, const OBB& obb2);
 
 bool IsCollision(const StructSphere& sphere1, const StructSphere& sphere2);

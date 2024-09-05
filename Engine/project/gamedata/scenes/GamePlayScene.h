@@ -19,6 +19,13 @@
 
 #include "components/utilities/globalVariables/GlobalVariables.h"
 
+struct Block {
+	Model model;
+	WorldTransform world;
+	Vector4 material;
+	bool isFloorOrBlockHit;
+};
+
 class GamePlayScene :public Iscene {
 public:
 	void Initialize() override;
@@ -27,8 +34,6 @@ public:
 	void DrawUI() override;
 	void DrawPostEffect() override;
 	void Finalize() override;
-
-	void ApplyGlobalVariables();
 
 	//ゲーム開始時の処理
 	void GameStartProcessing();
@@ -59,10 +64,11 @@ private:
 	ModelData ObjModelData_;
 	uint32_t ObjTexture_;
 	WorldTransform world_;//配置指定用の座標
-};
 
-struct Block {
-	Model model;
-	WorldTransform world;
-	Vector4 material;
+	//Editor
+	Editors* editors_;
+	bool isEditorMode_ = false;
+
+	//押し戻しの倍率
+	float pushbackMultiplier_ = 0.1f;
 };

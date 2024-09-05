@@ -89,7 +89,7 @@ void Editors::Update() {
 	//Jsonから配置のロード
 	if (ImGui::Button("StartSetBlock")) {
 		for (int i = 0; i < objCount_; i++) {
-			SetObject(EulerTransform{ { 1.0f,1.0f,1.0f }, {0.0f,0.0f,0.0f}, {0.0f,0.0f,0.0f} }, objNameHolder_[i], "None");
+			SetGroupName(decisionGroupName_);
 		}
 	}
 
