@@ -19,6 +19,8 @@
 
 #include "components/utilities/globalVariables/GlobalVariables.h"
 
+#include "player/Player.h"
+
 struct Block {
 	Model model;
 	WorldTransform world;
@@ -54,6 +56,11 @@ private:
 	Input* input_;
 	DebugCamera* debugCamera_;
 
+	//Player
+	std::unique_ptr<Player> player_;
+	std::unique_ptr<Model> playerModel_;
+	bool isPlayerOperationModes_ = true;//Playerを操作しているか
+
 	//
 	std::unique_ptr<Model> model_;
 	WorldTransform worldTransformModel_;
@@ -70,5 +77,8 @@ private:
 	bool isEditorMode_ = false;
 
 	//押し戻しの倍率
-	float pushbackMultiplier_ = 0.1f;
+	float pushbackMultiplier_ = 0.001f;
+
+	//Other
+	bool isGameStart_ = true;//ゲームスタート時の処理
 };

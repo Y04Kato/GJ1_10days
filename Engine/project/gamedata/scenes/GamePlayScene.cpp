@@ -18,6 +18,12 @@ void GamePlayScene::Initialize() {
 
 	viewProjection_.Initialize();
 
+	//Player初期化
+	player_ = std::make_unique<Player>();
+	playerModel_.reset(Model::CreateModel("project/gamedata/resources/block", "block.obj"));
+	playerModel_->SetDirectionalLightFlag(true, 3);
+	player_->Initialize(playerModel_.get());
+
 	//配置カーソル用
 	model_.reset(Model::CreateModel("project/gamedata/resources/block", "block.obj"));
 	worldTransformModel_.Initialize();
@@ -37,11 +43,31 @@ void GamePlayScene::Initialize() {
 }
 
 void GamePlayScene::Update() {
+	//ステージ初期設定
+	if (isGameStart_ == true) {
+		GameStartProcessing();
+	}
+
+#ifdef _DEBUG
+	if (input_->TriggerKey(DIK_Q)) {
+		player_->SetTranslate(worldTransformModel_.translation_);
+		player_->SetVelocity(Vector3{ 0.0f,0.0f,0.0f });
+	}
+#endif // _DEBUG
 
 	//ImGui
 	ImGui::Begin("PlayScene");
 	ImGui::Checkbox("isEditorMode", &isEditorMode_);
-	ImGui::DragFloat3("", viewProjection_.rotation_.num);
+	ImGui::Text("PlayerRespawn:[Q]key");
+	ImGui::Text("Player & Block Move:[A]or[D]key");
+	ImGui::Text("PlayerJump:[Space]key");
+	ImGui::Text("TogglePlayerOperationModes:[E]key");
+	if (isPlayerOperationModes_ == true) {
+		ImGui::Text("PlayerOperationModes:True");
+	}
+	else {
+		ImGui::Text("PlayerOperationModes:False");
+	}
 	ImGui::End();
 
 	//EditorMode
@@ -49,21 +75,37 @@ void GamePlayScene::Update() {
 
 	}
 	else {//EditorsModeではない時
-		//Block配置
-		if (input_->TriggerKey(DIK_0)) {
-			EulerTransform trans;
-			trans.translate = worldTransformModel_.translation_;
-			trans.rotate = worldTransformModel_.rotation_;
-			trans.scale = worldTransformModel_.scale_;
-			SpawnBlock(ObjModelData_, ObjTexture_, trans);
+		//Player操作モードチェンジ
+		if (input_->TriggerKey(DIK_E)) {
+			if (isPlayerOperationModes_ == true) {
+				isPlayerOperationModes_ = false;
+			}
+			else {
+				isPlayerOperationModes_ = true;
+			}
 		}
 
-		//配置地点操作
-		if (input_->PressKey(DIK_A)) {
-			worldTransformModel_.translation_.num[0] -= 1.0f;
+		//Player操作モードなら
+		if (isPlayerOperationModes_ == true) {
+			player_->Move();
 		}
-		if (input_->PressKey(DIK_D)) {
-			worldTransformModel_.translation_.num[0] += 1.0f;
+		else {
+			//Block配置
+			if (input_->TriggerKey(DIK_0)) {
+				EulerTransform trans;
+				trans.translate = worldTransformModel_.translation_;
+				trans.rotate = worldTransformModel_.rotation_;
+				trans.scale = worldTransformModel_.scale_;
+				SpawnBlock(ObjModelData_, ObjTexture_, trans);
+			}
+
+			//配置地点操作
+			if (input_->PressKey(DIK_A)) {
+				worldTransformModel_.translation_.num[0] -= 1.0f;
+			}
+			if (input_->PressKey(DIK_D)) {
+				worldTransformModel_.translation_.num[0] += 1.0f;
+			}
 		}
 	}
 
@@ -79,6 +121,9 @@ void GamePlayScene::Update() {
 	for (Block& block : blocks_) {
 		block.world.UpdateMatrix();
 	}
+
+	//Player更新
+	player_->Update();
 
 	//Edirots更新
 	editors_->Update();
@@ -104,7 +149,10 @@ void GamePlayScene::Draw() {
 #pragma region 3Dオブジェクト描画
 	CJEngine_->renderer_->Draw(PipelineType::Standard3D);
 
-	//ブロック描画
+	//Player
+	player_->Draw(viewProjection_);
+
+	//Block
 	for (Block& block : blocks_) {
 		block.model.Draw(block.world, viewProjection_, block.material);
 	}
@@ -145,7 +193,9 @@ void GamePlayScene::Finalize() {
 }
 
 void GamePlayScene::GameStartProcessing() {
+	editors_->SetGroupName((char*)"DemoStage");
 
+	isGameStart_ = false;
 }
 
 void GamePlayScene::SpawnBlock(ModelData ObjModelData, uint32_t ObjTexture, EulerTransform transform) {
@@ -166,7 +216,83 @@ void GamePlayScene::SpawnBlock(ModelData ObjModelData, uint32_t ObjTexture, Eule
 }
 
 void GamePlayScene::CollisionConclusion() {
-	//ブロック同士の当たり判定
+	//Playerと床の当たり判定
+	OBB playerOBB;
+	playerOBB = CreateOBBFromEulerTransform(EulerTransform(player_->GetWorldTransform().scale_, player_->GetWorldTransform().rotation_, player_->GetWorldTransform().translation_));
+	for (Obj obj : editors_->GetObj()) {
+		if (obj.type == "Floor") {
+			OBB objOBB;
+			objOBB = CreateOBBFromEulerTransform(EulerTransform(obj.world.scale_, obj.world.rotation_, obj.world.translation_));
+			if (IsCollision(playerOBB, objOBB)) {
+				//押し戻し処理
+				//playerOBBからobjOBBの最近接点を計算
+				Vector3 closestPoint = objOBB.center;
+				Vector3 d = playerOBB.center - objOBB.center;
+
+				//objOBBの各軸方向における距離を計算し、最近接点を求める
+				for (int i = 0; i < 3; ++i) {
+					float dist = Dot(d, objOBB.orientation[i]);
+					dist = std::fmax(-objOBB.size.num[i], std::fmin(dist, objOBB.size.num[i]));
+					closestPoint += objOBB.orientation[i] * dist;
+				}
+
+				//playerOBBの中心とobjOBBの最近接点の距離を計算
+				Vector3 direction = playerOBB.center - closestPoint;
+				float distance = Length(direction);
+				float overlap = std::fmax(0.0f, Length(playerOBB.size) - distance);//重なりを計算
+
+				if (overlap > 0.0f) {
+					//押し戻すための修正ベクトルを計算
+					Vector3 correction = Normalize(direction) * overlap * pushbackMultiplier_;
+					playerOBB.center += correction;//playerOBBを押し戻す
+					player_->SetTranslate(playerOBB.center);
+					player_->SetIsFloorHit(true);
+				}
+			}
+			else {
+				player_->SetIsFloorHit(false);
+			}
+		}
+	}
+
+	//PlayerとBlockの当たり判定
+	bool isCollisionDetected = false; //衝突があったかどうかを記録するフラグ
+	for (Block& block : blocks_) {
+		OBB blockOBB;
+		blockOBB = CreateOBBFromEulerTransform(EulerTransform(block.world.scale_, block.world.rotation_, block.world.translation_));
+		if (IsCollision(playerOBB, blockOBB)) {
+			//押し戻し処理
+			//playerOBBからblockOBBの最近接点を計算
+			Vector3 closestPoint = blockOBB.center;
+			Vector3 d = playerOBB.center - blockOBB.center;
+
+			//blockOBBの各軸方向における距離を計算し、最近接点を求める
+			for (int i = 0; i < 3; ++i) {
+				float dist = Dot(d, blockOBB.orientation[i]);
+				dist = std::fmax(-blockOBB.size.num[i], std::fmin(dist, blockOBB.size.num[i]));
+				closestPoint += blockOBB.orientation[i] * dist;
+			}
+
+			//playerOBBの中心とblockOBBの最近接点の距離を計算
+			Vector3 direction = playerOBB.center - closestPoint;
+			float distance = Length(direction);
+			float overlap = std::fmax(0.0f, Length(playerOBB.size) - distance);//重なりを計算
+
+			if (overlap > 0.0f) {
+				//押し戻すための修正ベクトルを計算
+				Vector3 correction = Normalize(direction) * overlap * pushbackMultiplier_;
+				playerOBB.center += correction;//playerOBBを押し戻す
+				player_->SetTranslate(playerOBB.center);
+				player_->SetIsBlockHit(true);
+				isCollisionDetected = true;
+			}
+		}
+	}
+
+	//全てのブロックとの判定が終了後に、衝突がなかった場合にのみfalseを設定
+	player_->SetIsBlockHit(isCollisionDetected);
+
+	//Block同士の当たり判定
 	for (Block& block1 : blocks_) {
 		if (block1.isFloorOrBlockHit) continue;
 
@@ -207,7 +333,7 @@ void GamePlayScene::CollisionConclusion() {
 		}
 	}
 
-	//ブロックと床の当たり判定
+	//Blockと床の当たり判定
 	for (Block& block : blocks_) {
 		OBB blockOBB;
 		blockOBB = CreateOBBFromEulerTransform(EulerTransform(block.world.scale_, block.world.rotation_, block.world.translation_));
