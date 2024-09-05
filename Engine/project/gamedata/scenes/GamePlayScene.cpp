@@ -46,7 +46,7 @@ void GamePlayScene::Update() {
 
 	//EditorMode
 	if (isEditorMode_ == true) {
-		
+
 	}
 	else {//EditorsModeではない時
 		//Block配置
@@ -178,22 +178,27 @@ void GamePlayScene::CollisionConclusion() {
 			OBB block2OBB = CreateOBBFromEulerTransform(EulerTransform(block2.world.scale_, block2.world.rotation_, block2.world.translation_));
 
 			if (IsCollision(block1OBB, block2OBB)) {
+				//押し戻し処理
+				//blockOBBからobjOBBの最近接点を計算
 				Vector3 closestPoint = block2OBB.center;
 				Vector3 d = block1OBB.center - block2OBB.center;
 
+				//objOBBの各軸方向における距離を計算し、最近接点を求める
 				for (int i = 0; i < 3; ++i) {
 					float dist = Dot(d, block2OBB.orientation[i]);
 					dist = std::fmax(-block2OBB.size.num[i], std::fmin(dist, block2OBB.size.num[i]));
 					closestPoint += block2OBB.orientation[i] * dist;
 				}
 
+				//blockOBBの中心とobjOBBの最近接点の距離を計算
 				Vector3 direction = block1OBB.center - closestPoint;
 				float distance = Length(direction);
-				float overlap = std::fmax(0.0f, Length(block1OBB.size) - distance); // 重なりを計算
+				float overlap = std::fmax(0.0f, Length(block1OBB.size) - distance);//重なりを計算
 
 				if (overlap > 0.0f) {
+					//押し戻すための修正ベクトルを計算
 					Vector3 correction = Normalize(direction) * overlap * pushbackMultiplier_;
-					block1OBB.center += correction;  // blockOBBを押し戻す
+					block1OBB.center += correction;//blockOBBを押し戻す
 					block1.world.translation_ = block1OBB.center;
 				}
 
@@ -229,9 +234,9 @@ void GamePlayScene::CollisionConclusion() {
 					float overlap = std::fmax(0.0f, Length(blockOBB.size) - distance);//重なりを計算
 
 					if (overlap > 0.0f) {
-						// 押し戻すための修正ベクトルを計算
+						//押し戻すための修正ベクトルを計算
 						Vector3 correction = Normalize(direction) * overlap * pushbackMultiplier_;
-						blockOBB.center += correction;  // blockOBBを押し戻す
+						blockOBB.center += correction;//blockOBBを押し戻す
 						block.world.translation_ = blockOBB.center;
 						block.isFloorOrBlockHit = true;
 					}
