@@ -88,8 +88,10 @@ private:
 	bool isEditorMode_ = false;
 
 	//押し戻しの倍率
-	float pushbackMultiplier_ = 0.001f;
+	float pushbackMultiplier_ = 0.2f;
+	float pushbackMultiplierBlock_ = 1.5f;
 
 	//Other
+	std::random_device seedGenerator;
 	bool isGameStart_ = true;//ゲームスタート時の処理
 };

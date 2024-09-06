@@ -253,7 +253,9 @@ void GamePlayScene::SpawnBlock(ModelData ObjModelData, uint32_t ObjTexture, Eule
 	block.world.rotation_ = transform.rotate;
 	block.world.scale_ = transform.scale;
 
-	block.material = { 1.0f,1.0f,1.0f,1.0f };
+	std::mt19937 randomEngine(seedGenerator());
+	std::uniform_real_distribution<float> distColor(0.0f, 1.0f);
+	block.material = { distColor(randomEngine),distColor(randomEngine) ,distColor(randomEngine) ,1.0f };;
 
 	block.isFloorOrBlockHit = false;
 
@@ -269,30 +271,8 @@ void GamePlayScene::CollisionConclusion() {
 			OBB objOBB;
 			objOBB = CreateOBBFromEulerTransform(EulerTransform(obj.world.scale_, obj.world.rotation_, obj.world.translation_));
 			if (IsCollision(playerOBB, objOBB)) {
-				//押し戻し処理
-				//playerOBBからobjOBBの最近接点を計算
-				Vector3 closestPoint = objOBB.center;
-				Vector3 d = playerOBB.center - objOBB.center;
-
-				//objOBBの各軸方向における距離を計算し、最近接点を求める
-				for (int i = 0; i < 3; ++i) {
-					float dist = Dot(d, objOBB.orientation[i]);
-					dist = std::fmax(-objOBB.size.num[i], std::fmin(dist, objOBB.size.num[i]));
-					closestPoint += objOBB.orientation[i] * dist;
-				}
-
-				//playerOBBの中心とobjOBBの最近接点の距離を計算
-				Vector3 direction = playerOBB.center - closestPoint;
-				float distance = Length(direction);
-				float overlap = std::fmax(0.0f, Length(playerOBB.size) - distance);//重なりを計算
-
-				if (overlap > 0.0f) {
-					//押し戻すための修正ベクトルを計算
-					Vector3 correction = Normalize(direction) * overlap * pushbackMultiplier_;
-					playerOBB.center += correction;//playerOBBを押し戻す
-					player_->SetTranslate(playerOBB.center);
-					player_->SetIsFloorHit(true);
-				}
+				player_->SetFloorPos(obj.world);
+				player_->SetIsFloorHit(true);
 			}
 			else {
 				player_->SetIsFloorHit(false);
@@ -301,41 +281,62 @@ void GamePlayScene::CollisionConclusion() {
 	}
 
 	//PlayerとBlockの当たり判定
-	bool isCollisionDetected = false; //衝突があったかどうかを記録するフラグ
+	bool isCollisionDetected = false;//衝突があったかどうかを記録するフラグ
+	bool isStandingOnBlock = false;//上に乗っているかどうかを記録するフラグ
+	bool isCollidingFromSide = false;//横から衝突しているかどうかを記録するフラグ
 	for (Block& block : blocks_) {
-		OBB blockOBB;
-		blockOBB = CreateOBBFromEulerTransform(EulerTransform(block.world.scale_, block.world.rotation_, block.world.translation_));
+		OBB blockOBB = CreateOBBFromEulerTransform(EulerTransform(block.world.scale_, block.world.rotation_, block.world.translation_));
+		// 衝突判定
 		if (IsCollision(playerOBB, blockOBB)) {
-			//押し戻し処理
-			//playerOBBからblockOBBの最近接点を計算
 			Vector3 closestPoint = blockOBB.center;
 			Vector3 d = playerOBB.center - blockOBB.center;
 
-			//blockOBBの各軸方向における距離を計算し、最近接点を求める
+			// 最近接点の計算
 			for (int i = 0; i < 3; ++i) {
 				float dist = Dot(d, blockOBB.orientation[i]);
-				dist = std::fmax(-blockOBB.size.num[i], std::fmin(dist, blockOBB.size.num[i]));
+				dist = std::fmax(-blockOBB.size.num[i], std::min(dist, blockOBB.size.num[i]));
 				closestPoint += blockOBB.orientation[i] * dist;
 			}
 
-			//playerOBBの中心とblockOBBの最近接点の距離を計算
-			Vector3 direction = playerOBB.center - closestPoint;
-			float distance = Length(direction);
-			float overlap = std::fmax(0.0f, Length(playerOBB.size) - distance);//重なりを計算
+			Vector3 difference = playerOBB.center - closestPoint;
+			float distance = Length(difference);
 
-			if (overlap > 0.0f) {
-				//押し戻すための修正ベクトルを計算
-				Vector3 correction = Normalize(direction) * overlap * pushbackMultiplier_;
-				playerOBB.center += correction;//playerOBBを押し戻す
-				player_->SetTranslate(playerOBB.center);
-				player_->SetIsBlockHit(true);
-				isCollisionDetected = true;
+			if (distance > 0.0f) {
+				Vector3 pushDirection = Normalize(difference);
+				Vector3 pushAmount = pushDirection * (playerOBB.size.num[0] - distance);
+
+				// プレイヤーが上に乗っているかどうかを判断
+				if (std::abs(pushDirection.num[1]) > std::abs(pushDirection.num[0]) &&
+					std::abs(pushDirection.num[1]) > std::abs(pushDirection.num[2])) {
+
+					isStandingOnBlock = true;
+
+					// 押し戻し処理
+					playerOBB.center += pushAmount;
+					player_->SetTranslate(playerOBB.center);
+
+					isCollisionDetected = true;
+				}
+				else { // 横方向からの衝突
+					isCollidingFromSide = true;
+					player_->SetIsReflection(true);
+
+					// 押し戻し処理
+					playerOBB.center += pushAmount;
+					player_->SetTranslate(playerOBB.center);
+
+					player_->SetVelocity(ComputeOBBRepulsion(playerOBB, player_->GetVelocity(), blockOBB, 1.0f));
+
+					isCollisionDetected = true;
+				}
 			}
 		}
 	}
 
-	//全てのブロックとの判定が終了後に、衝突がなかった場合にのみfalseを設定
+	//衝突判定の結果を反映
 	player_->SetIsBlockHit(isCollisionDetected);
+	player_->SetIsStandingOnHit(isStandingOnBlock);
+	player_->SetIsCollidingFromSide(isCollidingFromSide);
 
 	//Block同士の当たり判定
 	for (Block& block1 : blocks_) {
