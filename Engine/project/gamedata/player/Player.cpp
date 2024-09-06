@@ -30,17 +30,21 @@ void Player::Update() {
 	}
 	ImGui::End();
 
+	//床などの処理
 	if (isFloorHit_ == false && isBlockHit_ == false) {
 		Fall();
+	}
+	else if (isFloorHit_ == true) {
+		worldTransform_.translation_.num[1] = floorTransform_.translation_.num[1] + floorTransform_.scale_.num[1] + worldTransform_.scale_.num[1] + 0.2f;
 	}
 	else if (velocity_.num[1] > 0.0f) {
 
 	}
 	else {
 		velocity_.num[1] = 0.0f;
-		worldTransform_.translation_.num[1] = floorTransform_.translation_.num[1] + floorTransform_.scale_.num[1] + worldTransform_.scale_.num[1];
 	}
 
+	//反射フラグ
 	if (isReflection_ == true) {
 		reflectionRecoveryTimer_++;
 	}
@@ -49,6 +53,7 @@ void Player::Update() {
 		reflectionRecoveryTimer_ = 0;
 	}
 
+	//ブロック角によるフリーズバグ修正用
 	if (isReflection_ == true && isCollidingFromSide_ == true) {
 		antiFreezeTimer_++;
 	}
@@ -59,32 +64,6 @@ void Player::Update() {
 	if (antiFreezeTimer_ >= antiFreezeTime_) {
 		isAntiFreeze_ = true;
 		antiFreezeTimer_ = 0;
-	}
-
-	worldTransform_.translation_ += velocity_;
-
-	worldTransform_.UpdateMatrix();
-}
-
-void Player::Draw(const ViewProjection& viewProjection) {
-	model_->Draw(worldTransform_, viewProjection, Vector4{ 0.2f,1.0f,0.2f,1.0f });
-}
-
-void Player::Move() {
-	if (isReflection_ == false || isAntiFreeze_ == true) {
-		if (input_->PressKey(DIK_A)) {
-			velocity_.num[0] = -0.1f;
-		}
-		if (input_->PressKey(DIK_D)) {
-			velocity_.num[0] = 0.1f;
-		}
-	}
-
-	if (isCollidingFromSide_ == false) {
-		if (input_->TriggerKey(DIK_SPACE)) {
-			velocity_.num[1] = 0.5f;
-
-		}
 	}
 
 	//加速度減衰処理
@@ -108,6 +87,32 @@ void Player::Move() {
 	}
 	else {
 		velocity_.num[2] = 0.0f;
+	}
+
+	worldTransform_.translation_ += velocity_;
+
+	worldTransform_.UpdateMatrix();
+}
+
+void Player::Draw(const ViewProjection& viewProjection) {
+	model_->Draw(worldTransform_, viewProjection, Vector4{ 0.2f,1.0f,0.2f,1.0f });
+}
+
+void Player::Move() {
+	if (isReflection_ == false || isAntiFreeze_ == true) {
+		if (input_->PressKey(DIK_A)) {
+			velocity_.num[0] = -0.15f;
+		}
+		if (input_->PressKey(DIK_D)) {
+			velocity_.num[0] = 0.15f;
+		}
+	}
+
+	if (isCollidingFromSide_ == false || isAntiFreeze_ == true) {
+		if (input_->TriggerKey(DIK_SPACE)) {
+			velocity_.num[1] = 0.5f;
+
+		}
 	}
 }
 

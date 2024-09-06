@@ -53,15 +53,18 @@ private:
 
 	Vector3 velocity_ = {};
 
+	//各種ヒットフラグ
 	bool isFloorHit_ = false;
 	bool isBlockHit_ = false;
 	bool isStandingOnHit_ = false;
 	bool isCollidingFromSide_ = false;
 
+	//反射用フラグ
 	bool isReflection_ = false;
 	const int reflectionRecoveryTime_ = 30;
 	int reflectionRecoveryTimer_ = 0;
 
+	//フリーズバグ修正用フラグ
 	bool isAntiFreeze_ = false;
 	const int antiFreezeTime_ = 5;
 	int antiFreezeTimer_ = 0;
