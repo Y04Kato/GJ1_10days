@@ -365,7 +365,7 @@ void GamePlayScene::CollisionConclusion() {
 					//押し戻すための修正ベクトルを計算
 					Vector3 correction = Normalize(direction) * overlap * pushbackMultiplier_;
 					block1OBB.center += correction;//blockOBBを押し戻す
-					block1.world.translation_ = block1OBB.center;
+					block1.world.translation_.num[1] = block1OBB.center.num[1];
 				}
 
 				block1.isFloorOrBlockHit = true;
