@@ -31,10 +31,21 @@ public:
 	bool GetIsBlockHit() { return isBlockHit_; }
 	void SetIsBlockHit(bool isBlockHit) { isBlockHit_ = isBlockHit; }
 
+	bool GetIsStandingOnHit() { return isStandingOnHit_; }
+	void SetIsStandingOnHit(bool isStandingOnHit) { isStandingOnHit_ = isStandingOnHit; }
+
+	bool GetIsCollidingFromSide() { return isCollidingFromSide_; }
+	void SetIsCollidingFromSide(bool isCollidingFromSide) { isCollidingFromSide_ = isCollidingFromSide; }
+
+	void SetIsReflection(bool isReflection) { isReflection_ = isReflection; reflectionRecoveryTimer_ = 0; }
+
+	void SetFloorPos(WorldTransform& worldtransform) { floorTransform_ = worldtransform; }
+
 private:
 	Model* model_;
 
 	WorldTransform worldTransform_;
+	WorldTransform floorTransform_;
 
 	Input* input_ = nullptr;
 
@@ -44,4 +55,14 @@ private:
 
 	bool isFloorHit_ = false;
 	bool isBlockHit_ = false;
+	bool isStandingOnHit_ = false;
+	bool isCollidingFromSide_ = false;
+
+	bool isReflection_ = false;
+	const int reflectionRecoveryTime_ = 30;
+	int reflectionRecoveryTimer_ = 0;
+
+	bool isAntiFreeze_ = false;
+	const int antiFreezeTime_ = 5;
+	int antiFreezeTimer_ = 0;
 };

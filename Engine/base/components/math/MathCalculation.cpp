@@ -418,6 +418,42 @@ Vector3 ComputeSphereVelocityAfterCollisionWithOBB(const StructSphere& sphere, c
 	return newSphereVelocity;
 }
 
+Vector3 ComputeOBBRepulsion(const OBB& obb1, const Vector3& obb1Velocity, const OBB& obb2, float restitution) {
+	//obb1の中心に最も近いobb2上の点を計算
+	Vector3 closestPoint = obb2.center;
+	Vector3 d = obb1.center - obb2.center;
+
+	//obb2の軸に投影して、obb2上の最も近い点を見つける
+	for (int i = 0; i < 3; ++i) {
+		float dist = Dot(d, obb2.orientation[i]);
+		dist = std::fmax(-obb2.size.num[i], std::fmin(dist, obb2.size.num[i]));
+		closestPoint = closestPoint + obb2.orientation[i] * dist;
+	}
+
+	//侵入ベクトルを計算
+	Vector3 penetrationVector = obb1.center - closestPoint;
+
+	//衝突がないか確認する
+	float penetrationDistance = std::sqrt(penetrationVector.num[0] * penetrationVector.num[0] +
+		penetrationVector.num[1] * penetrationVector.num[1] +
+		penetrationVector.num[2] * penetrationVector.num[2]);
+
+	//貫通ベクトルを正規化して衝突法線を取得
+	Vector3 collisionNormal = Normalize(penetrationVector);
+
+	//衝突法線方向の相対速度を計算
+	float relativeVelocity = Dot(obb1Velocity, collisionNormal);
+
+	//スカラーを計算
+	float impulseScalar = -(1.0f + restitution) * relativeVelocity;
+
+	//obb1に適用して新しい速度を取得します
+	Vector3 newVelocity = obb1Velocity + collisionNormal * impulseScalar;
+
+	//新しい速度を返す
+	return newVelocity;
+}
+
 Vector3 CalculateValue(const std::vector<KeyframeVector3>& keyframe, float time) {
 	assert(!keyframe.empty());//キーがない物は返す値がないのでダメ
 	if (keyframe.size() == 1 || time <= keyframe[0].time) {
