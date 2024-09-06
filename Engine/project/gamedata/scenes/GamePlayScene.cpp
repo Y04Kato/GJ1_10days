@@ -76,7 +76,7 @@ void GamePlayScene::Update() {
 	// ドロップダウンでブロックタイプを選択
 	if (ImGui::BeginCombo("Block Type", std::to_string(selectedBlockType).c_str()))
 	{
-		for (int type = 1; type <= 7; ++type)
+		for (int type = 1; type <= 8; ++type)
 		{
 			bool isSelected = (selectedBlockType == type);
 			if (ImGui::Selectable(std::to_string(type).c_str(), isSelected))
