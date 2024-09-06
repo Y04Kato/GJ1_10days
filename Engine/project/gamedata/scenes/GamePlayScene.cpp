@@ -71,6 +71,34 @@ void GamePlayScene::Update() {
 	}
 	ImGui::End();
 
+	ImGui::Begin("Block Type Selector");
+
+	// ドロップダウンでブロックタイプを選択
+	if (ImGui::BeginCombo("Block Type", std::to_string(selectedBlockType).c_str()))
+	{
+		for (int type = 1; type <= 7; ++type)
+		{
+			bool isSelected = (selectedBlockType == type);
+			if (ImGui::Selectable(std::to_string(type).c_str(), isSelected))
+			{
+				selectedBlockType = type;
+			}
+			if (isSelected)
+			{
+				ImGui::SetItemDefaultFocus();
+			}
+		}
+		ImGui::EndCombo();
+	}
+
+	// ブロックタイプに応じてデータをロードするボタン
+	if (ImGui::Button("Load Block"))
+	{
+		LoadBlockPopData(selectedBlockType);
+	}
+
+	ImGui::End();
+
 	//EditorMode
 	if (isEditorMode_ == true) {
 
@@ -109,7 +137,7 @@ void GamePlayScene::Update() {
 			if (input_->TriggerKey(DIK_3)) {
 				LoadBlockPopData(3);
 			}
-
+			
 
 			//配置地点操作
 			if (input_->PressKey(DIK_A)) {
@@ -440,19 +468,18 @@ void GamePlayScene::LoadBlockPopData(int type) {
 	}
 }
 
-
 void GamePlayScene::SelectSpawn(int blockType) {
 	EulerTransform trans;
 	trans.translate = worldTransformModel_.translation_;
 	trans.rotate = worldTransformModel_.rotation_;
 	trans.scale = worldTransformModel_.scale_;
 
-	for (int y = 0; y < 3; ++y) { // 3x3の行列を処理
-		for (int x = 0; x < 3; ++x) {
+	for (int y = 0; y < 3; ++y) { // 行方向
+		for (int x = 0; x < 3; ++x) { // 列方向
 			if (matrix_[y][x] == 1) {
 				Vector3 position;
-				position.num[0] = static_cast<float>(x);
-				position.num[1] = static_cast<float>(y);
+				position.num[0] = static_cast<float>(x); // X座標
+				position.num[1] = static_cast<float>(2 - y); // Y座標
 				position.num[2] = 0.0f;
 				SpawnCSVBlock(ObjModelData_, ObjTexture_, trans, blockType, position);
 			}
