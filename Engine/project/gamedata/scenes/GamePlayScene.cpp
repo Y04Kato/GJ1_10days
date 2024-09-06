@@ -127,17 +127,6 @@ void GamePlayScene::Update() {
 				trans.scale = worldTransformModel_.scale_;
 				SpawnBlock(ObjModelData_, ObjTexture_, trans);
 			}
-			//Block配置
-			if (input_->TriggerKey(DIK_1)) {
-				LoadBlockPopData(1);
-			}
-			if (input_->TriggerKey(DIK_2)) {
-				LoadBlockPopData(2);
-			}
-			if (input_->TriggerKey(DIK_3)) {
-				LoadBlockPopData(3);
-			}
-			
 
 			//配置地点操作
 			if (input_->PressKey(DIK_A)) {
