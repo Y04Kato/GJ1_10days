@@ -71,46 +71,11 @@ void GamePlayScene::Update() {
 	}
 	ImGui::End();
 
-	ImGui::Begin("Block Type Selector");
-
-	// ドロップダウンでブロックタイプを選択
-	if (ImGui::BeginCombo("Block Type", std::to_string(selectedBlockType).c_str()))
-	{
-		for (int type = 1; type <= 11; ++type)
-		{
-			bool isSelected = (selectedBlockType == type);
-			if (ImGui::Selectable(std::to_string(type).c_str(), isSelected))
-			{
-				selectedBlockType = type;
-			}
-			if (isSelected)
-			{
-				ImGui::SetItemDefaultFocus();
-			}
-		}
-		ImGui::EndCombo();
-	}
-
-	// ブロックタイプに応じてデータをロードするボタン
-	if (ImGui::Button("Load Block || DIK_9"))
-	{
-		LoadBlockPopData(selectedBlockType);
-	}
-	if (input_->TriggerKey(DIK_9)) {
-		LoadBlockPopData(selectedBlockType);
-	}
-	if (input_->TriggerKey(DIK_W) && selectedBlockType <= 10) {
-		selectedBlockType++;
-	}
-	if (input_->TriggerKey(DIK_S) && selectedBlockType >= 2 ) {
-		selectedBlockType--;
-	}
-
-	ImGui::End();
+	
 
 	//EditorMode
 	if (isEditorMode_ == true) {
-
+	
 	}
 	else {//EditorsModeではない時
 		//Player操作モードチェンジ
@@ -150,6 +115,42 @@ void GamePlayScene::Update() {
 			if (input_->TriggerKey(DIK_D)) {
 				worldTransformModel_.translation_.num[0] += 2.0f;
 			}*/
+
+			ImGui::Begin("Block Type Selector");
+			ImGui::Text("TypeSelect : W,S");
+			// ドロップダウンでブロックタイプを選択
+			if (ImGui::BeginCombo("Block Type", std::to_string(selectedBlockType).c_str()))
+			{
+				for (int type = 1; type <= 11; ++type)
+				{
+					bool isSelected = (selectedBlockType == type);
+					if (ImGui::Selectable(std::to_string(type).c_str(), isSelected))
+					{
+						selectedBlockType = type;
+					}
+					if (isSelected)
+					{
+						ImGui::SetItemDefaultFocus();
+					}
+				}
+				ImGui::EndCombo();
+			}
+
+			// ブロックタイプに応じてデータをロードするボタン
+			if (ImGui::Button("Load Block || DIK_SPACE"))
+			{
+				LoadBlockPopData(selectedBlockType);
+			}
+			if (input_->TriggerKey(DIK_SPACE)) {
+				LoadBlockPopData(selectedBlockType);
+			}
+			if (input_->TriggerKey(DIK_W) && selectedBlockType <= 10) {
+				selectedBlockType++;
+			}
+			if (input_->TriggerKey(DIK_S) && selectedBlockType >= 2) {
+				selectedBlockType--;
+			}
+			ImGui::End();
 		}
 	}
 
