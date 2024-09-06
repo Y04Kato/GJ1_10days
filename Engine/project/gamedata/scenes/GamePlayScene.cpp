@@ -144,6 +144,9 @@ void GamePlayScene::Update() {
 			if (input_->TriggerKey(DIK_S) && selectedBlockType >= 2) {
 				selectedBlockType--;
 			}
+			if (input_->TriggerKey(DIK_R)) {
+				blocks_.clear();
+			}
 			ImGui::End();
 		}
 	}
