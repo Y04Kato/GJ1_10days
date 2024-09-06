@@ -44,6 +44,7 @@ public:
 	//ブロックの生成
 	void SpawnBlock(ModelData ObjModelData, uint32_t ObjTexture, EulerTransform transform);
 
+	void LoadAllBlockData();
 	void LoadBlockPopData(int type);
 	void SpawnCSVBlock(ModelData ObjModelData, uint32_t ObjTexture, EulerTransform transform, int blockType, Vector3 position);
 	void SelectSpawn(int blockType);
@@ -75,6 +76,7 @@ private:
 	std::stringstream blockPopCommands;
 	std::vector<std::vector<int>> matrix_;
 	//ブロック
+	std::unordered_map<int, std::vector<std::vector<int>>> blockDataMap_; // ブロックタイプとそのデータを保持
 	std::list<Block> blocks_;
 	ModelData ObjModelData_;
 	uint32_t ObjTexture_;

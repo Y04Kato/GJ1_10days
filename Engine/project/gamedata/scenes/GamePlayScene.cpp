@@ -1,6 +1,6 @@
 #include "GamePlayScene.h"
 #include "components/utilities/globalVariables/GlobalVariables.h"
-
+#include "iostream"
 void GamePlayScene::Initialize() {
 	CJEngine_ = CitrusJunosEngine::GetInstance();
 	dxCommon_ = DirectXCommon::GetInstance();
@@ -39,7 +39,8 @@ void GamePlayScene::Initialize() {
 	editors_ = Editors::GetInstance();
 	editors_->Initialize();
 	editors_->SetModels(ObjModelData_, ObjTexture_);
-	editors_->AddGroupName((char*)"DemoStage");
+	editors_->AddGroupName((char*)"DemoStage");		 
+	LoadAllBlockData();
 }
 
 void GamePlayScene::Update() {
@@ -383,55 +384,62 @@ void GamePlayScene::CollisionConclusion() {
 	}
 }
 
-
-void GamePlayScene::LoadBlockPopData(int type) {
-	// ファイルを開く
+void GamePlayScene::LoadAllBlockData() {
 	std::ifstream file("project/gamedata/resources/csv/BlockType.csv");
 	assert(file.is_open());
 
 	std::string line;
 	int currentBlockType = -1;
 
-	// 行列の初期化
-	matrix_ = std::vector<std::vector<int>>(3, std::vector<int>(3, 0));
-
 	while (getline(file, line)) {
 		if (line.empty()) {
 			continue;
 		}
 
-		// ブロックタイプの定義が始まる場合
 		if (isdigit(line[0])) {
 			currentBlockType = line[0] - '0';
-			matrix_ = std::vector<std::vector<int>>(3, std::vector<int>(3, 0)); // 新しい行列を初期化
+			matrix_ = std::vector<std::vector<int>>(3, std::vector<int>(3, 0));
 			continue;
 		}
 
-		// ターゲットのブロックタイプのみ処理する
-		if (currentBlockType == type) {
-			// 行列のデータを読み込み
-			if (line.find(",") != std::string::npos) {
-				std::istringstream line_stream(line);
-				std::string value;
-				for (int y = 0; y < 3; ++y) {
+		if (currentBlockType != -1) {
+			for (int y = 0; y < 3; ++y) {
+				if (line.find(",") != std::string::npos) {
+					std::istringstream line_stream(line);
+					std::string value;
+
 					for (int x = 0; x < 3; ++x) {
 						if (getline(line_stream, value, ',')) {
 							matrix_[y][x] = std::atoi(value.c_str());
 						}
 					}
 				}
+				if (!getline(file, line)) {
+					break;
+				}
 			}
+			blockDataMap_[currentBlockType] = matrix_;
 
-			// ブロックの行列が終わったときにブロックを生成
 			if (line == "}") {
-				SelectSpawn(currentBlockType);
-				break; // ターゲットのブロックタイプを処理したら終了
+				currentBlockType = -1; // ブロック定義の終わり
 			}
 		}
 	}
-
 	file.close();
 }
+
+void GamePlayScene::LoadBlockPopData(int type) {
+	auto it = blockDataMap_.find(type);
+	if (it != blockDataMap_.end()) {
+		matrix_ = it->second;
+		SelectSpawn(type);
+	}
+	else {
+		// 指定されたブロックタイプが存在しない場合の処理
+		assert(false && "Block type not found in CSV data");
+	}
+}
+
 
 void GamePlayScene::SelectSpawn(int blockType) {
 	EulerTransform trans;
@@ -457,7 +465,12 @@ void GamePlayScene::SpawnCSVBlock(ModelData ObjModelData, uint32_t ObjTexture, E
 	block.model.Initialize(ObjModelData_, ObjTexture_);
 	block.model.SetDirectionalLightFlag(true, 3);
 	block.world.Initialize();
-	block.world.translation_ = transform.translate + position; // 位置を追加
+	// オフセットを設定（例: 2.0fを掛けて間隔を広げる）
+	Vector3 offsetPosition = position;
+	offsetPosition.num[0] *= 2.0f; // X軸方向の間隔を広げる
+	offsetPosition.num[1] *= 2.0f; // Y軸方向の間隔を広げる
+
+	block.world.translation_ = transform.translate + offsetPosition; // 位置を追加
 	block.world.rotation_ = transform.rotate;
 	block.world.scale_ = transform.scale;
 
