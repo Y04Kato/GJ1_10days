@@ -1,0 +1,43 @@
+#pragma once
+#include"../CreateResource/BufferResources.h"
+
+struct RunTimeCount
+{
+	float flame;
+	uint32_t deltaTime;
+};
+
+class RunTimeCounter
+{
+public:
+
+	static RunTimeCounter* GetInstance();
+
+	void  Create();
+
+	void Update();
+
+	void CommandCall(uint32_t rootParamIndex);
+
+	void ComputeCommandCall(uint32_t rootParamIndex);
+
+#pragma region Get
+
+	static RunTimeCount GetTimer() { return RunTimeCounter::GetInstance()->time_; }
+
+#pragma endregion
+
+
+private:
+
+	uint32_t DeltaTimer(float& flame);
+	std::unique_ptr<BufferResource<RunTimeCount>>timerBuf_ = nullptr;
+	RunTimeCount time_;
+	uint32_t max_ = 120;
+
+	RunTimeCounter() = default;
+	~RunTimeCounter() = default;
+	RunTimeCounter(const  RunTimeCounter&) = delete;
+	const  RunTimeCounter& operator=(const RunTimeCounter&) = delete;
+};
+

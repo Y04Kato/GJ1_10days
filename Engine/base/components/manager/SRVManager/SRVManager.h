@@ -18,6 +18,7 @@ public:
 	uint32_t descriptorSizeSRV;
 
 private:
+
 	SRVManager() {
 		descriptorSizeSRV = DirectXCommon::GetInstance()->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	}

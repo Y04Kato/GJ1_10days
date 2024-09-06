@@ -41,6 +41,9 @@ void SceneManager::Initialize() {
 	//CSV
 	GlobalVariables::GetInstance()->LoadFiles();
 
+	//経過時間のカウンター
+	RunTimeCounter::GetInstance()->Create();
+
 	//Scene
 	scene_[TITLE_SCENE] = std::make_unique<GameTitleScene>();
 	scene_[GAME_SCENE] = std::make_unique<GamePlayScene>();
@@ -69,6 +72,7 @@ void SceneManager::Update() {
 
 		imGuiManager_->Begin();
 		input_->Update();
+		RunTimeCounter::GetInstance()->Update();
 		GlobalVariables::GetInstance()->Update();
 		directionalLight_->Update();
 		pointLight_->Update();

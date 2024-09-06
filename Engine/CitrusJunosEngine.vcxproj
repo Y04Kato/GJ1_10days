@@ -154,6 +154,7 @@
     <ClCompile Include="base\components\3d\ViewProjection.cpp" />
     <ClCompile Include="base\components\3d\WorldTransform.cpp" />
     <ClCompile Include="base\components\audio\Audio.cpp" />
+    <ClCompile Include="base\components\CreateResource\CreateResource.cpp" />
     <ClCompile Include="base\components\manager\ImGuiManager\ImGuiManager.cpp" />
     <ClCompile Include="base\components\manager\PSOManager\PSOManager.cpp" />
     <ClCompile Include="base\components\manager\RTVManager\RTVManager.cpp" />
@@ -179,6 +180,7 @@
     <ClCompile Include="base\components\pipelineState\Vignette\Vignette.cpp" />
     <ClCompile Include="base\components\postEffect\PostEffect.cpp" />
     <ClCompile Include="base\components\renderer\Renderer.cpp" />
+    <ClCompile Include="base\components\RuntimeCounter\RunTimeCounter.cpp" />
     <ClCompile Include="base\components\shaderCompiler\ShaderCompiler.cpp" />
     <ClCompile Include="base\components\utilities\convertString\ConvertString.cpp" />
     <ClCompile Include="base\components\utilities\directionalLight\DirectionalLight.cpp" />
@@ -414,6 +416,9 @@
     <ClInclude Include="base\components\3d\ViewProjection.h" />
     <ClInclude Include="base\components\3d\WorldTransform.h" />
     <ClInclude Include="base\components\audio\Audio.h" />
+    <ClInclude Include="base\components\CreateResource\BufferResources.h" />
+    <ClInclude Include="base\components\CreateResource\CreateResource.h" />
+    <ClInclude Include="base\components\CreateResource\IBufferResource.h" />
     <ClInclude Include="base\components\manager\ImGuiManager\ImGuiManager.h" />
     <ClInclude Include="base\components\manager\PSOManager\PSOManager.h" />
     <ClInclude Include="base\components\manager\RTVManager\RTVManager.h" />
@@ -442,6 +447,7 @@
     <ClInclude Include="base\components\pipelineState\Vignette\Vignette.h" />
     <ClInclude Include="base\components\postEffect\PostEffect.h" />
     <ClInclude Include="base\components\renderer\Renderer.h" />
+    <ClInclude Include="base\components\RuntimeCounter\RunTimeCounter.h" />
     <ClInclude Include="base\components\shaderCompiler\ShaderCompiler.h" />
     <ClInclude Include="base\components\utilities\convertString\ConvertString.h" />
     <ClInclude Include="base\components\utilities\directionalLight\DirectionalLight.h" />
