@@ -98,6 +98,10 @@ void GamePlayScene::Update() {
 				trans.scale = worldTransformModel_.scale_;
 				SpawnBlock(ObjModelData_, ObjTexture_, trans);
 			}
+			//Block配置
+			if (input_->TriggerKey(DIK_1)) {
+				LoadBlockPopData();
+			}
 
 			//配置地点操作
 			if (input_->PressKey(DIK_A)) {
@@ -198,7 +202,79 @@ void GamePlayScene::GameStartProcessing() {
 	isGameStart_ = false;
 }
 
+void GamePlayScene::LoadBlockPopData() {
+	// ファイルを開く
+	std::ifstream file("project/gamedata/resources/csv/BlockType.csv");
+	assert(file.is_open());
+	EulerTransform trans;
+	trans.translate = worldTransformModel_.translation_;
+	trans.rotate = worldTransformModel_.rotation_;
+	trans.scale = worldTransformModel_.scale_;
+	std::string line;
+	int blockType = -1;
+
+	// 行列の初期化
+	matrix_ = std::vector<std::vector<int>>(3, std::vector<int>(3, 0));
+
+	while (getline(file, line)) {
+		if (line.empty()) {
+			continue;
+		}
+
+		// ブロックタイプの定義が始まる場合
+		if (line[0] >= '0' && line[0] <= '9') {
+			blockType = line[0] - '0';
+			matrix_ = std::vector<std::vector<int>>(3, std::vector<int>(3, 0)); // 新しい行列を初期化
+			continue;
+		}
+
+		// 行列のデータを読み込み
+		if (line.find(",") != std::string::npos) {
+			std::istringstream line_stream(line);
+			std::string value;
+			for (int i = 0; i < 3; ++i) {
+				getline(line_stream, value, ',');
+				matrix_[i][blockType - 1] = std::atoi(value.c_str());
+			}
+		}
+
+		// ブロックの行列が終わったときにブロックを生成
+		if (line == "}") {
+			for (int y = 0; y < 3; ++y) {
+				for (int x = 0; x < 3; ++x) {
+					if (matrix_[y][x] == 1) {
+						Vector3 position;
+						position.num[0] = static_cast<float>(x);
+						position.num[1] = static_cast<float>(y);
+						position.num[2] = 0.0f;
+						SpawnCSVBlock(ObjModelData_, ObjTexture_, trans, static_cast<float>(blockType));
+					}
+				}
+			}
+		}
+	}
+
+	file.close();
+}
+
 void GamePlayScene::SpawnBlock(ModelData ObjModelData, uint32_t ObjTexture, EulerTransform transform) {
+	Block block;
+	block.model.Initialize(ObjModelData_, ObjTexture_);
+	block.model.SetDirectionalLightFlag(true, 3);
+
+	block.world.Initialize();
+	block.world.translation_ = transform.translate;
+	block.world.rotation_ = transform.rotate;
+	block.world.scale_ = transform.scale;
+
+	block.material = { 1.0f,1.0f,1.0f,1.0f };
+
+	block.isFloorOrBlockHit = false;
+
+	blocks_.push_back(block);
+}
+
+void GamePlayScene::SpawnCSVBlock(ModelData ObjModelData, uint32_t ObjTexture, EulerTransform transform, float type) {
 	Block block;
 	block.model.Initialize(ObjModelData_, ObjTexture_);
 	block.model.SetDirectionalLightFlag(true, 3);

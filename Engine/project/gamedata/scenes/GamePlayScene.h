@@ -43,6 +43,10 @@ public:
 	//ブロックの生成
 	void SpawnBlock(ModelData ObjModelData, uint32_t ObjTexture, EulerTransform transform);
 
+	void LoadBlockPopData();
+	void UpdataBlockPopCommands();
+	void SpawnCSVBlock(ModelData ObjModelData, uint32_t ObjTexture, EulerTransform transform, float type);
+
 	//当たり判定まとめ
 	void CollisionConclusion();
 
@@ -66,6 +70,9 @@ private:
 	WorldTransform worldTransformModel_;
 	Vector4 modelMaterial_;
 
+	// ブロック発生コマンド
+	std::stringstream blockPopCommands;
+	std::vector<std::vector<int>> matrix_;
 	//ブロック
 	std::list<Block> blocks_;
 	ModelData ObjModelData_;
