@@ -46,6 +46,7 @@ protected:
 
 	IDxcBlob* vertexShaderBlob = nullptr;
 	IDxcBlob* pixelShaderBlob = nullptr;
+	IDxcBlob* csShaderBlob = nullptr;
 
 	ID3DBlob* signatureBlob = nullptr;
 	ID3DBlob* errorBlob = nullptr;
