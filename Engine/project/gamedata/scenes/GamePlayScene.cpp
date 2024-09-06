@@ -76,7 +76,7 @@ void GamePlayScene::Update() {
 	// ドロップダウンでブロックタイプを選択
 	if (ImGui::BeginCombo("Block Type", std::to_string(selectedBlockType).c_str()))
 	{
-		for (int type = 1; type <= 8; ++type)
+		for (int type = 1; type <= 11; ++type)
 		{
 			bool isSelected = (selectedBlockType == type);
 			if (ImGui::Selectable(std::to_string(type).c_str(), isSelected))
@@ -92,8 +92,11 @@ void GamePlayScene::Update() {
 	}
 
 	// ブロックタイプに応じてデータをロードするボタン
-	if (ImGui::Button("Load Block"))
+	if (ImGui::Button("Load Block || DIK_1"))
 	{
+		LoadBlockPopData(selectedBlockType);
+	}
+	if (input_->TriggerKey(DIK_1)) {
 		LoadBlockPopData(selectedBlockType);
 	}
 
@@ -412,9 +415,9 @@ void GamePlayScene::LoadAllBlockData() {
 		if (line.empty()) {
 			continue;
 		}
-
+		// 行の最初の文字が数字かどうかを確認
 		if (isdigit(line[0])) {
-			currentBlockType = line[0] - '0';
+			currentBlockType = std::stoi(line); // 1桁または2桁の数字を整数として読み込む
 			matrix_ = std::vector<std::vector<int>>(3, std::vector<int>(3, 0));
 			continue;
 		}
