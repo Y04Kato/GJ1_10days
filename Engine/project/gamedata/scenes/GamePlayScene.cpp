@@ -92,12 +92,18 @@ void GamePlayScene::Update() {
 	}
 
 	// ブロックタイプに応じてデータをロードするボタン
-	if (ImGui::Button("Load Block || DIK_1"))
+	if (ImGui::Button("Load Block || DIK_9"))
 	{
 		LoadBlockPopData(selectedBlockType);
 	}
-	if (input_->TriggerKey(DIK_1)) {
+	if (input_->TriggerKey(DIK_9)) {
 		LoadBlockPopData(selectedBlockType);
+	}
+	if (input_->TriggerKey(DIK_W) && selectedBlockType <= 10) {
+		selectedBlockType++;
+	}
+	if (input_->TriggerKey(DIK_S) && selectedBlockType >= 2 ) {
+		selectedBlockType--;
 	}
 
 	ImGui::End();
@@ -138,6 +144,12 @@ void GamePlayScene::Update() {
 			if (input_->PressKey(DIK_D)) {
 				worldTransformModel_.translation_.num[0] += 1.0f;
 			}
+			/*if (input_->TriggerKey(DIK_A)) {
+				worldTransformModel_.translation_.num[0] -= 2.0f;
+			}
+			if (input_->TriggerKey(DIK_D)) {
+				worldTransformModel_.translation_.num[0] += 2.0f;
+			}*/
 		}
 	}
 
