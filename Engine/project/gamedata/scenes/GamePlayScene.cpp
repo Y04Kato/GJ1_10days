@@ -109,12 +109,6 @@ void GamePlayScene::Update() {
 			if (input_->PressKey(DIK_D)) {
 				worldTransformModel_.translation_.num[0] += 1.0f;
 			}
-			/*if (input_->TriggerKey(DIK_A)) {
-				worldTransformModel_.translation_.num[0] -= 2.0f;
-			}
-			if (input_->TriggerKey(DIK_D)) {
-				worldTransformModel_.translation_.num[0] += 2.0f;
-			}*/
 
 			ImGui::Begin("Block Type Selector");
 			ImGui::Text("TypeSelect : W,S");
