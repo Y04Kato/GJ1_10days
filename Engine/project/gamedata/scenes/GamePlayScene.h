@@ -26,6 +26,7 @@ struct Block {
 	WorldTransform world;
 	Vector4 material;
 	bool isFloorOrBlockHit;
+	int blockType;
 };
 
 class GamePlayScene :public Iscene {
@@ -43,9 +44,9 @@ public:
 	//ブロックの生成
 	void SpawnBlock(ModelData ObjModelData, uint32_t ObjTexture, EulerTransform transform);
 
-	void LoadBlockPopData();
-	void UpdataBlockPopCommands();
-	void SpawnCSVBlock(ModelData ObjModelData, uint32_t ObjTexture, EulerTransform transform, float type);
+	void LoadBlockPopData(int type);
+	void SpawnCSVBlock(ModelData ObjModelData, uint32_t ObjTexture, EulerTransform transform, int blockType, Vector3 position);
+	void SelectSpawn(int blockType);
 
 	//当たり判定まとめ
 	void CollisionConclusion();
