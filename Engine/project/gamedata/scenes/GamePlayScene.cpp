@@ -504,7 +504,10 @@ void GamePlayScene::SpawnCSVBlock(ModelData ObjModelData, uint32_t ObjTexture, E
 	block.world.rotation_ = transform.rotate;
 	block.world.scale_ = transform.scale;
 
-	block.material = { 1.0f,1.0f,1.0f,1.0f };
+	std::mt19937 randomEngine(seedGenerator());
+	std::uniform_real_distribution<float> distColor(0.0f, 1.0f);
+	block.material = { distColor(randomEngine),distColor(randomEngine) ,distColor(randomEngine) ,1.0f };;
+
 	block.isFloorOrBlockHit = false;
 	block.blockType = blockType;
 	blocks_.push_back(block);
