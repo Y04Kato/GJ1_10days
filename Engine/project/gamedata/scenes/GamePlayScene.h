@@ -45,10 +45,10 @@ public:
 	void SpawnBlock(ModelData ObjModelData, uint32_t ObjTexture, EulerTransform transform);
 
 	void LoadAllBlockData();
-	void LoadBlockPopData(int type);
+	void LoadBlockPopData(int type,int RotateType);
 	void SpawnCSVBlock(ModelData ObjModelData, uint32_t ObjTexture, EulerTransform transform, int blockType, Vector3 position);
 	void SelectSpawn(int blockType);
-
+	void Rotate90(std::vector<std::vector<int>>& matrix_);
 	//当たり判定まとめ
 	void CollisionConclusion();
 
@@ -82,7 +82,8 @@ private:
 	ModelData ObjModelData_;
 	uint32_t ObjTexture_;
 	WorldTransform world_;//配置指定用の座標
-
+	int RotateType = 0;//Rotate
+	const int maxRotateType = 3;// RotateType の範囲を定義
 	//Editor
 	Editors* editors_;
 	bool isEditorMode_ = false;

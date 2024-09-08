@@ -112,6 +112,8 @@ void GamePlayScene::Update() {
 
 			ImGui::Begin("Block Type Selector");
 			ImGui::Text("TypeSelect : W,S");
+			ImGui::Text("Rotate : -90 : 1\nRotate : +90 : 2");
+			ImGui::Text("Reset : R");
 			// ドロップダウンでブロックタイプを選択
 			if (ImGui::BeginCombo("Block Type", std::to_string(selectedBlockType).c_str()))
 			{
@@ -133,10 +135,18 @@ void GamePlayScene::Update() {
 			// ブロックタイプに応じてデータをロードするボタン
 			if (ImGui::Button("Load Block || DIK_SPACE"))
 			{
-				LoadBlockPopData(selectedBlockType);
+				LoadBlockPopData(selectedBlockType,RotateType);
 			}
 			if (input_->TriggerKey(DIK_SPACE)) {
-				LoadBlockPopData(selectedBlockType);
+				LoadBlockPopData(selectedBlockType,RotateType);
+			}
+			// DIK_2 が押されたときに RotateType を増加させる
+			if (input_->TriggerKey(DIK_2)) {
+				RotateType = (RotateType + 1) % (maxRotateType + 1);
+			}
+			// DIK_1 が押されたときに RotateType を減少させる
+			if (input_->TriggerKey(DIK_1)) {
+				RotateType = (RotateType - 1 + (maxRotateType + 1)) % (maxRotateType + 1);
 			}
 			if (input_->TriggerKey(DIK_W) && selectedBlockType <= 10) {
 				selectedBlockType++;
@@ -459,10 +469,14 @@ void GamePlayScene::LoadAllBlockData() {
 	file.close();
 }
 
-void GamePlayScene::LoadBlockPopData(int type) {
+void GamePlayScene::LoadBlockPopData(int type, int RotateType) {
 	auto it = blockDataMap_.find(type);
 	if (it != blockDataMap_.end()) {
 		matrix_ = it->second;
+		// RotateTypeに応じて回転処理を行う
+		for (int i = 0; i < RotateType; ++i) {
+			Rotate90(matrix_);
+		}
 		SelectSpawn(type);
 	}
 	else {
@@ -470,13 +484,12 @@ void GamePlayScene::LoadBlockPopData(int type) {
 		assert(false && "Block type not found in CSV data");
 	}
 }
-
+		
 void GamePlayScene::SelectSpawn(int blockType) {
 	EulerTransform trans;
 	trans.translate = worldTransformModel_.translation_;
 	trans.rotate = worldTransformModel_.rotation_;
 	trans.scale = worldTransformModel_.scale_;
-
 	for (int y = 0; y < 3; ++y) { // 行方向
 		for (int x = 0; x < 3; ++x) { // 列方向
 			if (matrix_[y][x] == 1) {
@@ -511,4 +524,15 @@ void GamePlayScene::SpawnCSVBlock(ModelData ObjModelData, uint32_t ObjTexture, E
 	block.isFloorOrBlockHit = false;
 	block.blockType = blockType;
 	blocks_.push_back(block);
+}
+
+// 90度回転（時計回り）
+void GamePlayScene::Rotate90(std::vector<std::vector<int>>& matrix_) {
+	std::vector<std::vector<int>> rotatedMatrix(3, std::vector<int>(3, 0));
+	for (int y = 0; y < 3; ++y) {
+		for (int x = 0; x < 3; ++x) {
+			rotatedMatrix[x][2 - y] = matrix_[y][x];
+		}
+	}
+	matrix_ = rotatedMatrix;
 }
