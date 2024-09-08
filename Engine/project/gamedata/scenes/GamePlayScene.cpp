@@ -93,14 +93,6 @@ void GamePlayScene::Update() {
 			player_->Move();
 		}
 		else {
-			//Block配置
-			if (input_->TriggerKey(DIK_0)) {
-				EulerTransform trans;
-				trans.translate = worldTransformModel_.translation_;
-				trans.rotate = worldTransformModel_.rotation_;
-				trans.scale = worldTransformModel_.scale_;
-				SpawnBlock(ObjModelData_, ObjTexture_, trans);
-			}
 
 			//配置地点操作
 			if (input_->PressKey(DIK_A)) {
@@ -172,9 +164,6 @@ void GamePlayScene::Update() {
 
 	//World更新
 	worldTransformModel_.UpdateMatrix();
-	for (Block& block : blocks_) {
-		block.world.UpdateMatrix();
-	}
 
 	//Player更新
 	player_->Update();
@@ -184,6 +173,10 @@ void GamePlayScene::Update() {
 
 	//当たり判定処理
 	CollisionConclusion();
+
+	for (Block& block : blocks_) {
+		block.world.UpdateMatrix();
+	}
 
 	//Camera
 	debugCamera_->Update();
@@ -250,25 +243,6 @@ void GamePlayScene::GameStartProcessing() {
 	editors_->SetGroupName((char*)"DemoStage");
 
 	isGameStart_ = false;
-}
-
-void GamePlayScene::SpawnBlock(ModelData ObjModelData, uint32_t ObjTexture, EulerTransform transform) {
-	Block block;
-	block.model.Initialize(ObjModelData_, ObjTexture_);
-	block.model.SetDirectionalLightFlag(true, 3);
-
-	block.world.Initialize();
-	block.world.translation_ = transform.translate;
-	block.world.rotation_ = transform.rotate;
-	block.world.scale_ = transform.scale;
-
-	std::mt19937 randomEngine(seedGenerator());
-	std::uniform_real_distribution<float> distColor(0.0f, 1.0f);
-	block.material = { distColor(randomEngine),distColor(randomEngine) ,distColor(randomEngine) ,1.0f };;
-
-	block.isFloorOrBlockHit = false;
-
-	blocks_.push_back(block);
 }
 
 void GamePlayScene::CollisionConclusion() {
@@ -384,6 +358,7 @@ void GamePlayScene::CollisionConclusion() {
 				}
 
 				block1.isFloorOrBlockHit = true;
+				StopConnectedBlocks(block1);
 			}
 		}
 	}
@@ -537,4 +512,24 @@ void GamePlayScene::Rotate90(std::vector<std::vector<int>>& matrix_) {
 		}
 	}
 	matrix_ = rotatedMatrix;
+}
+
+void GamePlayScene::StopConnectedBlocks(Block& block1) {
+	// 接触したブロック以外のブロックも全て停止する
+	for (Block& block2 : blocks_) {
+		if (block2.isFloorOrBlockHit || &block1 == &block2) {
+			continue;
+		}
+
+		// block1とblock2の当たり判定を行う
+		OBB block2OBB = CreateOBBFromEulerTransform(EulerTransform(block2.world.scale_, block2.world.rotation_, block2.world.translation_));
+		OBB block1OBB = CreateOBBFromEulerTransform(EulerTransform(block1.world.scale_, block1.world.rotation_, block1.world.translation_));
+
+		if (IsCollision(block1OBB, block2OBB)) {
+			// 接触しているならblock2も停止させる
+			block2.isFloorOrBlockHit = true;
+			block2.world.translation_.num[1] = block2OBB.center.num[1];
+			StopConnectedBlocks(block2);  // 再帰的に関連ブロックを停止させる
+		}
+	}
 }

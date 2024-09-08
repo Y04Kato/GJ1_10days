@@ -41,9 +41,6 @@ public:
 	//ゲーム開始時の処理
 	void GameStartProcessing();
 
-	//ブロックの生成
-	void SpawnBlock(ModelData ObjModelData, uint32_t ObjTexture, EulerTransform transform);
-
 	void LoadAllBlockData();
 	void LoadBlockPopData(int type,int RotateType);
 	void SpawnCSVBlock(ModelData ObjModelData, uint32_t ObjTexture, EulerTransform transform, int blockType, Vector3 position);
@@ -51,6 +48,8 @@ public:
 	void Rotate90(std::vector<std::vector<int>>& matrix_);
 	//当たり判定まとめ
 	void CollisionConclusion();
+
+	void StopConnectedBlocks(Block& block1);
 
 private:
 	CitrusJunosEngine* CJEngine_;
