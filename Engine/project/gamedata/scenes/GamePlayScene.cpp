@@ -112,12 +112,12 @@ void GamePlayScene::Update() {
 
 			ImGui::Begin("Block Type Selector");
 			ImGui::Text("TypeSelect : W,S");
-			ImGui::Text("Rotate : 1(-90),2(+90)");
+			ImGui::Text("Rotate : 1(-90),2(+90) \nangle : %d", RotateType * 90);
 			ImGui::Text("Reset : R");
 			// ドロップダウンでブロックタイプを選択
 			if (ImGui::BeginCombo("Block Type", std::to_string(selectedBlockType).c_str()))
 			{
-				for (int type = 1; type <= 11; ++type)
+				for (int type = 1; type <= maxType; ++type)
 				{
 					bool isSelected = (selectedBlockType == type);
 					if (ImGui::Selectable(std::to_string(type).c_str(), isSelected))
@@ -149,7 +149,7 @@ void GamePlayScene::Update() {
 				RotateType = (RotateType - 1 + (maxRotateType + 1)) % (maxRotateType + 1);
 			}
 			//Type変更
-			if (input_->TriggerKey(DIK_W) && selectedBlockType <= 10) {
+			if (input_->TriggerKey(DIK_W) && selectedBlockType <= maxType - 1) {
 				selectedBlockType++;
 			}
 			if (input_->TriggerKey(DIK_S) && selectedBlockType >= 2) {
