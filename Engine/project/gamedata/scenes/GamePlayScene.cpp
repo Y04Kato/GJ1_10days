@@ -393,9 +393,11 @@ void GamePlayScene::CollisionConclusion() {
 						//押し戻すための修正ベクトルを計算
 						Vector3 correction = Normalize(direction) * overlap * pushbackMultiplier_;
 						blockOBB.center += correction;//blockOBBを押し戻す
-						block.world.translation_ = blockOBB.center;
-						block.isFloorOrBlockHit = true;
+						block.world.translation_.num[1] = blockOBB.center.num[1];
 					}
+
+					block.isFloorOrBlockHit = true;
+					StopConnectedBlocks(block);
 				}
 			}
 		}
