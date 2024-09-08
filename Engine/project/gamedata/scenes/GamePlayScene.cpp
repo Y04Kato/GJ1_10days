@@ -112,7 +112,7 @@ void GamePlayScene::Update() {
 
 			ImGui::Begin("Block Type Selector");
 			ImGui::Text("TypeSelect : W,S");
-			ImGui::Text("Rotate : -90 : 1\nRotate : +90 : 2");
+			ImGui::Text("Rotate : 1(-90),2(+90)");
 			ImGui::Text("Reset : R");
 			// ドロップダウンでブロックタイプを選択
 			if (ImGui::BeginCombo("Block Type", std::to_string(selectedBlockType).c_str()))
@@ -133,10 +133,10 @@ void GamePlayScene::Update() {
 			}
 
 			// ブロックタイプに応じてデータをロードするボタン
-			if (ImGui::Button("Load Block || DIK_SPACE"))
-			{
+			if (ImGui::Button("Load Block || DIK_SPACE")){
 				LoadBlockPopData(selectedBlockType,RotateType);
 			}
+			//SpaceでそのTypeのブロックをSpawn
 			if (input_->TriggerKey(DIK_SPACE)) {
 				LoadBlockPopData(selectedBlockType,RotateType);
 			}
@@ -148,12 +148,14 @@ void GamePlayScene::Update() {
 			if (input_->TriggerKey(DIK_1)) {
 				RotateType = (RotateType - 1 + (maxRotateType + 1)) % (maxRotateType + 1);
 			}
+			//Type変更
 			if (input_->TriggerKey(DIK_W) && selectedBlockType <= 10) {
 				selectedBlockType++;
 			}
 			if (input_->TriggerKey(DIK_S) && selectedBlockType >= 2) {
 				selectedBlockType--;
 			}
+			//Reset
 			if (input_->TriggerKey(DIK_R)) {
 				blocks_.clear();
 			}
