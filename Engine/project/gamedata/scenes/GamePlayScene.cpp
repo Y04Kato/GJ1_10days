@@ -111,9 +111,9 @@ void GamePlayScene::Update() {
 			}
 
 			ImGui::Begin("Block Type Selector");
+			ImGui::Text("Reset : R");
 			ImGui::Text("TypeSelect : W,S");
 			ImGui::Text("Rotate : 1(-90),2(+90) \nangle : %d", RotateType * 90);
-			ImGui::Text("Reset : R");
 			// ドロップダウンでブロックタイプを選択
 			if (ImGui::BeginCombo("Block Type", std::to_string(selectedBlockType).c_str()))
 			{
