@@ -41,6 +41,8 @@ void GamePlayScene::Initialize() {
 	editors_->SetModels(ObjModelData_, ObjTexture_);
 	editors_->AddGroupName((char*)"DemoStage");
 	LoadAllBlockData();
+
+	datas_ = Datas::GetInstance();
 }
 
 void GamePlayScene::Update() {
@@ -241,7 +243,22 @@ void GamePlayScene::Finalize() {
 }
 
 void GamePlayScene::GameStartProcessing() {
-	editors_->SetGroupName((char*)"DemoStage");
+	//ステージ選択を適用
+	if (datas_->GetStageNum() == 0) {
+		editors_->SetGroupName((char*)"Stage1");
+	}
+	if (datas_->GetStageNum() == 1) {
+		editors_->SetGroupName((char*)"Stage2");
+	}
+	if (datas_->GetStageNum() == 2) {
+		editors_->SetGroupName((char*)"Stage3");
+	}
+	if (datas_->GetStageNum() == 3) {
+		editors_->SetGroupName((char*)"Stage4");
+	}
+	if (datas_->GetStageNum() == 4) {
+		editors_->SetGroupName((char*)"Stage5");
+	}
 
 	isGameStart_ = false;
 }

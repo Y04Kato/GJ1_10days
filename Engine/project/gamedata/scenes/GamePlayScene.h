@@ -20,6 +20,7 @@
 #include "components/utilities/globalVariables/GlobalVariables.h"
 
 #include "player/Player.h"
+#include "datas/datas.h"
 
 struct Block {
 	Model model;
@@ -100,4 +101,7 @@ private:
 	bool isGameStart_ = true;//ゲームスタート時の処理
 
 	bool isSetBlock_ = false;//ブロックを出したか否か
+
+	//
+	Datas* datas_;
 };

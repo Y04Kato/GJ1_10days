@@ -1,0 +1,22 @@
+{
+    "Stage5": {
+        "ObjCount": 1,
+        "obj0": "obj0",
+        "obj0Rotate": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "obj0Scale": [
+            27.0,
+            1.0,
+            1.0
+        ],
+        "obj0Translate": [
+            0.0,
+            -10.821673393249512,
+            0.0
+        ],
+        "obj0Type": "Floor"
+    }
+}
