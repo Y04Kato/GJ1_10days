@@ -35,7 +35,7 @@ void Player::Update() {
 		Fall();
 	}
 	else if (isFloorHit_ == true) {
-		worldTransform_.translation_.num[1] = floorTransform_.translation_.num[1] + floorTransform_.scale_.num[1] + worldTransform_.scale_.num[1] + 0.5f;
+		worldTransform_.translation_.num[1] = floorTransform_.translation_.num[1] + floorTransform_.scale_.num[1] + worldTransform_.scale_.num[1] + 0.05f;
 	}
 	else if (velocity_.num[1] > 0.0f) {
 
@@ -113,7 +113,7 @@ void Player::Move() {
 	if (isCollidingFromSide_ == false || isAntiFreeze_ == true) {
 		if (isFloorHit_ == true || isJumpOn == true) {
 			if (input_->TriggerKey(DIK_SPACE)) {
-				velocity_.num[1] = 0.5f;
+				velocity_.num[1] = 0.3f;
 				isJumpOn = false;
 			}
 		}
