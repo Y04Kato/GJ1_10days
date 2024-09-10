@@ -39,7 +39,7 @@ void GamePlayScene::Initialize() {
 	editors_ = Editors::GetInstance();
 	editors_->Initialize();
 	editors_->SetModels(ObjModelData_, ObjTexture_);
-	editors_->AddGroupName((char*)"DemoStage");		 
+	editors_->AddGroupName((char*)"DemoStage");
 	LoadAllBlockData();
 }
 
@@ -71,11 +71,11 @@ void GamePlayScene::Update() {
 	}
 	ImGui::End();
 
-	
+
 
 	//EditorMode
 	if (isEditorMode_ == true) {
-	
+
 	}
 	else {//EditorsModeではない時
 		//Player操作モードチェンジ
@@ -125,12 +125,13 @@ void GamePlayScene::Update() {
 			}
 
 			// ブロックタイプに応じてデータをロードするボタン
-			if (ImGui::Button("Load Block || DIK_SPACE")){
-				LoadBlockPopData(selectedBlockType,RotateType);
+			if (ImGui::Button("Load Block || DIK_SPACE")) {
+				LoadBlockPopData(selectedBlockType, RotateType);
 			}
 			//SpaceでそのTypeのブロックをSpawn
-			if (input_->TriggerKey(DIK_SPACE)) {
-				LoadBlockPopData(selectedBlockType,RotateType);
+			if (input_->TriggerKey(DIK_SPACE) && isSetBlock_ == false) {
+				LoadBlockPopData(selectedBlockType, RotateType);
+				isSetBlock_ = true;
 			}
 			// DIK_2 が押されたときに RotateType を増加させる
 			if (input_->TriggerKey(DIK_2)) {
@@ -269,12 +270,12 @@ void GamePlayScene::CollisionConclusion() {
 	bool isCollidingFromSide = false;//横から衝突しているかどうかを記録するフラグ
 	for (Block& block : blocks_) {
 		OBB blockOBB = CreateOBBFromEulerTransform(EulerTransform(block.world.scale_, block.world.rotation_, block.world.translation_));
-		// 衝突判定
+		//衝突判定
 		if (IsCollision(playerOBB, blockOBB)) {
 			Vector3 closestPoint = blockOBB.center;
 			Vector3 d = playerOBB.center - blockOBB.center;
 
-			// 最近接点の計算
+			//最近接点の計算
 			for (int i = 0; i < 3; ++i) {
 				float dist = Dot(d, blockOBB.orientation[i]);
 				dist = std::fmax(-blockOBB.size.num[i], std::min(dist, blockOBB.size.num[i]));
@@ -286,25 +287,27 @@ void GamePlayScene::CollisionConclusion() {
 
 			if (distance > 0.0f) {
 				Vector3 pushDirection = Normalize(difference);
-				Vector3 pushAmount = pushDirection * (playerOBB.size.num[0] - distance);
+				Vector3 pushAmount = pushDirection * (playerOBB.size.num[0] - distance) * pushbackMultiplierBlock_;
 
-				// プレイヤーが上に乗っているかどうかを判断
+				//プレイヤーが上に乗っているかどうかを判断
 				if (std::abs(pushDirection.num[1]) > std::abs(pushDirection.num[0]) &&
 					std::abs(pushDirection.num[1]) > std::abs(pushDirection.num[2])) {
 
 					isStandingOnBlock = true;
 
-					// 押し戻し処理
+					//押し戻し処理
 					playerOBB.center += pushAmount;
 					player_->SetTranslate(playerOBB.center);
 
+					player_->SetVelocity(ComputeOBBRepulsion(playerOBB, player_->GetVelocity(), blockOBB, 0.2f));
+
 					isCollisionDetected = true;
 				}
-				else { // 横方向からの衝突
+				else {//横方向からの衝突
 					isCollidingFromSide = true;
 					player_->SetIsReflection(true);
 
-					// 押し戻し処理
+					//押し戻し処理
 					playerOBB.center += pushAmount;
 					player_->SetTranslate(playerOBB.center);
 
@@ -359,6 +362,7 @@ void GamePlayScene::CollisionConclusion() {
 
 				block1.isFloorOrBlockHit = true;
 				StopConnectedBlocks(block1);
+				isSetBlock_ = false;
 			}
 		}
 	}
@@ -398,6 +402,7 @@ void GamePlayScene::CollisionConclusion() {
 
 					block.isFloorOrBlockHit = true;
 					StopConnectedBlocks(block);
+					isSetBlock_ = false;
 				}
 			}
 		}
@@ -415,9 +420,9 @@ void GamePlayScene::LoadAllBlockData() {
 		if (line.empty()) {
 			continue;
 		}
-		// 行の最初の文字が数字かどうかを確認
+		//行の最初の文字が数字かどうかを確認
 		if (isdigit(line[0])) {
-			currentBlockType = std::stoi(line); // 1桁または2桁の数字を整数として読み込む
+			currentBlockType = std::stoi(line);//1桁または2桁の数字を整数として読み込む
 			matrix_ = std::vector<std::vector<int>>(3, std::vector<int>(3, 0));
 			continue;
 		}
@@ -441,7 +446,7 @@ void GamePlayScene::LoadAllBlockData() {
 			blockDataMap_[currentBlockType] = matrix_;
 
 			if (line == "}") {
-				currentBlockType = -1; // ブロック定義の終わり
+				currentBlockType = -1;//ブロック定義の終わり
 			}
 		}
 	}
@@ -452,60 +457,61 @@ void GamePlayScene::LoadBlockPopData(int type, int RotateType) {
 	auto it = blockDataMap_.find(type);
 	if (it != blockDataMap_.end()) {
 		matrix_ = it->second;
-		// RotateTypeに応じて回転処理を行う
+		//RotateTypeに応じて回転処理を行う
 		for (int i = 0; i < RotateType; ++i) {
 			Rotate90(matrix_);
 		}
 		SelectSpawn(type);
 	}
 	else {
-		// 指定されたブロックタイプが存在しない場合の処理
+		//指定されたブロックタイプが存在しない場合の処理
 		assert(false && "Block type not found in CSV data");
 	}
 }
-		
+
 void GamePlayScene::SelectSpawn(int blockType) {
 	EulerTransform trans;
 	trans.translate = worldTransformModel_.translation_;
 	trans.rotate = worldTransformModel_.rotation_;
 	trans.scale = worldTransformModel_.scale_;
-	for (int y = 0; y < 3; ++y) { // 行方向
-		for (int x = 0; x < 3; ++x) { // 列方向
+	std::mt19937 randomEngine(seedGenerator());
+	std::uniform_real_distribution<float> distColor(0.0f, 1.0f);
+	Vector4 color = { distColor(randomEngine),distColor(randomEngine) ,distColor(randomEngine) ,1.0f };
+	for (int y = 0; y < 3; ++y) {//行方向
+		for (int x = 0; x < 3; ++x) {//列方向
 			if (matrix_[y][x] == 1) {
 				Vector3 position;
-				position.num[0] = static_cast<float>(x); // X座標
-				position.num[1] = static_cast<float>(2 - y); // Y座標
+				position.num[0] = static_cast<float>(x);//X座標
+				position.num[1] = static_cast<float>(2 - y);//Y座標
 				position.num[2] = 0.0f;
-				SpawnCSVBlock(ObjModelData_, ObjTexture_, trans, blockType, position);
+				SpawnCSVBlock(ObjModelData_, ObjTexture_, trans, blockType, position, color);
 			}
 		}
 	}
 }
 
-void GamePlayScene::SpawnCSVBlock(ModelData ObjModelData, uint32_t ObjTexture, EulerTransform transform, int blockType, Vector3 position) {
+void GamePlayScene::SpawnCSVBlock(ModelData ObjModelData, uint32_t ObjTexture, EulerTransform transform, int blockType, Vector3 position, Vector4 color) {
 	Block block;
 	block.model.Initialize(ObjModelData_, ObjTexture_);
 	block.model.SetDirectionalLightFlag(true, 3);
 	block.world.Initialize();
-	// オフセットを設定（例: 2.0fを掛けて間隔を広げる）
+	//オフセットを設定（例: 2.0fを掛けて間隔を広げる）
 	Vector3 offsetPosition = position;
-	offsetPosition.num[0] *= 2.0f; // X軸方向の間隔を広げる
-	offsetPosition.num[1] *= 2.0f; // Y軸方向の間隔を広げる
+	offsetPosition.num[0] *= 2.0f;//X軸方向の間隔を広げる
+	offsetPosition.num[1] *= 2.0f;//Y軸方向の間隔を広げる
 
-	block.world.translation_ = transform.translate + offsetPosition; // 位置を追加
+	block.world.translation_ = transform.translate + offsetPosition;//位置を追加
 	block.world.rotation_ = transform.rotate;
 	block.world.scale_ = transform.scale;
 
-	std::mt19937 randomEngine(seedGenerator());
-	std::uniform_real_distribution<float> distColor(0.0f, 1.0f);
-	block.material = { distColor(randomEngine),distColor(randomEngine) ,distColor(randomEngine) ,1.0f };;
+	block.material = color;
 
 	block.isFloorOrBlockHit = false;
 	block.blockType = blockType;
 	blocks_.push_back(block);
 }
 
-// 90度回転（時計回り）
+//90度回転（時計回り）
 void GamePlayScene::Rotate90(std::vector<std::vector<int>>& matrix_) {
 	std::vector<std::vector<int>> rotatedMatrix(3, std::vector<int>(3, 0));
 	for (int y = 0; y < 3; ++y) {
@@ -517,21 +523,21 @@ void GamePlayScene::Rotate90(std::vector<std::vector<int>>& matrix_) {
 }
 
 void GamePlayScene::StopConnectedBlocks(Block& block1) {
-	// 接触したブロック以外のブロックも全て停止する
+	//接触したブロック以外のブロックも全て停止する
 	for (Block& block2 : blocks_) {
 		if (block2.isFloorOrBlockHit || &block1 == &block2) {
 			continue;
 		}
 
-		// block1とblock2の当たり判定を行う
+		//block1とblock2の当たり判定を行う
 		OBB block2OBB = CreateOBBFromEulerTransform(EulerTransform(block2.world.scale_, block2.world.rotation_, block2.world.translation_));
 		OBB block1OBB = CreateOBBFromEulerTransform(EulerTransform(block1.world.scale_, block1.world.rotation_, block1.world.translation_));
 
 		if (IsCollision(block1OBB, block2OBB)) {
-			// 接触しているならblock2も停止させる
+			//接触しているならblock2も停止させる
 			block2.isFloorOrBlockHit = true;
 			block2.world.translation_.num[1] = block2OBB.center.num[1];
-			StopConnectedBlocks(block2);  // 再帰的に関連ブロックを停止させる
+			StopConnectedBlocks(block2);//再帰的に関連ブロックを停止させる
 		}
 	}
 }

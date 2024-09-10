@@ -41,7 +41,7 @@ public:
 
 	void LoadAllBlockData();
 	void LoadBlockPopData(int type, int RotateType);
-	void SpawnCSVBlock(ModelData ObjModelData, uint32_t ObjTexture, EulerTransform transform, int blockType, Vector3 position);
+	void SpawnCSVBlock(ModelData ObjModelData, uint32_t ObjTexture, EulerTransform transform, int blockType, Vector3 position, Vector4 color);
 	void SelectSpawn(int blockType);
 	void Rotate90(std::vector<std::vector<int>>& matrix_);
 	//当たり判定まとめ
@@ -106,4 +106,5 @@ private:
 	std::random_device seedGenerator;
 	bool isSceneStart_ = true;//ゲームスタート時の処理
 	bool isNextScene_ = false;//ゲームシーンへ移行
+	bool isSetBlock_ = false;//ブロックを出したか否か
 };

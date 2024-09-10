@@ -32,7 +32,12 @@ public:
 	void SetIsBlockHit(bool isBlockHit) { isBlockHit_ = isBlockHit; }
 
 	bool GetIsStandingOnHit() { return isStandingOnHit_; }
-	void SetIsStandingOnHit(bool isStandingOnHit) { isStandingOnHit_ = isStandingOnHit; }
+	void SetIsStandingOnHit(bool isStandingOnHit) {
+		isStandingOnHit_ = isStandingOnHit; 
+		if (isStandingOnHit_ == true) {
+			isJumpOn = true;
+		}
+	}
 
 	bool GetIsCollidingFromSide() { return isCollidingFromSide_; }
 	void SetIsCollidingFromSide(bool isCollidingFromSide) { isCollidingFromSide_ = isCollidingFromSide; }
@@ -66,6 +71,8 @@ private:
 
 	//フリーズバグ修正用フラグ
 	bool isAntiFreeze_ = false;
-	const int antiFreezeTime_ = 5;
+	const int antiFreezeTime_ = 3;
 	int antiFreezeTimer_ = 0;
+
+	bool isJumpOn = false;
 };

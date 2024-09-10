@@ -93,17 +93,18 @@ void GameTitleScene::Update(){
 	}
 	else {//EditorsModeではない時
 
-		if (isNextScene_ == false) {
+		if (isSetBlock_ == false) {
 			if (input_->TriggerKey(DIK_SPACE)) {
 				LoadBlockPopData(selectedBlockType, RotateType);
+				isSetBlock_ = true;
 			}
 		}
 	}
 
 	//ブロックが設置されたら
 	if (isNextScene_ == true) {
-		sphereSize_.num[0] += 25.0f;
-		sphereSize_.num[1] += 25.0f;
+		sphereSize_.num[0] += 35.0f;
+		sphereSize_.num[1] += 35.0f;
 		sphereSpriteTransform_.rotate.num[2] += 0.05f;
 		sphereSprite_->SetSize(sphereSize_);
 	}
@@ -211,6 +212,7 @@ void GameTitleScene::SceneEndProcessing() {
 
 	isNextScene_ = false;
 	isSceneStart_ = true;
+	isSetBlock_ = false;
 }
 
 void GameTitleScene::CollisionConclusion() {
@@ -309,9 +311,9 @@ void GameTitleScene::LoadAllBlockData() {
 		if (line.empty()) {
 			continue;
 		}
-		// 行の最初の文字が数字かどうかを確認
+		//行の最初の文字が数字かどうかを確認
 		if (isdigit(line[0])) {
-			currentBlockType = std::stoi(line); // 1桁または2桁の数字を整数として読み込む
+			currentBlockType = std::stoi(line); //1桁または2桁の数字を整数として読み込む
 			matrix_ = std::vector<std::vector<int>>(3, std::vector<int>(3, 0));
 			continue;
 		}
@@ -335,7 +337,7 @@ void GameTitleScene::LoadAllBlockData() {
 			blockDataMap_[currentBlockType] = matrix_;
 
 			if (line == "}") {
-				currentBlockType = -1; // ブロック定義の終わり
+				currentBlockType = -1;//ブロック定義の終わり
 			}
 		}
 	}
@@ -346,14 +348,14 @@ void GameTitleScene::LoadBlockPopData(int type, int RotateType) {
 	auto it = blockDataMap_.find(type);
 	if (it != blockDataMap_.end()) {
 		matrix_ = it->second;
-		// RotateTypeに応じて回転処理を行う
+		//RotateTypeに応じて回転処理を行う
 		for (int i = 0; i < RotateType; ++i) {
 			Rotate90(matrix_);
 		}
 		SelectSpawn(type);
 	}
 	else {
-		// 指定されたブロックタイプが存在しない場合の処理
+		//指定されたブロックタイプが存在しない場合の処理
 		assert(false && "Block type not found in CSV data");
 	}
 }
@@ -363,43 +365,44 @@ void GameTitleScene::SelectSpawn(int blockType) {
 	trans.translate = worldTransformModel_.translation_;
 	trans.rotate = worldTransformModel_.rotation_;
 	trans.scale = worldTransformModel_.scale_;
-	for (int y = 0; y < 3; ++y) { // 行方向
-		for (int x = 0; x < 3; ++x) { // 列方向
+	std::mt19937 randomEngine(seedGenerator());
+	std::uniform_real_distribution<float> distColor(0.0f, 1.0f);
+	Vector4 color = { distColor(randomEngine),distColor(randomEngine) ,distColor(randomEngine) ,1.0f };
+	for (int y = 0; y < 3; ++y) {//行方向
+		for (int x = 0; x < 3; ++x) {//列方向
 			if (matrix_[y][x] == 1) {
 				Vector3 position;
-				position.num[0] = static_cast<float>(x); // X座標
-				position.num[1] = static_cast<float>(2 - y); // Y座標
+				position.num[0] = static_cast<float>(x);//X座標
+				position.num[1] = static_cast<float>(2 - y);//Y座標
 				position.num[2] = 0.0f;
-				SpawnCSVBlock(ObjModelData_, ObjTexture_, trans, blockType, position);
+				SpawnCSVBlock(ObjModelData_, ObjTexture_, trans, blockType, position, color);
 			}
 		}
 	}
 }
 
-void GameTitleScene::SpawnCSVBlock(ModelData ObjModelData, uint32_t ObjTexture, EulerTransform transform, int blockType, Vector3 position) {
+void GameTitleScene::SpawnCSVBlock(ModelData ObjModelData, uint32_t ObjTexture, EulerTransform transform, int blockType, Vector3 position, Vector4 color) {
 	TestBlock block;
 	block.model.Initialize(ObjModelData_, ObjTexture_);
 	block.model.SetDirectionalLightFlag(true, 3);
 	block.world.Initialize();
-	// オフセットを設定（例: 2.0fを掛けて間隔を広げる）
+	//オフセットを設定（例: 2.0fを掛けて間隔を広げる）
 	Vector3 offsetPosition = position;
-	offsetPosition.num[0] *= 2.0f; // X軸方向の間隔を広げる
-	offsetPosition.num[1] *= 2.0f; // Y軸方向の間隔を広げる
+	offsetPosition.num[0] *= 2.0f;//X軸方向の間隔を広げる
+	offsetPosition.num[1] *= 2.0f;//Y軸方向の間隔を広げる
 
-	block.world.translation_ = transform.translate + offsetPosition; // 位置を追加
+	block.world.translation_ = transform.translate + offsetPosition;//位置を追加
 	block.world.rotation_ = transform.rotate;
 	block.world.scale_ = transform.scale;
 
-	std::mt19937 randomEngine(seedGenerator());
-	std::uniform_real_distribution<float> distColor(0.0f, 1.0f);
-	block.material = { distColor(randomEngine),distColor(randomEngine) ,distColor(randomEngine) ,1.0f };;
+	block.material = color;
 
 	block.isFloorOrBlockHit = false;
 	block.blockType = blockType;
 	blocks_.push_back(block);
 }
 
-// 90度回転（時計回り）
+//90度回転（時計回り）
 void GameTitleScene::Rotate90(std::vector<std::vector<int>>& matrix_) {
 	std::vector<std::vector<int>> rotatedMatrix(3, std::vector<int>(3, 0));
 	for (int y = 0; y < 3; ++y) {
@@ -411,21 +414,21 @@ void GameTitleScene::Rotate90(std::vector<std::vector<int>>& matrix_) {
 }
 
 void GameTitleScene::StopConnectedBlocks(TestBlock& block1) {
-	// 接触したブロック以外のブロックも全て停止する
+	//接触したブロック以外のブロックも全て停止する
 	for (TestBlock& block2 : blocks_) {
 		if (block2.isFloorOrBlockHit || &block1 == &block2) {
 			continue;
 		}
 
-		// block1とblock2の当たり判定を行う
+		//block1とblock2の当たり判定を行う
 		OBB block2OBB = CreateOBBFromEulerTransform(EulerTransform(block2.world.scale_, block2.world.rotation_, block2.world.translation_));
 		OBB block1OBB = CreateOBBFromEulerTransform(EulerTransform(block1.world.scale_, block1.world.rotation_, block1.world.translation_));
 
 		if (IsCollision(block1OBB, block2OBB)) {
-			// 接触しているならblock2も停止させる
+			//接触しているならblock2も停止させる
 			block2.isFloorOrBlockHit = true;
 			block2.world.translation_.num[1] = block2OBB.center.num[1];
-			StopConnectedBlocks(block2);  // 再帰的に関連ブロックを停止させる
+			StopConnectedBlocks(block2);  //再帰的に関連ブロックを停止させる
 		}
 	}
 }

@@ -35,7 +35,7 @@ void Player::Update() {
 		Fall();
 	}
 	else if (isFloorHit_ == true) {
-		worldTransform_.translation_.num[1] = floorTransform_.translation_.num[1] + floorTransform_.scale_.num[1] + worldTransform_.scale_.num[1] + 0.2f;
+		worldTransform_.translation_.num[1] = floorTransform_.translation_.num[1] + floorTransform_.scale_.num[1] + worldTransform_.scale_.num[1] + 0.5f;
 	}
 	else if (velocity_.num[1] > 0.0f) {
 
@@ -99,6 +99,7 @@ void Player::Draw(const ViewProjection& viewProjection) {
 }
 
 void Player::Move() {
+	//左右移動
 	if (isReflection_ == false || isAntiFreeze_ == true) {
 		if (input_->PressKey(DIK_A)) {
 			velocity_.num[0] = -0.15f;
@@ -108,10 +109,13 @@ void Player::Move() {
 		}
 	}
 
+	//ジャンプ
 	if (isCollidingFromSide_ == false || isAntiFreeze_ == true) {
-		if (input_->TriggerKey(DIK_SPACE)) {
-			velocity_.num[1] = 0.5f;
-
+		if (isFloorHit_ == true || isJumpOn == true) {
+			if (input_->TriggerKey(DIK_SPACE)) {
+				velocity_.num[1] = 0.5f;
+				isJumpOn = false;
+			}
 		}
 	}
 }
@@ -120,5 +124,5 @@ void Player::Fall() {
 	worldTransform_.translation_.num[1] += velocity_.num[1] / 2;
 	const float kGravityAcceleration = 0.05f;
 	Vector3 accelerationVector = { 0.0f,-kGravityAcceleration,0.0f };
-	velocity_.num[1] += accelerationVector.num[1];
+	velocity_.num[1] += accelerationVector.num[1] / 2;
 }

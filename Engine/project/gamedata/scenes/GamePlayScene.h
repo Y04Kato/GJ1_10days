@@ -43,7 +43,7 @@ public:
 
 	void LoadAllBlockData();
 	void LoadBlockPopData(int type,int RotateType);
-	void SpawnCSVBlock(ModelData ObjModelData, uint32_t ObjTexture, EulerTransform transform, int blockType, Vector3 position);
+	void SpawnCSVBlock(ModelData ObjModelData, uint32_t ObjTexture, EulerTransform transform, int blockType, Vector3 position,Vector4 color);
 	void SelectSpawn(int blockType);
 	void Rotate90(std::vector<std::vector<int>>& matrix_);
 	//当たり判定まとめ
@@ -90,9 +90,11 @@ private:
 
 	//押し戻しの倍率
 	float pushbackMultiplier_ = 0.01f;
-	float pushbackMultiplierBlock_ = 1.5f;
+	float pushbackMultiplierBlock_ = 1.01f;
 
 	//Other
 	std::random_device seedGenerator;
 	bool isGameStart_ = true;//ゲームスタート時の処理
+
+	bool isSetBlock_ = false;//ブロックを出したか否か
 };
