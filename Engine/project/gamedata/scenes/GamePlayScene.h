@@ -41,6 +41,9 @@ public:
 	//ゲーム開始時の処理
 	void GameStartProcessing();
 
+	//シーン終了時の処理
+	void SceneEndProcessing();
+
 	void LoadAllBlockData();
 	void LoadBlockPopData(int type,int RotateType);
 	void SpawnCSVBlock(ModelData ObjModelData, uint32_t ObjTexture, EulerTransform transform, int blockType, Vector3 position,Vector4 color);

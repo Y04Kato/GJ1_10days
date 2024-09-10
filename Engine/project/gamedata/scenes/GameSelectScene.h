@@ -17,6 +17,8 @@
 #include "postEffect/PostEffect.h"
 #include "editors/Editors.h"
 
+#include "datas/datas.h"
+
 struct Vertex {
 	Vector3 position;//頂点の位置
 	float oscillationTimer = 0.0f;//浮遊アニメーションのためのタイマー
@@ -30,6 +32,12 @@ public:
 	void DrawUI() override;
 	void DrawPostEffect() override;
 	void Finalize() override;
+
+	//ゲーム開始時の処理
+	void GameStartProcessing();
+
+	//シーン終了時の処理
+	void SceneEndProcessing();
 
 	void MoveCameraToVertex(int vertexIndex, float timerSpeed, float rotationY);
 
@@ -85,4 +93,9 @@ private:
 	const float returnSpeed = 3.0f;//Y=0に戻るスピード
 
 	float deltaTime = 0.0f;
+
+	//
+	Datas* datas_;
+
+	bool isGameStart_ = true;//ゲームスタート時の処理
 };

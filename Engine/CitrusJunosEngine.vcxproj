@@ -205,6 +205,7 @@
     <ClCompile Include="base\components\math\MathCalculation.cpp" />
     <ClCompile Include="base\CJEngine.cpp" />
     <ClCompile Include="base\WinApp.cpp" />
+    <ClCompile Include="project\gamedata\datas\datas.cpp" />
     <ClCompile Include="project\gamedata\player\Player.cpp" />
     <ClCompile Include="project\gamedata\scenes\GameClearScene.cpp" />
     <ClCompile Include="project\gamedata\scenes\GameDemoScene.cpp" />
@@ -477,6 +478,7 @@
       <DeploymentContent>false</DeploymentContent>
     </ClInclude>
     <ClInclude Include="base\WinApp.h" />
+    <ClInclude Include="project\gamedata\datas\datas.h" />
     <ClInclude Include="project\gamedata\player\Player.h" />
     <ClInclude Include="project\gamedata\scenes\GameClearScene.h" />
     <ClInclude Include="project\gamedata\scenes\GameDemoScene.h" />

@@ -246,6 +246,13 @@ void GamePlayScene::GameStartProcessing() {
 	isGameStart_ = false;
 }
 
+void GamePlayScene::SceneEndProcessing() {
+	blocks_.clear();
+	editors_->Finalize();
+
+	isSetBlock_ = false;
+}
+
 void GamePlayScene::CollisionConclusion() {
 	//Playerと床の当たり判定
 	OBB playerOBB;

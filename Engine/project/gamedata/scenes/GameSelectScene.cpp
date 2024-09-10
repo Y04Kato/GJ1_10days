@@ -56,11 +56,11 @@ void GameSelectScene::Initialize() {
 	fadeSprite_->SetTextureInitialSize();
 
 	//
-	model_[0].reset(Model::CreateModel("project/gamedata/resources/block", "block.obj"));
-	model_[1].reset(Model::CreateModel("project/gamedata/resources/block", "block.obj"));
-	model_[2].reset(Model::CreateModel("project/gamedata/resources/block", "block.obj"));
-	model_[3].reset(Model::CreateModel("project/gamedata/resources/block", "block.obj"));
-	model_[4].reset(Model::CreateModel("project/gamedata/resources/block", "block.obj"));
+	model_[0].reset(Model::CreateModel("project/gamedata/resources/TextObj", "Stage1Text.obj"));
+	model_[1].reset(Model::CreateModel("project/gamedata/resources/TextObj", "Stage2Text.obj"));
+	model_[2].reset(Model::CreateModel("project/gamedata/resources/TextObj", "Stage3Text.obj"));
+	model_[3].reset(Model::CreateModel("project/gamedata/resources/TextObj", "Stage4Text.obj"));
+	model_[4].reset(Model::CreateModel("project/gamedata/resources/TextObj", "Stage5Text.obj"));
 	model_[5].reset(Model::CreateModel("project/gamedata/resources/block", "block.obj"));
 	for (int i = 0; i < 6; i++) {
 		worldTransformModel_[i].Initialize();
@@ -82,12 +82,22 @@ void GameSelectScene::Initialize() {
 	hexVertices_[4].position = { -5.0f,0.0f,18.5f };
 	hexVertices_[5].position = { -18.5f,0.0f,0.0f };
 
+	//
+	datas_ = Datas::GetInstance();
+	datas_->Initialize();
+
 	lastFrameTime = std::chrono::high_resolution_clock::now();
 }
 
 void GameSelectScene::Update() {
 	ImGui::Begin("SelectScene");
+	ImGui::Text("CurrentVertexIndex %d", currentVertexIndex);
 	ImGui::End();
+
+	//シーン初期設定
+	if (isGameStart_ == true) {
+		GameStartProcessing();
+	}
 
 	//Aキーが押されたら左側（反時計回り）に移動
 	if (input_->TriggerKey(DIK_A)) {
@@ -127,7 +137,8 @@ void GameSelectScene::Update() {
 
 	//決定
 	if (input_->TriggerKey(DIK_SPACE)) {
-
+		datas_->SetStageNum(currentVertexIndex);
+		isfadeIn_ = true;
 	}
 
 	//頂点の浮遊アニメーションとY座標の補正を更新
@@ -136,29 +147,29 @@ void GameSelectScene::Update() {
 
 	//UI点滅用
 	if (changeAlpha_ == false) {
-		spriteAlpha_ -= 8;
-		if (spriteAlpha_ <= 0) {
+		spriteAlpha_ -= 8.0f;
+		if (spriteAlpha_ <= 0.0f) {
 			changeAlpha_ = true;
 		}
 	}
 	else if (changeAlpha_ == true) {
-		spriteAlpha_ += 8;
-		if (spriteAlpha_ >= 256) {
+		spriteAlpha_ += 8.0f;
+		if (spriteAlpha_ >= 256.0f) {
 			changeAlpha_ = false;
 		}
 	}
 
 	//フェード用
 	if (isfadeIn_ == false) {
-		fadeAlpha_ -= 4;
-		if (fadeAlpha_ <= 0) {
-			fadeAlpha_ = 0;
+		fadeAlpha_ -= 4.0f;
+		if (fadeAlpha_ <= 0.0f) {
+			fadeAlpha_ = 0.0f;
 		}
 	}
 	else if (isfadeIn_ == true) {//ステージ決定時
-		fadeAlpha_ += 4;
-		if (fadeAlpha_ >= 256) {
-
+		fadeAlpha_ += 4.0f;
+		if (fadeAlpha_ >= 256.0f) {
+			SceneEndProcessing();
 		}
 	}
 
@@ -208,6 +219,28 @@ void GameSelectScene::DrawPostEffect() {
 
 void GameSelectScene::Finalize() {
 
+}
+
+void GameSelectScene::GameStartProcessing() {
+	debugCamera_->SetCamera({ -5.0f,0.0f,-18.5f }, { 0.0f,0.0f,0.0f });
+
+	isGameStart_ = false;
+}
+
+void GameSelectScene::SceneEndProcessing() {
+	currentVertexIndex = 0;
+	currentRotationY = 0.0f;
+	isfadeIn_ = false;
+	isGameStart_ = true;
+	fadeAlpha_ = 256.0f;
+	debugCamera_->SetCamera({ 0.0f,0.0f,-45.0f }, { 0.0f,0.0f,0.0f });
+
+	if (datas_->GetStageNum() == 5) {
+		sceneNo = TITLE_SCENE;
+	}
+	else {
+		sceneNo = GAME_SCENE;
+	}
 }
 
 void GameSelectScene::MoveCameraToVertex(int vertexIndex, float timerSpeed, float rotationY) {

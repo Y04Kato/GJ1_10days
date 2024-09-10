@@ -246,6 +246,8 @@ void GameTitleScene::Finalize() {
 void GameTitleScene::SceneStartProcessing() {
 	editors_->SetGroupName((char*)"TitleStage");
 
+	debugCamera_->SetCamera({ 0.0f,0.0f,-45.0f }, { 0.0f,0.0f,0.0f });
+
 	isSceneStart_ = false;
 }
 
