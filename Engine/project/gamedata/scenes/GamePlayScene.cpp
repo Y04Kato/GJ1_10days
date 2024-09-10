@@ -96,10 +96,10 @@ void GamePlayScene::Update() {
 
 			//配置地点操作
 			if (input_->PressKey(DIK_A)) {
-				worldTransformModel_.translation_.num[0] -= 1.001f;
+				worldTransformModel_.translation_.num[0] -= 2.0001f;
 			}
 			if (input_->PressKey(DIK_D)) {
-				worldTransformModel_.translation_.num[0] += 1.001f;
+				worldTransformModel_.translation_.num[0] += 2.0001f;
 			}
 
 			ImGui::Begin("Block Type Selector");
