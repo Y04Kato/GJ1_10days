@@ -61,7 +61,7 @@ void GameSelectScene::Initialize() {
 	model_[2].reset(Model::CreateModel("project/gamedata/resources/TextObj", "Stage3Text.obj"));
 	model_[3].reset(Model::CreateModel("project/gamedata/resources/TextObj", "Stage4Text.obj"));
 	model_[4].reset(Model::CreateModel("project/gamedata/resources/TextObj", "Stage5Text.obj"));
-	model_[5].reset(Model::CreateModel("project/gamedata/resources/block", "block.obj"));
+	model_[5].reset(Model::CreateModel("project/gamedata/resources/TextObj", "EXITText.obj"));
 	for (int i = 0; i < 6; i++) {
 		worldTransformModel_[i].Initialize();
 		model_[i]->SetDirectionalLightFlag(true, 3);

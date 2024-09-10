@@ -19,7 +19,7 @@ void GameTitleScene::Initialize(){
 	viewProjection_.Initialize();
 
 	//配置カーソル用
-	model_.reset(Model::CreateModel("project/gamedata/resources/block", "block.obj"));
+	model_.reset(Model::CreateModel("project/gamedata/resources/TextObj", "TitleText.obj"));
 	worldTransformModel_.Initialize();
 	modelMaterial_ = { 1.0f,0.2f,0.2f,0.2f };
 	model_->SetDirectionalLightFlag(true, 0);
@@ -89,7 +89,6 @@ void GameTitleScene::Initialize(){
 
 	//
 	selectedBlockType = 11;
-	worldTransformModel_.translation_.num[0] = 15.0f;
 }
 
 void GameTitleScene::Update(){
@@ -204,7 +203,7 @@ void GameTitleScene::Draw(){
 	editors_->Draw(viewProjection_);
 
 	//
-	//model_->Draw(worldTransformModel_, viewProjection_, modelMaterial_);
+	model_->Draw(worldTransformModel_, viewProjection_, modelMaterial_);
 
 #pragma endregion
 
@@ -408,9 +407,9 @@ void GameTitleScene::LoadBlockPopData(int type, int RotateType) {
 
 void GameTitleScene::SelectSpawn(int blockType) {
 	EulerTransform trans;
-	trans.translate = worldTransformModel_.translation_;
+	trans.translate = Vector3{ 15.0f,10.0f,0.0f};
 	trans.rotate = worldTransformModel_.rotation_;
-	trans.scale = worldTransformModel_.scale_;
+	trans.scale = Vector3{ 1.0f,1.0f,1.0f };
 	std::mt19937 randomEngine(seedGenerator());
 	std::uniform_real_distribution<float> distColor(0.0f, 1.0f);
 	Vector4 color = { distColor(randomEngine),distColor(randomEngine) ,distColor(randomEngine) ,1.0f };
