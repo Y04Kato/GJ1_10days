@@ -79,6 +79,20 @@ private:
 	WorldTransform worldTransformModel_;
 	Vector4 modelMaterial_;
 
+	//
+	std::unique_ptr <CreateSprite> bgSprite_;
+	std::unique_ptr <CreateSprite> fadeSprite_;
+	EulerTransform allSpriteTransform_;
+	EulerTransform allSpriteUVTransform_;
+	Vector4 allSpriteMaterial_;
+
+	//
+	float fadeAlpha_ = 256.0f;
+	bool isfadeIn_ = false;
+
+	//
+	uint32_t bgResourceNum_;
+
 	// ブロック発生コマンド
 	std::stringstream blockPopCommands;
 	std::vector<std::vector<int>> matrix_;

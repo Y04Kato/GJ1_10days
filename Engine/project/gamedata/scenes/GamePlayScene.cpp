@@ -21,6 +21,32 @@ void GamePlayScene::Initialize() {
 
 	viewProjection_.Initialize();
 
+	//
+	bgResourceNum_ = textureManager_->Load("project/gamedata/resources/bg/paper.png");
+
+	//スプライト
+	allSpriteMaterial_ = { 1.0f,1.0f,1.0f,1.0f };
+	allSpriteTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{1280 / 2.0f,720 / 2.0f,0.0f} };
+	allSpriteUVTransform_ = {
+		{1.0f,1.0f,1.0f},
+		{0.0f,0.0f,0.0f},
+		{0.0f,0.0f,0.0f},
+	};
+
+	//BGSprite
+	bgSprite_ = std::make_unique <CreateSprite>();
+
+	bgSprite_->Initialize(Vector2{ 10.0f,10.0f }, bgResourceNum_);
+	bgSprite_->SetAnchor(Vector2{ 0.5f,0.5f });
+	bgSprite_->SetTextureInitialSize();
+
+	//FadeSprite
+	fadeSprite_ = std::make_unique <CreateSprite>();
+
+	fadeSprite_->Initialize(Vector2{ 10.0f,10.0f }, bgResourceNum_);
+	fadeSprite_->SetAnchor(Vector2{ 0.5f,0.5f });
+	fadeSprite_->SetTextureInitialSize();
+
 	//Player初期化
 	player_ = std::make_unique<Player>();
 	playerModel_.reset(Model::CreateModel("project/gamedata/resources/block", "block.obj"));
@@ -76,7 +102,19 @@ void GamePlayScene::Update() {
 	}
 	ImGui::End();
 
-
+	//フェード用
+	if (isfadeIn_ == false) {
+		fadeAlpha_ -= 4.0f;
+		if (fadeAlpha_ <= 0.0f) {
+			fadeAlpha_ = 0.0f;
+		}
+	}
+	else if (isfadeIn_ == true) {
+		fadeAlpha_ += 4.0f;
+		if (fadeAlpha_ >= 256.0f) {
+			SceneEndProcessing();
+		}
+	}
 
 	//EditorMode
 	if (isEditorMode_ == true) {
@@ -202,6 +240,7 @@ void GamePlayScene::Update() {
 void GamePlayScene::Draw() {
 #pragma region 背景スプライト描画
 	CJEngine_->renderer_->Draw(PipelineType::Standard2D);
+	bgSprite_->Draw(allSpriteTransform_, allSpriteUVTransform_, allSpriteMaterial_);
 
 #pragma endregion
 
@@ -239,6 +278,9 @@ void GamePlayScene::DrawUI() {
 #pragma region 前景スプライト描画
 	CJEngine_->renderer_->Draw(PipelineType::Standard2D);
 
+
+
+	fadeSprite_->Draw(allSpriteTransform_, allSpriteUVTransform_, Vector4{ 0.0f,0.0f,0.0f,fadeAlpha_ / 256.0f });
 #pragma endregion
 }
 
@@ -249,6 +291,7 @@ void GamePlayScene::DrawPostEffect() {
 void GamePlayScene::Finalize() {
 	blocks_.clear();
 	editors_->Finalize();
+
 }
 
 void GamePlayScene::GameStartProcessing() {
@@ -277,6 +320,9 @@ void GamePlayScene::SceneEndProcessing() {
 	editors_->Finalize();
 
 	isSetBlock_ = false;
+	isfadeIn_ = false;
+	isGameStart_ = true;
+	fadeAlpha_ = 256.0f;
 }
 
 void GamePlayScene::CollisionConclusion() {
@@ -514,7 +560,7 @@ void GamePlayScene::LoadBlockPopData(int type, int RotateType) {
 
 void GamePlayScene::SelectSpawn(int blockType) {
 	EulerTransform trans;
-	trans.translate = worldTransformModel_.translation_;
+	trans.translate = Vector3{ worldTransformModel_.translation_.num[0] - 2.0002f ,worldTransformModel_.translation_.num[1] ,worldTransformModel_.translation_.num[2] };
 	trans.rotate = worldTransformModel_.rotation_;
 	trans.scale = worldTransformModel_.scale_;
 	std::mt19937 randomEngine(seedGenerator());

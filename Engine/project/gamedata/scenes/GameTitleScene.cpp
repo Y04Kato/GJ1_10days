@@ -231,7 +231,7 @@ void GameTitleScene::DrawUI() {
 	startSprite_->Draw(allSpriteTransform_, allSpriteUVTransform_, Vector4{ allSpriteMaterial_.num[0],allSpriteMaterial_.num[1],allSpriteMaterial_.num[2],spriteAlpha_ / 256.0f });
 
 	if (isNextScene_ == true) {
-		sphereSprite_->Draw(sphereSpriteTransform_, allSpriteUVTransform_, allSpriteMaterial_);
+		//sphereSprite_->Draw(sphereSpriteTransform_, allSpriteUVTransform_, allSpriteMaterial_);
 	}
 
 	fadeSprite_->Draw(allSpriteTransform_, allSpriteUVTransform_, Vector4{ 0.0f,0.0f,0.0f,fadeAlpha_ / 256.0f });
