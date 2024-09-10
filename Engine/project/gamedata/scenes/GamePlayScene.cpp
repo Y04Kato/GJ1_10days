@@ -90,6 +90,10 @@ void GamePlayScene::Update() {
 
 		//Player操作モードなら
 		if (isPlayerOperationModes_ == true) {
+			ImGui::Begin("player pos");
+			ImGui::Text("playerpos x %f", player_->GetWorldTransform().translation_.num[0]);
+			ImGui::Text("playerpos y %f", player_->GetWorldTransform().translation_.num[1]);
+			ImGui::End();
 			player_->Move();
 		}
 		else {
@@ -101,7 +105,7 @@ void GamePlayScene::Update() {
 			if (input_->PressKey(DIK_D)) {
 				worldTransformModel_.translation_.num[0] += 1.0f;
 			}
-
+			
 			ImGui::Begin("Block Type Selector");
 			ImGui::Text("Reset : R");
 			ImGui::Text("TypeSelect : W,S");
