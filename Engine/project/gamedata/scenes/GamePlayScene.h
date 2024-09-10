@@ -87,7 +87,7 @@ private:
 	WorldTransform world_;//配置指定用の座標
 	int RotateType = 0;//Rotate
 	const int maxRotateType = 3;// RotateType の範囲を定義
-	const int maxType = 11;
+	const int maxType = 12;
 	//Editor
 	Editors* editors_;
 	bool isEditorMode_ = false;
