@@ -14,6 +14,8 @@ void GameSelectScene::Initialize() {
 
 	//Audio
 	audio_ = Audio::GetInstance();
+	select_ = audio_->SoundLoad("project/gamedata/resources/SE/Select.mp3");
+	set_ = audio_->SoundLoad("project/gamedata/resources/SE/Set.mp3");
 
 	// デバッグカメラの初期化
 	debugCamera_ = DebugCamera::GetInstance();
@@ -101,6 +103,7 @@ void GameSelectScene::Update() {
 
 	//Aキーが押されたら左側（反時計回り）に移動
 	if (input_->TriggerKey(DIK_A)) {
+		audio_->SoundPlayWave(select_, 0.1f, false);
 		currentVertexIndex = (currentVertexIndex + 5) % 6;//左へ移動（インデックスを減少）
 		if (currentVertexIndex == 1) {
 			currentRotationY += rotationStep;//π/2右回転
@@ -119,6 +122,7 @@ void GameSelectScene::Update() {
 
 	//Dキーが押されたら右側（時計回り）に移動
 	if (input_->TriggerKey(DIK_D)) {
+		audio_->SoundPlayWave(select_, 0.1f, false);
 		currentVertexIndex = (currentVertexIndex + 1) % 6;//右へ移動（インデックスを増加）
 		if (currentVertexIndex == 2) {
 			currentRotationY -= rotationStep;//π/2左回転
@@ -137,6 +141,7 @@ void GameSelectScene::Update() {
 
 	//決定
 	if (input_->TriggerKey(DIK_SPACE)) {
+		audio_->SoundPlayWave(set_, 0.1f, false);
 		datas_->SetStageNum(currentVertexIndex);
 		isfadeIn_ = true;
 	}

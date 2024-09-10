@@ -11,6 +11,10 @@ void GameTitleScene::Initialize(){
 
 	//Audio
 	audio_ = Audio::GetInstance();
+	bgm_ = audio_->SoundLoad("project/gamedata/resources/SE/BGM.mp3");
+	select_ = audio_->SoundLoad("project/gamedata/resources/SE/Select.mp3");
+	set_ = audio_->SoundLoad("project/gamedata/resources/SE/Set.mp3");
+	audio_->SoundPlayWave(bgm_, 0.1f, true);
 
 	// デバッグカメラの初期化
 	debugCamera_ = DebugCamera::GetInstance();
@@ -112,6 +116,7 @@ void GameTitleScene::Update(){
 			if (input_->TriggerKey(DIK_SPACE)) {
 				LoadBlockPopData(selectedBlockType, RotateType);
 				isSetBlock_ = true;
+				audio_->SoundPlayWave(select_, 0.1f, false);
 			}
 		}
 	}
@@ -340,6 +345,7 @@ void GameTitleScene::CollisionConclusion() {
 					block.isFloorOrBlockHit = true;
 					StopConnectedBlocks(block);
 					isNextScene_ = true;
+					audio_->SoundPlayWave(set_, 0.1f, false);
 				}
 			}
 		}

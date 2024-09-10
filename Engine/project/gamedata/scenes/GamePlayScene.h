@@ -62,6 +62,10 @@ private:
 	TextureManager* textureManager_;
 
 	Audio* audio_;
+	SoundData select_;
+	SoundData set_;
+	SoundData jump_;
+
 	Input* input_;
 	DebugCamera* debugCamera_;
 

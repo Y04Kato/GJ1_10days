@@ -5,6 +5,10 @@ void Player::Initialize(Model* model) {
 	worldTransform_.Initialize();
 	worldTransform_.scale_ = { 0.8f,0.8f,0.8f };
 	input_ = Input::GetInstance();
+
+	audio_ = Audio::GetInstance();
+	set_ = audio_->SoundLoad("project/gamedata/resources/SE/Set.mp3");
+	jump_ = audio_->SoundLoad("project/gamedata/resources/SE/Jump.mp3");
 }
 
 void Player::Update() {
@@ -21,6 +25,12 @@ void Player::Update() {
 	}
 	else {
 		ImGui::Text("isCollidingFromSide:False");
+	}
+	if (isFloorHit_ == true) {
+		ImGui::Text("isFloorHit:True");
+	}
+	else {
+		ImGui::Text("isFloorHit:False");
 	}
 	if (isReflection_ == true) {
 		ImGui::Text("isReflection:True");
@@ -115,6 +125,7 @@ void Player::Move() {
 			if (input_->TriggerKey(DIK_SPACE)) {
 				velocity_.num[1] = 0.3f;
 				isJumpOn = false;
+				audio_->SoundPlayWave(jump_, 0.1f, false);
 			}
 		}
 	}
@@ -125,4 +136,18 @@ void Player::Fall() {
 	const float kGravityAcceleration = 0.05f;
 	Vector3 accelerationVector = { 0.0f,-kGravityAcceleration,0.0f };
 	velocity_.num[1] += accelerationVector.num[1] / 2;
+}
+
+void Player::SetIsFloorHit(bool isFloorHit) { 
+	isFloorHit_ = isFloorHit; 
+}
+
+void Player::SetIsStandingOnHit(bool isStandingOnHit) {
+	isStandingOnHit_ = isStandingOnHit;
+	if (isStandingOnHit_ == true) {
+		if (isJumpOn == false) {
+			audio_->SoundPlayWave(set_, 0.1f, false);
+		}
+		isJumpOn = true;
+	}
 }

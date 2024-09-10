@@ -1,5 +1,6 @@
 #pragma once
 #include "Input.h"
+#include "Audio.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include <Model.h>
@@ -26,18 +27,13 @@ public:
 	void SetVelocity(Vector3 velocity) { velocity_ = velocity; }
 
 	bool GetIsFloorHit() { return isFloorHit_; }
-	void SetIsFloorHit(bool isFloorHit) { isFloorHit_ = isFloorHit; }
+	void SetIsFloorHit(bool isFloorHit);
 
 	bool GetIsBlockHit() { return isBlockHit_; }
 	void SetIsBlockHit(bool isBlockHit) { isBlockHit_ = isBlockHit; }
 
 	bool GetIsStandingOnHit() { return isStandingOnHit_; }
-	void SetIsStandingOnHit(bool isStandingOnHit) {
-		isStandingOnHit_ = isStandingOnHit; 
-		if (isStandingOnHit_ == true) {
-			isJumpOn = true;
-		}
-	}
+	void SetIsStandingOnHit(bool isStandingOnHit);
 
 	bool GetIsCollidingFromSide() { return isCollidingFromSide_; }
 	void SetIsCollidingFromSide(bool isCollidingFromSide) { isCollidingFromSide_ = isCollidingFromSide; }
@@ -48,6 +44,9 @@ public:
 
 private:
 	Model* model_;
+	Audio* audio_;
+	SoundData set_;
+	SoundData jump_;
 
 	WorldTransform worldTransform_;
 	WorldTransform floorTransform_;

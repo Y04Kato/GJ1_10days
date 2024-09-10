@@ -11,6 +11,9 @@ void GamePlayScene::Initialize() {
 
 	//Audio
 	audio_ = Audio::GetInstance();
+	select_ = audio_->SoundLoad("project/gamedata/resources/SE/Select.mp3");
+	set_ = audio_->SoundLoad("project/gamedata/resources/SE/Set.mp3");
+	jump_ = audio_->SoundLoad("project/gamedata/resources/SE/Jump.mp3");
 
 	// デバッグカメラの初期化
 	debugCamera_ = DebugCamera::GetInstance();
@@ -163,6 +166,12 @@ void GamePlayScene::Update() {
 		if (block.isFloorOrBlockHit == false) {
 			block.world.translation_.num[1] -= 0.5f;
 		}
+	}
+
+	//Playerが落下した時戻す
+	if (player_->GetWorldTransform().translation_.num[1] <= -10.0f) {
+		player_->SetTranslate(Vector3{ 0.0f,0.0f,0.0f });
+		player_->SetVelocity(Vector3{ 0.0f,0.0f,0.0f });
 	}
 
 	//World更新
@@ -338,6 +347,8 @@ void GamePlayScene::CollisionConclusion() {
 					player_->SetVelocity(ComputeOBBRepulsion(playerOBB, player_->GetVelocity(), blockOBB, 1.0f));
 
 					isCollisionDetected = true;
+
+					audio_->SoundPlayWave(jump_, 0.1f, false);
 				}
 			}
 		}
@@ -384,6 +395,10 @@ void GamePlayScene::CollisionConclusion() {
 					block1.world.translation_.num[1] = block1OBB.center.num[1];
 				}
 
+				if (isSetBlock_ == true) {
+					audio_->SoundPlayWave(set_, 0.1f, false);
+				}
+
 				block1.isFloorOrBlockHit = true;
 				StopConnectedBlocks(block1);
 				isSetBlock_ = false;
@@ -422,6 +437,10 @@ void GamePlayScene::CollisionConclusion() {
 						Vector3 correction = Normalize(direction) * overlap * pushbackMultiplier_;
 						blockOBB.center += correction;//blockOBBを押し戻す
 						block.world.translation_.num[1] = blockOBB.center.num[1];
+					}
+
+					if (isSetBlock_ == true) {
+						audio_->SoundPlayWave(set_, 0.1f, false);
 					}
 
 					block.isFloorOrBlockHit = true;
