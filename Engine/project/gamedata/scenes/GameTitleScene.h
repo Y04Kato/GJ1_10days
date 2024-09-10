@@ -64,6 +64,8 @@ private:
 	std::unique_ptr <CreateSprite> titleSprite_;
 	std::unique_ptr <CreateSprite> bgSprite_;
 	std::unique_ptr <CreateSprite> sphereSprite_;
+	std::unique_ptr <CreateSprite> startSprite_;
+	std::unique_ptr <CreateSprite> fadeSprite_;
 	EulerTransform allSpriteTransform_;
 	EulerTransform sphereSpriteTransform_;
 	EulerTransform allSpriteUVTransform_;
@@ -71,10 +73,18 @@ private:
 
 	Vector2 sphereSize_;
 
+	//UI点滅用
+	bool changeAlpha_ = false;
+	float spriteAlpha_ = 256.0f;
+
+	//
+	float fadeAlpha_ = 0.0f;
+
 	//
 	uint32_t titleResourceNum_;
 	uint32_t bgResourceNum_;
 	uint32_t sphereResourceNum_;
+	uint32_t startResourceNum_;
 
 	//
 	std::unique_ptr<Model> model_;

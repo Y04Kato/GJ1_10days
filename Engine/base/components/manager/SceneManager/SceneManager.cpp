@@ -8,7 +8,7 @@ void SceneManager::Run() {
 
 void SceneManager::Initialize() {
 	//WindowTitle
-	const char kWindowTitle[] = "title";
+	const char kWindowTitle[] = "3003_落ち木積み";
 	//COMの初期化
 	CoInitializeEx(0, COINIT_MULTITHREADED);
 	//Engine

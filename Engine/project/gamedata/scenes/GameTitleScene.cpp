@@ -40,6 +40,7 @@ void GameTitleScene::Initialize(){
 	titleResourceNum_ = textureManager_->Load("project/gamedata/resources/ui/title.png");
 	bgResourceNum_ = textureManager_->Load("project/gamedata/resources/bg/paper.png");
 	sphereResourceNum_ = textureManager_->Load("project/gamedata/resources/bg/sphere.png");
+	startResourceNum_ = textureManager_->Load("project/gamedata/resources/ui/pressSpace.png");
 
 	//スプライト
 	allSpriteMaterial_ = { 1.0f,1.0f,1.0f,1.0f };
@@ -71,6 +72,20 @@ void GameTitleScene::Initialize(){
 	sphereSize_ = { 0.0f,0.0f };
 	sphereSprite_->Initialize(sphereSize_, sphereResourceNum_);
 	sphereSprite_->SetAnchor(Vector2{ 0.5f,0.5f });
+
+	//StartSprite
+	startSprite_ = std::make_unique <CreateSprite>();
+
+	startSprite_->Initialize(Vector2{ 10.0f,10.0f }, startResourceNum_);
+	startSprite_->SetAnchor(Vector2{ 0.5f,0.5f });
+	startSprite_->SetTextureInitialSize();
+
+	//FadeSprite
+	fadeSprite_ = std::make_unique <CreateSprite>();
+
+	fadeSprite_->Initialize(Vector2{ 10.0f,10.0f }, bgResourceNum_);
+	fadeSprite_->SetAnchor(Vector2{ 0.5f,0.5f });
+	fadeSprite_->SetTextureInitialSize();
 
 	//
 	selectedBlockType = 11;
@@ -107,13 +122,38 @@ void GameTitleScene::Update(){
 		sphereSize_.num[1] += 35.0f;
 		sphereSpriteTransform_.rotate.num[2] += 0.05f;
 		sphereSprite_->SetSize(sphereSize_);
+
+		fadeAlpha_ += 4;
+	}
+	else {
+		fadeAlpha_ -= 4;
+		if (fadeAlpha_ <= 0) {
+			fadeAlpha_ = 0;
+		}
+	}
+
+	//UI点滅用
+	if (changeAlpha_ == false) {
+		spriteAlpha_ -= 8;
+		if (spriteAlpha_ <= 0) {
+			changeAlpha_ = true;
+		}
+	}
+	else if (changeAlpha_ == true) {
+		spriteAlpha_ += 8;
+		if (spriteAlpha_ >= 256) {
+			changeAlpha_ = false;
+		}
 	}
 
 	//画面を埋めるサイズになったら
 	if (sphereSize_.num[0] >= 2500.0f) {
-		SceneEndProcessing();
-		//SELECTシーンへ移行
-		sceneNo = SELECT_SCENE;
+		if (fadeAlpha_ >= 256) {
+			fadeAlpha_ = 256;
+			SceneEndProcessing();
+			//SELECTシーンへ移行
+			sceneNo = SELECT_SCENE;
+		}
 	}
 
 	//Block落下
@@ -183,10 +223,14 @@ void GameTitleScene::DrawUI() {
 #pragma region 前景スプライト描画
 	CJEngine_->renderer_->Draw(PipelineType::Standard2D);
 	titleSprite_->Draw(allSpriteTransform_, allSpriteUVTransform_, allSpriteMaterial_);
+	startSprite_->Draw(allSpriteTransform_, allSpriteUVTransform_, Vector4{ allSpriteMaterial_.num[0],allSpriteMaterial_.num[1],allSpriteMaterial_.num[2],spriteAlpha_ / 256.0f });
 
 	if (isNextScene_ == true) {
 		sphereSprite_->Draw(sphereSpriteTransform_, allSpriteUVTransform_, allSpriteMaterial_);
 	}
+
+	fadeSprite_->Draw(allSpriteTransform_, allSpriteUVTransform_, Vector4{ 0.0f,0.0f,0.0f,fadeAlpha_ / 256.0f });
+
 #pragma endregion
 }
 
