@@ -95,11 +95,11 @@ void GamePlayScene::Update() {
 		else {
 
 			//配置地点操作
-			if (input_->PressKey(DIK_A)) {
-				worldTransformModel_.translation_.num[0] -= 2.0001f;
+			if (input_->TriggerKey(DIK_A)) {
+				worldTransformModel_.translation_.num[0] -= 2.001f;
 			}
-			if (input_->PressKey(DIK_D)) {
-				worldTransformModel_.translation_.num[0] += 2.0001f;
+			if (input_->TriggerKey(DIK_D)) {
+				worldTransformModel_.translation_.num[0] += 2.001f;
 			}
 
 			ImGui::Begin("Block Type Selector");
@@ -504,8 +504,8 @@ void GamePlayScene::SpawnCSVBlock(ModelData ObjModelData, uint32_t ObjTexture, E
 	block.world.Initialize();
 	//オフセットを設定（例: 2.0fを掛けて間隔を広げる）
 	Vector3 offsetPosition = position;
-	offsetPosition.num[0] *= 2.0f;//X軸方向の間隔を広げる
-	offsetPosition.num[1] *= 2.0f;//Y軸方向の間隔を広げる
+	offsetPosition.num[0] *= 2.000001f;//X軸方向の間隔を広げる
+	offsetPosition.num[1] *= 2.000001f;//Y軸方向の間隔を広げる
 
 	block.world.translation_ = transform.translate + offsetPosition;//位置を追加
 	block.world.rotation_ = transform.rotate;
