@@ -21,9 +21,10 @@ void GameTitleScene::Initialize(){
 	//配置カーソル用
 	model_.reset(Model::CreateModel("project/gamedata/resources/TextObj", "TitleText.obj"));
 	worldTransformModel_.Initialize();
-	modelMaterial_ = { 1.0f,0.2f,0.2f,0.2f };
+	modelMaterial_ = { 0.6f,0.3f,0.3f,1.0f };
 	model_->SetDirectionalLightFlag(true, 0);
 	worldTransformModel_.translation_.num[1] = 10.0f;//配置の高さ
+	worldTransformModel_.scale_ = { 12.0f,12.0f,5.0f };
 
 	//ブロックのモデル&テクスチャ読み込み
 	ObjModelData_ = model_->LoadModelFile("project/gamedata/resources/block", "block.obj");
@@ -221,7 +222,7 @@ void GameTitleScene::Draw(){
 void GameTitleScene::DrawUI() {
 #pragma region 前景スプライト描画
 	CJEngine_->renderer_->Draw(PipelineType::Standard2D);
-	titleSprite_->Draw(allSpriteTransform_, allSpriteUVTransform_, allSpriteMaterial_);
+	//titleSprite_->Draw(allSpriteTransform_, allSpriteUVTransform_, allSpriteMaterial_);
 	startSprite_->Draw(allSpriteTransform_, allSpriteUVTransform_, Vector4{ allSpriteMaterial_.num[0],allSpriteMaterial_.num[1],allSpriteMaterial_.num[2],spriteAlpha_ / 256.0f });
 
 	if (isNextScene_ == true) {
