@@ -149,6 +149,26 @@ void GamePlayScene::Update() {
 				worldTransformModel_.translation_.num[0] += 1.0001f;
 			}
 
+			if (input_->PressKey(DIK_A)) {
+				pressTimer_++;
+
+				if (pressTimer_ >= pressMaxTime) {
+					worldTransformModel_.translation_.num[0] -= 1.0001f;
+					pressTimer_ = 0;
+				}
+			}
+			else if (input_->PressKey(DIK_D)) {
+				pressTimer_++;
+
+				if (pressTimer_ >= pressMaxTime) {
+					worldTransformModel_.translation_.num[0] += 1.0001f;
+					pressTimer_ = 0;
+				}
+			}
+			else {
+				pressTimer_ = 0;
+			}
+
 			ImGui::Begin("Block Type Selector");
 			ImGui::Text("Reset : R");
 			ImGui::Text("TypeSelect : W,S");
@@ -346,9 +366,9 @@ void GamePlayScene::SceneEndProcessing() {
 }
 
 void GamePlayScene::CollisionConclusion() {
-	// Playerと床の当たり判定
-	bool isCollisionFloor = false; //衝突があったかどうかを記録するフラグ
-	bool isCollidingFromSideOnFloor = false; //横から衝突しているかどうかを記録するフラグ
+	//Playerと床の当たり判定
+	bool isCollisionFloor = false;//衝突があったかどうかを記録するフラグ
+	bool isCollidingFromSideOnFloor = false;//横から衝突しているかどうかを記録するフラグ
 
 	OBB playerOBB;
 	playerOBB = CreateOBBFromEulerTransform(EulerTransform(player_->GetWorldTransform().scale_, player_->GetWorldTransform().rotation_, player_->GetWorldTransform().translation_));

@@ -122,4 +122,8 @@ private:
 
 	//
 	Datas* datas_;
+
+	//
+	int pressTimer_ = 0;
+	const int pressMaxTime = 10;
 };
