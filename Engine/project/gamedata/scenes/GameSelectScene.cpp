@@ -58,14 +58,15 @@ void GameSelectScene::Initialize() {
 	fadeSprite_->SetTextureInitialSize();
 
 	//
-	model_[0].reset(Model::CreateModel("project/gamedata/resources/TextObj", "Stage1Text.obj"));
-	model_[1].reset(Model::CreateModel("project/gamedata/resources/TextObj", "Stage2Text.obj"));
-	model_[2].reset(Model::CreateModel("project/gamedata/resources/TextObj", "Stage3Text.obj"));
+	model_[0].reset(Model::CreateModel("project/gamedata/resources/DemoViewStageObj", "DemoViewStage1.obj"));
+	model_[1].reset(Model::CreateModel("project/gamedata/resources/DemoViewStageObj", "DemoViewStage2.obj"));
+	model_[2].reset(Model::CreateModel("project/gamedata/resources/DemoViewStageObj", "DemoViewStage3.obj"));
 	model_[3].reset(Model::CreateModel("project/gamedata/resources/TextObj", "Stage4Text.obj"));
 	model_[4].reset(Model::CreateModel("project/gamedata/resources/TextObj", "Stage5Text.obj"));
 	model_[5].reset(Model::CreateModel("project/gamedata/resources/TextObj", "EXITText.obj"));
 	for (int i = 0; i < 6; i++) {
 		worldTransformModel_[i].Initialize();
+		worldTransformModel_[i].scale_ = { 0.1f,0.1f,0.1f };
 		model_[i]->SetDirectionalLightFlag(true, 3);
 	}
 	modelMaterial_ = { 1.0f,1.0f,1.0f,1.0f };
@@ -75,7 +76,7 @@ void GameSelectScene::Initialize() {
 	worldTransformModel_[2].translation_ = { 10.0f,0.0f,0.0f };
 	worldTransformModel_[3].translation_ = { 5.0f,0.0f,10.0f };
 	worldTransformModel_[4].translation_ = { -5.0f,0.0f,10.0f };
-	worldTransformModel_[5].translation_ = { -10.0f,0.0f,0.0f };
+	worldTransformModel_[5].translation_ = { -10.0f,1.0f,0.0f };
 
 	worldTransformModel_[0].rotation_ = { 0.0f,0.0f,0.0f };
 	worldTransformModel_[1].rotation_ = { 0.0f,0.0f,0.0f };
@@ -83,6 +84,8 @@ void GameSelectScene::Initialize() {
 	worldTransformModel_[3].rotation_ = { 0.0f,-3.14f,0.0f };
 	worldTransformModel_[4].rotation_ = { 0.0f,-3.14f,0.0f };
 	worldTransformModel_[5].rotation_ = { 0.0f,1.57f,0.0f };
+
+	worldTransformModel_[5].scale_ = { 1.0f,1.0f,1.0f };
 
 	hexVertices_[0].position = { -5.0f,0.0f,-18.5f };
 	hexVertices_[1].position = { 5.0f,0.0f,-18.5f };
@@ -235,7 +238,7 @@ void GameSelectScene::Finalize() {
 }
 
 void GameSelectScene::GameStartProcessing() {
-	debugCamera_->SetCamera({ -5.0f,0.0f,-18.5f }, { 0.0f,0.0f,0.0f });
+	debugCamera_->SetCamera({ -5.0f,1.0f,-18.5f }, { 0.0f,0.0f,0.0f });
 
 	isGameStart_ = false;
 }
@@ -258,6 +261,7 @@ void GameSelectScene::SceneEndProcessing() {
 
 void GameSelectScene::MoveCameraToVertex(int vertexIndex, float timerSpeed, float rotationY) {
 	Vector3 translation = hexVertices_[vertexIndex].position;
+	translation.num[1] += 1;
 	Vector3 rotation = { 0.0f, rotationY, 0.0f };//必要に応じてカメラの回転を指定
 	debugCamera_->MovingCamera(translation, rotation, timerSpeed);
 }

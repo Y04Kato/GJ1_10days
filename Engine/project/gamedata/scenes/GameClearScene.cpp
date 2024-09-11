@@ -21,7 +21,7 @@ void GameClearScene::Initialize() {
 	viewProjection_.Initialize();
 
 	//配置カーソル用
-	model_.reset(Model::CreateModel("project/gamedata/resources/TextObj", "TitleText.obj"));
+	model_.reset(Model::CreateModel("project/gamedata/resources/TextObj", "ClearText.obj"));
 	worldTransformModel_.Initialize();
 	modelMaterial_ = { 0.6f,0.3f,0.3f,1.0f };
 	model_->SetDirectionalLightFlag(true, 0);
