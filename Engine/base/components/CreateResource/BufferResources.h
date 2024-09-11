@@ -352,7 +352,11 @@ inline void BufferResource<T>::CreateUAVResource(const uint32_t& Num, const std:
 	uavDesc.Buffer.Flags = D3D12_BUFFER_UAV_FLAG_NONE;
 	uavDesc.Buffer.StructureByteStride = sizeof(T);
 	dxCommon = DirectXCommon::GetInstance();
-	dxCommon->GetDevice()->CreateShaderResourceView(buffer_.get(), &uavDesc, SRVhandle.CPU);
-
+	dxCommon->GetDevice()->CreateUnorderedAccessView(
+		buffer_.Get(),
+		nullptr,
+		&uavDesc,
+		SRVhandle.CPU
+	);
 	size;
 }

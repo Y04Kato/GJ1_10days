@@ -388,6 +388,10 @@ void DirectXCommon::Finalize() {
 	CloseWindow(WinApp::GetInstance()->GetHwnd());
 }
 
+void DirectXCommon::CommandClose()
+{
+}
+
 DirectXCommon* DirectXCommon::GetInstance() {
 	static DirectXCommon instance;
 	return &instance;

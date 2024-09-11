@@ -160,6 +160,8 @@
     <ClCompile Include="base\components\manager\RTVManager\RTVManager.cpp" />
     <ClCompile Include="base\components\manager\SRVManager\SRVManager.cpp" />
     <ClCompile Include="base\components\manager\TextureManager\TextureManager.cpp" />
+    <ClCompile Include="base\components\Particle\Emitter\ParticleEmitter.cpp" />
+    <ClCompile Include="base\components\Particle\GpuParticle.cpp" />
     <ClCompile Include="base\components\pipelineState\Gaussian\Gaussian.cpp" />
     <ClCompile Include="base\components\pipelineState\GpuParticle\ParticleEmit.cpp" />
     <ClCompile Include="base\components\pipelineState\GpuParticle\ParticleInit.cpp" />
@@ -467,6 +469,11 @@
     <ClInclude Include="base\components\manager\RTVManager\RTVManager.h" />
     <ClInclude Include="base\components\manager\SRVManager\SRVManager.h" />
     <ClInclude Include="base\components\manager\TextureManager\TextureManager.h" />
+    <ClInclude Include="base\components\Particle\Emitter\ParticleEmitter.h" />
+    <ClInclude Include="base\components\Particle\Emitter\StructGpuParticleEmitter.h" />
+    <ClInclude Include="base\components\Particle\Field\ParticleField.h" />
+    <ClInclude Include="base\components\Particle\Field\StructParticleField.h" />
+    <ClInclude Include="base\components\Particle\GpuParticle.h" />
     <ClInclude Include="base\components\pipelineState\Gaussian\Gaussian.h" />
     <ClInclude Include="base\components\pipelineState\GpuParticle\ParticleEmit.h" />
     <ClInclude Include="base\components\pipelineState\GpuParticle\ParticleInit.h" />
