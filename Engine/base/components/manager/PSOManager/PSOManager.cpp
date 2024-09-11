@@ -77,7 +77,7 @@ void PSOManager::Initialize(){
 	AddPipeline(scanlines->GetPSO(), PipelineType::Scanlines);
 	AddPipeline(hsv->GetPSO(), PipelineType::HSV);
 
-	AddPipeline(particle->GetPSO(), PipelineType::PARTICLE_Init);
+	AddPipeline(particleInit->GetPSO(), PipelineType::PARTICLE_Init);
 	AddPipeline(particleEmit->GetPSO(), PipelineType::PARTICLE_EMIT_BOX);
 	AddPipeline(particleUpdate->GetPSO(), PipelineType::PARTICLE_UPDATE);
 

@@ -388,9 +388,42 @@ void DirectXCommon::Finalize() {
 	CloseWindow(WinApp::GetInstance()->GetHwnd());
 }
 
+
+
 void DirectXCommon::CommandClose()
 {
+	hr_ = commandList_->Close();
+	assert(SUCCEEDED(hr_));
+
+	//GPUにコマンドリストを実行させる
+	ID3D12CommandList* commandLists[] = { commandList_.Get() };
+	commandQueue_->ExecuteCommandLists(1, commandLists);
+	//GPUとOSに画面の交換を行うよう通知する
+	swapChain_->Present(1, 0);
+	//Fenceの値を更新
+	fenceValue_++;
+	//GPUがここまで辿り着いた時、Fenceの値を指定した値に代入するようにsignalを送る
+	commandQueue_->Signal(fence_.Get(), fenceValue_);
+
+	if (fence_->GetCompletedValue() < fenceValue_) {
+		//指定したSignalにたどり着いていないので、たどり着くまで待つようにイベントを設定する
+		fence_->SetEventOnCompletion(fenceValue_, fenceEvent_);
+		//イベント待つ
+		WaitForSingleObject(fenceEvent_, INFINITE);
+	}
+
+	//FPS固定
+	UpdateFixFPS();
+
+	//次のフレーム用のコマンドリストを準備
+	hr_ = commandAllocator_->Reset();
+	assert(SUCCEEDED(hr_));
+	hr_ = commandList_->Reset(commandAllocator_.Get(), nullptr);
+	assert(SUCCEEDED(hr_));
+	////
+
 }
+
 
 DirectXCommon* DirectXCommon::GetInstance() {
 	static DirectXCommon instance;

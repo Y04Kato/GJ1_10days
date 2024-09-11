@@ -7,6 +7,7 @@
 #include"Emitter/StructGpuParticleEmitter.h"
 #include<vector>
 #include<memory>
+#include"../../CJEngine.h"
 
 struct ParticleCS
 {
@@ -84,6 +85,8 @@ namespace ParticleIbu {
 		std::vector<uint32_t>freeList_;
 
 		uint32_t texHandle_ = 1;
+
+		CitrusJunosEngine* CJEngine_;
 	};
 
 };

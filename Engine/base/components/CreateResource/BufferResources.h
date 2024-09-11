@@ -70,6 +70,7 @@ public:
 
 	D3D12_VERTEX_BUFFER_VIEW GetBufferView() { return vertexBufferView_; }
 
+	DESCRIPTERHANDLE GetHandles() { return SRVhandle; }
 #pragma endregion
 
 private:

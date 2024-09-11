@@ -76,25 +76,35 @@ void GpuParticle::Create(const size_t kNum, std::string Name)
 		indexBuf_->Setbuffer(indexParam_);
 		indexBuf_->UnMap();
 	}
-
+	CJEngine_ = CitrusJunosEngine::GetInstance();
 	{//初期化CS_Dispatch
-		//SPSOProperty pso = GraphicsPipelineManager::GetInstance()->GetPiplines(Pipline::PARTICLE_INIT, "None");;
-		ComPtr<ID3D12GraphicsCommandList>commandList = DirectXCommon::GetInstance()->GetCommandList();
-		//ID3D12DescriptorHeap* heap[] = { DirectXCommon::GetInstance()->GetSrvHeap() };
-		//commandList->SetDescriptorHeaps(1, heap);
+		ComPtr<ID3D12GraphicsCommandList>list = DirectXCommon::GetInstance()->GetCommandList();
+		ID3D12DescriptorHeap* heap[] = { DirectXCommon::GetInstance()->GetSrvDescriptiorHeap().Get()};
+		list->SetDescriptorHeaps(1, heap);
 
-		//commandList->SetComputeRootSignature(pso.rootSignature.Get());
-		//commandList->SetPipelineState(pso.GraphicsPipelineState.Get());
+		CJEngine_->renderer_->ComputeCommand(PipelineType::PARTICLE_Init);
 
 		//DescriptorManager::GetInstance()->ComputeRootParamerterCommand(0, writeParticleBuf_->GetSrvIndex());
 		//DescriptorManager::GetInstance()->ComputeRootParamerterCommand(1, freeListIndexBuf_->GetSrvIndex());
 		//DescriptorManager::GetInstance()->ComputeRootParamerterCommand(2, freeListBuf_->GetSrvIndex());
 
+		list->SetComputeRootDescriptorTable(
+			0,
+			writeParticleBuf_->GetHandles().GPU
+		);
+		list->SetComputeRootDescriptorTable(
+			1,
+			freeListIndexBuf_->GetHandles().GPU
+		);
+		list->SetComputeRootDescriptorTable(
+			2,
+			freeListBuf_->GetHandles().GPU
+		);
 
 		UINT dispach = UINT(GetNum() / 1024);
-		commandList->Dispatch(dispach, 1, 1);
+		list->Dispatch(dispach, 1, 1);
 	}
-	//DirectXCommon::GetInstance()->CommandClosed();
+	DirectXCommon::GetInstance()->CommandClose();
 }
 
 void GpuParticle::Update()
@@ -140,7 +150,7 @@ void GpuParticle::Draw()
 
 void GpuParticle::CallBarrier()
 {
-	
+
 	ComPtr<ID3D12GraphicsCommandList>commandList = DirectXCommon::GetInstance()->GetCommandList();
 	D3D12_RESOURCE_BARRIER barrier{};
 	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_UAV;

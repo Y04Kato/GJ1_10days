@@ -166,6 +166,8 @@ void GameDemoScene::Initialize() {
 	GlobalVariables::GetInstance()->CreateGroup(groupName);
 
 	LevelSetObject();
+
+	TestParticle::GetInstance()->Initialize();
 }
 
 void GameDemoScene::Update() {
