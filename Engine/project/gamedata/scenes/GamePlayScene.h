@@ -111,7 +111,7 @@ private:
 	bool isEditorMode_ = false;
 
 	//押し戻しの倍率
-	float pushbackMultiplier_ = 0.01f;
+	float pushbackMultiplier_ = 0.05f;
 	float pushbackMultiplierBlock_ = 1.01f;
 
 	//Other

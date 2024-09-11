@@ -77,6 +77,13 @@ void GameSelectScene::Initialize() {
 	worldTransformModel_[4].translation_ = { -5.0f,0.0f,10.0f };
 	worldTransformModel_[5].translation_ = { -10.0f,0.0f,0.0f };
 
+	worldTransformModel_[0].rotation_ = { 0.0f,0.0f,0.0f };
+	worldTransformModel_[1].rotation_ = { 0.0f,0.0f,0.0f };
+	worldTransformModel_[2].rotation_ = { 0.0f,-1.57f,0.0f };
+	worldTransformModel_[3].rotation_ = { 0.0f,-3.14f,0.0f };
+	worldTransformModel_[4].rotation_ = { 0.0f,-3.14f,0.0f };
+	worldTransformModel_[5].rotation_ = { 0.0f,1.57f,0.0f };
+
 	hexVertices_[0].position = { -5.0f,0.0f,-18.5f };
 	hexVertices_[1].position = { 5.0f,0.0f,-18.5f };
 	hexVertices_[2].position = { 18.5f,0.0f,0.0f };
@@ -94,6 +101,7 @@ void GameSelectScene::Initialize() {
 void GameSelectScene::Update() {
 	ImGui::Begin("SelectScene");
 	ImGui::Text("CurrentVertexIndex %d", currentVertexIndex);
+	ImGui::DragFloat3("", &worldTransformModel_[0].rotation_.num[0]);
 	ImGui::End();
 
 	//シーン初期設定
@@ -275,18 +283,74 @@ void GameSelectScene::UpdateVertices(float deltaTime) {
 				}
 			}
 
-			if (worldTransformModel_[i].rotation_.num[1] != 0.0f) {
+			if (worldTransformModel_[0].rotation_.num[1] != 0.0f && 0 != currentVertexIndex) {
 				//線形補間で徐々にY=0に戻す
-				float direction = (worldTransformModel_[i].rotation_.num[1] > 0.0f) ? -1.0f : 1.0f;
-				worldTransformModel_[i].rotation_.num[1] += direction * returnSpeed * deltaTime;
+				float direction = (worldTransformModel_[0].rotation_.num[1] > 0.0f) ? -1.0f : 1.0f;
+				worldTransformModel_[0].rotation_.num[1] += direction * returnSpeed * deltaTime;
 
 				//0に近づける処理（Y=0を超えないように調整）
-				if (std::abs(worldTransformModel_[i].rotation_.num[1]) < returnSpeed * deltaTime) {
-					worldTransformModel_[i].rotation_.num[1] = 0.0f;
+				if (std::abs(worldTransformModel_[0].rotation_.num[1]) < returnSpeed * deltaTime) {
+					worldTransformModel_[0].rotation_.num[1] = 0.0f;
+				}
+			}
+
+			if (worldTransformModel_[1].rotation_.num[1] != 0.0f && 1 != currentVertexIndex) {
+				//線形補間で徐々にY=0に戻す
+				float direction = (worldTransformModel_[1].rotation_.num[1] > 0.0f) ? -1.0f : 1.0f;
+				worldTransformModel_[1].rotation_.num[1] += direction * returnSpeed * deltaTime;
+
+				//0に近づける処理（Y=0を超えないように調整）
+				if (std::abs(worldTransformModel_[1].rotation_.num[1]) < returnSpeed * deltaTime) {
+					worldTransformModel_[1].rotation_.num[1] = 0.0f;
+				}
+			}
+
+			if (worldTransformModel_[2].rotation_.num[1] != -1.57f && 2 != currentVertexIndex) {
+				//線形補間で徐々にY=-1.57に戻す
+				float direction = (worldTransformModel_[2].rotation_.num[1] > -1.57f) ? -1.0f : 1.0f;
+				worldTransformModel_[2].rotation_.num[1] += direction * returnSpeed * deltaTime;
+
+				//-1.57に近づける処理（Y=-1.57を超えないように調整）
+				if (std::abs(worldTransformModel_[2].rotation_.num[1] - (-1.57f)) < returnSpeed * deltaTime) {
+					worldTransformModel_[2].rotation_.num[1] = -1.57f;
+				}
+			}
+
+			if (worldTransformModel_[3].rotation_.num[1] != -3.14f && 3 != currentVertexIndex) {
+				//線形補間で徐々にY=-3.14に戻す
+				float direction = (worldTransformModel_[3].rotation_.num[1] > -3.14f) ? -1.0f : 1.0f;
+				worldTransformModel_[3].rotation_.num[1] += direction * returnSpeed * deltaTime;
+
+				//-3.14に近づける処理（Y=-3.14を超えないように調整）
+				if (std::abs(worldTransformModel_[3].rotation_.num[1] - (-3.14f)) < returnSpeed * deltaTime) {
+					worldTransformModel_[3].rotation_.num[1] = -3.14f;
+				}
+			}
+
+			if (worldTransformModel_[4].rotation_.num[1] != -3.14f && 4 != currentVertexIndex) {
+				//線形補間で徐々にY=-3.14に戻す
+				float direction = (worldTransformModel_[4].rotation_.num[1] > -3.14f) ? -1.0f : 1.0f;
+				worldTransformModel_[4].rotation_.num[1] += direction * returnSpeed * deltaTime;
+
+				//-3.14に近づける処理（Y=-3.14を超えないように調整）
+				if (std::abs(worldTransformModel_[4].rotation_.num[1] - (-3.14f)) < returnSpeed * deltaTime) {
+					worldTransformModel_[4].rotation_.num[1] = -3.14f;
+				}
+			}
+
+			if (worldTransformModel_[5].rotation_.num[1] != 1.57f && 5 != currentVertexIndex) {
+				//線形補間で徐々にY=1.57に戻す
+				float direction = (worldTransformModel_[5].rotation_.num[1] > 1.57f) ? -1.0f : 1.0f;
+				worldTransformModel_[5].rotation_.num[1] += direction * returnSpeed * deltaTime;
+
+				//1.57に近づける処理（Y=-1.57を超えないように調整）
+				if (std::abs(worldTransformModel_[5].rotation_.num[1] - (1.57f)) < returnSpeed * deltaTime) {
+					worldTransformModel_[5].rotation_.num[1] = 1.57f;
 				}
 			}
 		}
 	}
+
 }
 
 void GameSelectScene::CalculateDeltaTime() {

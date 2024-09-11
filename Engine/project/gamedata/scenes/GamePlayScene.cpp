@@ -80,12 +80,16 @@ void GamePlayScene::Update() {
 		GameStartProcessing();
 	}
 
-#ifdef _DEBUG
 	if (input_->TriggerKey(DIK_Q)) {
-		player_->SetTranslate(worldTransformModel_.translation_);
+		for (Obj obj : editors_->GetObj()) {
+			if (obj.type == "Spawn") {
+				player_->SetTranslate(Vector3{ obj.world.GetWorldPos().num[0],obj.world.GetWorldPos().num[1] + 2.0f,obj.world.GetWorldPos().num[2] });
+			}
+		}
 		player_->SetVelocity(Vector3{ 0.0f,0.0f,0.0f });
+
+		blocks_.clear();
 	}
-#endif // _DEBUG
 
 	//ImGui
 	ImGui::Begin("PlayScene");
@@ -207,7 +211,7 @@ void GamePlayScene::Update() {
 	}
 
 	//Playerが落下した時戻す
-	if (player_->GetWorldTransform().translation_.num[1] <= -10.0f) {
+	if (player_->GetWorldTransform().translation_.num[1] <= -30.0f) {
 		player_->SetTranslate(Vector3{ 0.0f,0.0f,0.0f });
 		player_->SetVelocity(Vector3{ 0.0f,0.0f,0.0f });
 	}
@@ -263,6 +267,13 @@ void GamePlayScene::Draw() {
 
 #pragma endregion
 
+#pragma region Skinningモデル描画
+	CJEngine_->renderer_->Draw(PipelineType::Skinning);
+
+	editors_->DrawSkin(viewProjection_);
+
+#pragma endregion
+
 #pragma region パーティクル描画
 	CJEngine_->renderer_->Draw(PipelineType::Particle);
 
@@ -277,7 +288,6 @@ void GamePlayScene::Draw() {
 void GamePlayScene::DrawUI() {
 #pragma region 前景スプライト描画
 	CJEngine_->renderer_->Draw(PipelineType::Standard2D);
-
 
 
 	fadeSprite_->Draw(allSpriteTransform_, allSpriteUVTransform_, Vector4{ 0.0f,0.0f,0.0f,fadeAlpha_ / 256.0f });
@@ -312,6 +322,14 @@ void GamePlayScene::GameStartProcessing() {
 		editors_->SetGroupName((char*)"Stage5");
 	}
 
+	editors_->Update();
+
+	for (Obj obj : editors_->GetObj()) {
+		if (obj.type == "Spawn") {
+			player_->SetTranslate(Vector3{ obj.world.GetWorldPos().num[0],obj.world.GetWorldPos().num[1] + 1.0f,obj.world.GetWorldPos().num[2]});
+		}
+	}
+
 	isGameStart_ = false;
 }
 
@@ -323,25 +341,78 @@ void GamePlayScene::SceneEndProcessing() {
 	isfadeIn_ = false;
 	isGameStart_ = true;
 	fadeAlpha_ = 256.0f;
+
+	sceneNo = CLEAR_SCENE;
 }
 
 void GamePlayScene::CollisionConclusion() {
-	//Playerと床の当たり判定
+	// Playerと床の当たり判定
+	bool isCollisionFloor = false; //衝突があったかどうかを記録するフラグ
+	bool isCollidingFromSideOnFloor = false; //横から衝突しているかどうかを記録するフラグ
+
 	OBB playerOBB;
 	playerOBB = CreateOBBFromEulerTransform(EulerTransform(player_->GetWorldTransform().scale_, player_->GetWorldTransform().rotation_, player_->GetWorldTransform().translation_));
+
 	for (Obj obj : editors_->GetObj()) {
 		if (obj.type == "Floor") {
 			OBB objOBB;
 			objOBB = CreateOBBFromEulerTransform(EulerTransform(obj.world.scale_, obj.world.rotation_, obj.world.translation_));
+
 			if (IsCollision(playerOBB, objOBB)) {
-				player_->SetFloorPos(obj.world);
-				player_->SetIsFloorHit(true);
+				Vector3 closestPoint = objOBB.center;
+				Vector3 d = playerOBB.center - objOBB.center;
+
+				//最近接点の計算
+				for (int i = 0; i < 3; ++i) {
+					float dist = Dot(d, objOBB.orientation[i]);
+					dist = std::fmax(-objOBB.size.num[i], std::min(dist, objOBB.size.num[i]));
+					closestPoint += objOBB.orientation[i] * dist;
+				}
+
+				Vector3 difference = playerOBB.center - closestPoint;
+				float distance = Length(difference);
+
+				if (distance > 0.0f) {
+					Vector3 pushDirection = Normalize(difference);
+					Vector3 pushAmount = pushDirection * (playerOBB.size.num[0] - distance) * pushbackMultiplierBlock_;
+
+					//プレイヤーが上に乗っているかどうかを判断
+					if (std::abs(pushDirection.num[1]) > std::abs(pushDirection.num[0]) &&
+						std::abs(pushDirection.num[1]) > std::abs(pushDirection.num[2])) {
+
+						player_->SetFloorPos(obj.world);
+						isCollisionFloor = true;
+					}
+					else { //横方向からの衝突
+						isCollidingFromSideOnFloor = true;
+						player_->SetIsReflection(true);
+
+						//押し戻し処理
+						playerOBB.center += pushAmount;
+						player_->SetTranslate(playerOBB.center);
+
+						player_->SetVelocity(ComputeOBBRepulsion(playerOBB, player_->GetVelocity(), objOBB, 1.0f));
+
+						audio_->SoundPlayWave(jump_, 0.1f, false);
+					}
+				}
 			}
-			else {
-				player_->SetIsFloorHit(false);
+		}
+
+		if (obj.type == "Goal" && fadeAlpha_ == 0.0f) {
+			OBB objOBB;
+			objOBB = CreateOBBFromEulerTransform(EulerTransform(obj.world.scale_, obj.world.rotation_, obj.world.translation_));
+
+			if (IsCollision(playerOBB, objOBB)) {
+				isfadeIn_ = true;
 			}
 		}
 	}
+
+	// 衝突判定の結果を反映
+	player_->SetIsFloorHit(isCollisionFloor);
+	player_->SetIsCollidingFromSide(isCollidingFromSideOnFloor);
+
 
 	//PlayerとBlockの当たり判定
 	bool isCollisionDetected = false;//衝突があったかどうかを記録するフラグ
@@ -459,7 +530,7 @@ void GamePlayScene::CollisionConclusion() {
 		for (Obj obj : editors_->GetObj()) {
 			if (obj.type == "Floor") {
 				OBB objOBB;
-				objOBB = CreateOBBFromEulerTransform(EulerTransform(obj.world.scale_, obj.world.rotation_, obj.world.translation_));
+				objOBB = CreateOBBFromEulerTransform(EulerTransform(Vector3{ obj.world.scale_.num[0]*0.98f,obj.world.scale_.num[1] *1.005f,obj.world.scale_.num[2] }, obj.world.rotation_, obj.world.translation_));
 				if (IsCollision(blockOBB, objOBB)) {
 					//押し戻し処理
 					//blockOBBからobjOBBの最近接点を計算
