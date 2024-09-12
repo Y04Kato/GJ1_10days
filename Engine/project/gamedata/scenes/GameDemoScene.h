@@ -92,7 +92,7 @@ private:
 	uint32_t ddsResourceNum_;
 
 	Audio* audio_;
-	SoundData soundData1_;
+	SoundData bgm_;
 	SoundData soundData2_;
 
 	Input* input_;

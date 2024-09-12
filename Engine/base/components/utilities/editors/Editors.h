@@ -25,6 +25,7 @@ public:
 	void Update();
 
 	void Draw(ViewProjection view);
+	void DrawSkin(ViewProjection view);
 
 	void Finalize();
 
@@ -61,6 +62,9 @@ private:
 	static const int objCountMax_ = 100;
 	int objCount_ = 0;
 	std::string objNameHolder_[objCountMax_];
+
+	std::unique_ptr<Model> flagModel_;
+	std::unique_ptr<Model> springModel_;
 
 	char objName_[64];
 	char objType_[64];

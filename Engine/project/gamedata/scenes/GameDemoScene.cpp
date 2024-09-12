@@ -122,10 +122,10 @@ void GameDemoScene::Initialize() {
 
 	//Audio
 	audio_ = Audio::GetInstance();
-	soundData1_ = audio_->SoundLoad("project/gamedata/resources/kamui.mp3");
+	bgm_ = audio_->SoundLoad("project/gamedata/resources/kamui.mp3");
 	soundData2_ = audio_->SoundLoad("project/gamedata/resources/system.mp3");
 	//音声再生
-	audio_->SoundPlayWave(soundData1_, 0.1f, true);
+	//audio_->SoundPlayWave(soundData1_, 0.1f, true);
 
 	// デバッグカメラの初期化
 	debugCamera_ = DebugCamera::GetInstance();
@@ -186,7 +186,7 @@ void GameDemoScene::Update() {
 
 	if (input_->PressKey(DIK_A)) {
 		OutputDebugStringA("Press A\n");
-		audio_->SoundStopWave(&soundData1_);
+		audio_->SoundStopWave(&bgm_);
 	}
 	if (input_->ReleaseKey(DIK_S)) {
 		OutputDebugStringA("Release S\n");
@@ -644,7 +644,7 @@ void GameDemoScene::DrawPostEffect() {
 }
 
 void GameDemoScene::Finalize() {
-	audio_->SoundUnload(&soundData1_);
+	audio_->SoundUnload(&bgm_);
 	audio_->SoundUnload(&soundData2_);
 
 	editors_->Finalize();

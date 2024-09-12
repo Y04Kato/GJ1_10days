@@ -109,6 +109,7 @@ std::tuple<Vector3, Vector3, Vector3> ComputeRotationMatrix(const Vector3& rotat
 //衝突＆反発
 std::pair<Vector3, Vector3> ComputeCollisionVelocities(float mass1, const Vector3& velocity1, float mass2, const Vector3& velocity2, float coefficientOfRestitution, const Vector3& normal);
 Vector3 ComputeSphereVelocityAfterCollisionWithOBB(const StructSphere& sphere, const Vector3& sphereVelocity, const OBB& obb, float restitution);
+Vector3 ComputeOBBRepulsion(const OBB& obb1, const Vector3& obb1Velocity, const OBB& obb2, float restitution);
 
 //任意の時刻の値を取得する
 Vector3 CalculateValue(const std::vector<KeyframeVector3>& keyframe, float time);
@@ -250,5 +251,6 @@ bool IsCollision(const AABB& aabb1, const AABB& aabb2);
 
 bool IsCollision(const OBB& obb, const StructSphere& sphere);
 bool IsCollision(const OBB& obb, const Segment& segment);
+bool IsCollision(const OBB& obb1, const OBB& obb2);
 
 bool IsCollision(const StructSphere& sphere1, const StructSphere& sphere2);

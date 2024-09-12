@@ -1,0 +1,107 @@
+{
+    "Stage2": {
+        "ObjCount": 6,
+        "obj0": "obj0",
+        "obj0Rotate": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "obj0Scale": [
+            27.0,
+            1.0,
+            1.0
+        ],
+        "obj0Translate": [
+            0.0,
+            -10.0,
+            0.0
+        ],
+        "obj0Type": "Floor",
+        "obj1": "obj1",
+        "obj1Rotate": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "obj1Scale": [
+            6.0,
+            3.0,
+            1.0
+        ],
+        "obj1Translate": [
+            7.0,
+            -6.0,
+            0.0
+        ],
+        "obj1Type": "Floor",
+        "obj2": "obj2",
+        "obj2Rotate": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "obj2Scale": [
+            4.0,
+            1.0,
+            1.0
+        ],
+        "obj2Translate": [
+            -9.0,
+            3.0,
+            0.0
+        ],
+        "obj2Type": "Floor",
+        "obj3": "obj3",
+        "obj3Rotate": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "obj3Scale": [
+            2.0,
+            1.0,
+            1.0
+        ],
+        "obj3Translate": [
+            -19.0,
+            3.0,
+            0.0
+        ],
+        "obj3Type": "Floor",
+        "obj4": "obj4",
+        "obj4Rotate": [
+            0.0,
+            -1.5700000524520874,
+            0.0
+        ],
+        "obj4Scale": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "obj4Translate": [
+            -20.0,
+            4.0,
+            0.0
+        ],
+        "obj4Type": "Goal",
+        "obj5": "obj5",
+        "obj5Rotate": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "obj5Scale": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "obj5Translate": [
+            -23.0,
+            -7.0,
+            0.0
+        ],
+        "obj5Type": "Spawn"
+    }
+}

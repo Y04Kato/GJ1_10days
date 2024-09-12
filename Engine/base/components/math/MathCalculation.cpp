@@ -418,6 +418,42 @@ Vector3 ComputeSphereVelocityAfterCollisionWithOBB(const StructSphere& sphere, c
 	return newSphereVelocity;
 }
 
+Vector3 ComputeOBBRepulsion(const OBB& obb1, const Vector3& obb1Velocity, const OBB& obb2, float restitution) {
+	//obb1の中心に最も近いobb2上の点を計算
+	Vector3 closestPoint = obb2.center;
+	Vector3 d = obb1.center - obb2.center;
+
+	//obb2の軸に投影して、obb2上の最も近い点を見つける
+	for (int i = 0; i < 3; ++i) {
+		float dist = Dot(d, obb2.orientation[i]);
+		dist = std::fmax(-obb2.size.num[i], std::fmin(dist, obb2.size.num[i]));
+		closestPoint = closestPoint + obb2.orientation[i] * dist;
+	}
+
+	//侵入ベクトルを計算
+	Vector3 penetrationVector = obb1.center - closestPoint;
+
+	//衝突がないか確認する
+	float penetrationDistance = std::sqrt(penetrationVector.num[0] * penetrationVector.num[0] +
+		penetrationVector.num[1] * penetrationVector.num[1] +
+		penetrationVector.num[2] * penetrationVector.num[2]);
+
+	//貫通ベクトルを正規化して衝突法線を取得
+	Vector3 collisionNormal = Normalize(penetrationVector);
+
+	//衝突法線方向の相対速度を計算
+	float relativeVelocity = Dot(obb1Velocity, collisionNormal);
+
+	//スカラーを計算
+	float impulseScalar = -(1.0f + restitution) * relativeVelocity;
+
+	//obb1に適用して新しい速度を取得します
+	Vector3 newVelocity = obb1Velocity + collisionNormal * impulseScalar;
+
+	//新しい速度を返す
+	return newVelocity;
+}
+
 Vector3 CalculateValue(const std::vector<KeyframeVector3>& keyframe, float time) {
 	assert(!keyframe.empty());//キーがない物は返す値がないのでダメ
 	if (keyframe.size() == 1 || time <= keyframe[0].time) {
@@ -1302,6 +1338,70 @@ bool IsCollision(const OBB& obb, const Segment& segment) {
 	Vector3 localLineEnd = (segment.origin + segment.diff) * obbWorldInverse;
 	localLine.diff = localLineEnd - localLine.origin;
 	return IsCollision(localAABB, localLine);
+}
+
+bool IsCollision(const OBB& obb1, const OBB& obb2) {
+	// OBBの3つの軸（local X, Y, Z）
+	const Vector3& A0 = obb1.orientation[0];
+	const Vector3& A1 = obb1.orientation[1];
+	const Vector3& A2 = obb1.orientation[2];
+
+	// OBB2の3つの軸（local X, Y, Z）
+	const Vector3& B0 = obb2.orientation[0];
+	const Vector3& B1 = obb2.orientation[1];
+	const Vector3& B2 = obb2.orientation[2];
+
+	// OBB1とOBB2の中心の距離
+	Vector3 D = obb2.center - obb1.center;
+
+	// 軸Aと軸Bの交差を計算
+	float R[3][3];  // R[i][j]はobb1の軸Aiとobb2の軸Bjのdot product
+	float AbsR[3][3];  // 各R[i][j]の絶対値
+	float ra, rb, distance;  // 投影されたOBB1とOBB2の半径と軸上の距離
+
+	// 各軸に対する投影を計算
+	for (int i = 0; i < 3; ++i) {
+		for (int j = 0; j < 3; ++j) {
+			R[i][j] = Dot(obb1.orientation[i], obb2.orientation[j]);
+			AbsR[i][j] = std::abs(R[i][j]) + 1e-6f;  // 浮動小数点の誤差対策
+		}
+	}
+
+	// 各軸に対して分離軸定理を適用
+	// OBB1の各軸 A0, A1, A2
+	for (int i = 0; i < 3; ++i) {
+		ra = obb1.size.num[i];
+		rb = obb2.size.num[0] * AbsR[i][0] + obb2.size.num[1] * AbsR[i][1] + obb2.size.num[2] * AbsR[i][2];
+		distance = std::abs(Dot(D, obb1.orientation[i]));
+		if (distance > ra + rb) {
+			return false;  // 分離軸が見つかった場合、衝突していない
+		}
+	}
+
+	// OBB2の各軸 B0, B1, B2
+	for (int i = 0; i < 3; ++i) {
+		ra = obb1.size.num[0] * AbsR[0][i] + obb1.size.num[1] * AbsR[1][i] + obb1.size.num[2] * AbsR[2][i];
+		rb = obb2.size.num[i];
+		distance = std::abs(Dot(D, obb2.orientation[i]));
+		if (distance > ra + rb) {
+			return false;  // 分離軸が見つかった場合、衝突していない
+		}
+	}
+
+	// OBB1の各軸とOBB2の各軸のクロス積
+	for (int i = 0; i < 3; ++i) {
+		for (int j = 0; j < 3; ++j) {
+			ra = obb1.size.num[(i + 1) % 3] * AbsR[(i + 2) % 3][j] + obb1.size.num[(i + 2) % 3] * AbsR[(i + 1) % 3][j];
+			rb = obb2.size.num[(j + 1) % 3] * AbsR[i][(j + 2) % 3] + obb2.size.num[(j + 2) % 3] * AbsR[i][(j + 1) % 3];
+			distance = std::abs(Dot(D, Cross(obb1.orientation[i], obb2.orientation[j])));
+			if (distance > ra + rb) {
+				return false;  // 分離軸が見つかった場合、衝突していない
+			}
+		}
+	}
+
+	// 全ての軸で分離が見つからなければ、衝突している
+	return true;
 }
 
 bool IsCollision(const StructSphere& sphere1, const StructSphere& sphere2) {

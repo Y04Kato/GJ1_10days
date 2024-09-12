@@ -213,9 +213,12 @@
     <ClCompile Include="base\components\math\MathCalculation.cpp" />
     <ClCompile Include="base\CJEngine.cpp" />
     <ClCompile Include="base\WinApp.cpp" />
+    <ClCompile Include="project\gamedata\datas\datas.cpp" />
+    <ClCompile Include="project\gamedata\player\Player.cpp" />
     <ClCompile Include="project\gamedata\scenes\GameClearScene.cpp" />
     <ClCompile Include="project\gamedata\scenes\GameDemoScene.cpp" />
     <ClCompile Include="project\gamedata\scenes\GamePlayScene.cpp" />
+    <ClCompile Include="project\gamedata\scenes\GameSelectScene.cpp" />
     <ClCompile Include="project\gamedata\scenes\GameTitleScene.cpp" />
     <ClCompile Include="base\components\manager\SceneManager\SceneManager.cpp" />
     <ClCompile Include="base\components\utilities\collisionManager\CollisionManager.cpp" />
@@ -537,9 +540,12 @@
       <DeploymentContent>false</DeploymentContent>
     </ClInclude>
     <ClInclude Include="base\WinApp.h" />
+    <ClInclude Include="project\gamedata\datas\datas.h" />
+    <ClInclude Include="project\gamedata\player\Player.h" />
     <ClInclude Include="project\gamedata\scenes\GameClearScene.h" />
     <ClInclude Include="project\gamedata\scenes\GameDemoScene.h" />
     <ClInclude Include="project\gamedata\scenes\GamePlayScene.h" />
+    <ClInclude Include="project\gamedata\scenes\GameSelectScene.h" />
     <ClInclude Include="project\gamedata\scenes\GameTitleScene.h" />
     <ClInclude Include="base\components\manager\SceneManager\Iscene.h" />
     <ClInclude Include="base\components\manager\SceneManager\SceneManager.h" />

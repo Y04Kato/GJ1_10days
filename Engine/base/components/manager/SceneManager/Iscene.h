@@ -3,6 +3,7 @@
 //シーン一覧、シーン追加時はここに追加する
 enum SCENE {
 	TITLE_SCENE,
+	SELECT_SCENE,
 	GAME_SCENE,
 	CLEAR_SCENE,
 	DEMO_SCENE,

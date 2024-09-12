@@ -13,6 +13,12 @@ void Editors::Initialize() {
 	globalVariables->AddItem("None", "ObjCount", objCount_);
 	ApplyGlobalVariables();
 
+	flagModel_.reset(Model::CreateSkinningModel("project/gamedata/resources/flag", "flag.gltf"));
+	flagModel_->SetDirectionalLightFlag(true, 3);
+
+	springModel_.reset(Model::CreateModel("project/gamedata/resources/block", "spring.obj"));
+	springModel_->SetDirectionalLightFlag(true, 3);
+
 	for (int i = 0; i < objCountMax_; i++) {
 		objNameHolder_[i] = "obj" + std::to_string(i);
 	}
@@ -89,7 +95,7 @@ void Editors::Update() {
 	//Jsonから配置のロード
 	if (ImGui::Button("StartSetBlock")) {
 		for (int i = 0; i < objCount_; i++) {
-			SetObject(EulerTransform{ { 1.0f,1.0f,1.0f }, {0.0f,0.0f,0.0f}, {0.0f,0.0f,0.0f} }, objNameHolder_[i], "None");
+			SetGroupName(decisionGroupName_);
 		}
 	}
 
@@ -107,19 +113,36 @@ void Editors::Update() {
 
 	//WorldTransform更新
 	for (Obj& obj : objects_) {
+		if (obj.type == "Goal") {
+			obj.world.rotation_.num[1] = -1.57f;
+		}
 		obj.world.UpdateMatrix();
 	}
 }
 
 void Editors::Draw(ViewProjection view) {
 	for (Obj& obj : objects_) {
-		obj.model.Draw(obj.world, view, obj.material);
+		if (obj.type == "Floor") {
+			obj.model.Draw(obj.world, view, obj.material);
+		}
+
+		if (obj.type == "Jump") {
+			springModel_->Draw(obj.world, view, Vector4{1.0f,0.5f,0.5f,1.0f});
+		}
 
 		//Guizmo操作
 		if (isDirectInputMode_ == false) {
 			if (objName_ == obj.name) {
 				obj.world = Guizmo(view, obj.world);
 			}
+		}
+	}
+}
+
+void Editors::DrawSkin(ViewProjection view) {
+	for (Obj& obj : objects_) {
+		if (obj.type == "Goal") {
+			flagModel_->SkinningDraw(obj.world, view, obj.material);
 		}
 	}
 }
