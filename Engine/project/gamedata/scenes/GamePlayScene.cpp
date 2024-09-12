@@ -56,47 +56,56 @@ void GamePlayScene::Initialize() {
 	ADmodel_.reset(Model::CreateModel("project/gamedata/resources/KeyObj", "ADkey.obj"));
 	ADmodel_->SetDirectionalLightFlag(true, 3);
 	ADworld_.Initialize();
+	ADworld_.translation_ = { -22.0f,-16.0f,0.0f };
 	ADworld_.scale_ = { 2.0f,2.0f,2.0f };
 
 	WSmodel_.reset(Model::CreateModel("project/gamedata/resources/KeyObj", "WSkey.obj"));
 	WSmodel_->SetDirectionalLightFlag(true, 3);
 	WSworld_.Initialize();
+	WSworld_.translation_ = { 12.0f,-16.0f,0.0f };
 	WSworld_.scale_ = { 2.0f,2.0f,2.0f };
 
 	QEmodel_.reset(Model::CreateModel("project/gamedata/resources/KeyObj", "QEkey.obj"));
 	QEmodel_->SetDirectionalLightFlag(true, 3);
 	QEworld_.Initialize();
+	QEworld_.translation_ = { 22.0f,-16.0f,0.0f };
 	QEworld_.scale_ = { 2.0f,2.0f,2.0f };
 
 	Fmodel_.reset(Model::CreateModel("project/gamedata/resources/KeyObj", "Fkey.obj"));
 	Fmodel_->SetDirectionalLightFlag(true, 3);
 	Fworld_.Initialize();
+	Fworld_.translation_ = { -14.0f,-16.0f,0.0f };
 	Fworld_.scale_ = { 2.0f,2.0f,2.0f };
 
 	Rmodel_.reset(Model::CreateModel("project/gamedata/resources/KeyObj", "Rkey.obj"));
 	Rmodel_->SetDirectionalLightFlag(true, 3);
 	Rworld_.Initialize();
+	Rworld_.translation_ = { 3.0f,-16.0f,0.0f };
 	Rworld_.scale_ = { 2.0f,2.0f,2.0f };
 
 	Jumpmodel_.reset(Model::CreateModel("project/gamedata/resources/KeyObj", "JUMPkey.obj"));
 	Jumpmodel_->SetDirectionalLightFlag(true, 3);
 	Jumpworld_.Initialize();
+	Jumpworld_.translation_ = { -5.0f,-16.0f,0.0f };
 	Jumpworld_.scale_ = { 2.0f,2.0f,2.0f };
 
 	Putmodel_.reset(Model::CreateModel("project/gamedata/resources/KeyObj", "PUTkey.obj"));
 	Putmodel_->SetDirectionalLightFlag(true, 3);
 	Putworld_.Initialize();
+	Putworld_.translation_ = { -5.0f,-16.0f,0.0f };
 	Putworld_.scale_ = { 2.0f,2.0f,2.0f };
 
 	PutTextmodel_.reset(Model::CreateModel("project/gamedata/resources/KeyObj", "PutText.obj"));
 	PutTextmodel_->SetDirectionalLightFlag(true, 3);
 	PutTextworld_.Initialize();
-	PutTextworld_.scale_ = { 2.0f,2.0f,2.0f };
+	PutTextworld_.translation_ = { -25.0f,16.0f,0.0f };
+	PutTextworld_.scale_ = { 4.0f,4.0f,4.0f };
 
 	PlayerTextmodel_.reset(Model::CreateModel("project/gamedata/resources/KeyObj", "PlayerText.obj"));
 	PlayerTextmodel_->SetDirectionalLightFlag(true, 3);
 	PlayerTextworld_.Initialize();
-	PlayerTextworld_.scale_ = { 2.0f,2.0f,2.0f };
+	PlayerTextworld_.translation_ = { -21.0f,16.0f,0.0f };
+	PlayerTextworld_.scale_ = { 4.0f,4.0f,4.0f };
 
 	//配置カーソル用
 	model_.reset(Model::CreateModel("project/gamedata/resources/block", "block.obj"));
@@ -459,30 +468,20 @@ void GamePlayScene::Draw() {
 		block.model.Draw(block.world, viewProjection_, block.material);
 	}
 
-	if (isPlayerOperationModes_ == true) {
-		
-	}
-	else {
-		
-	}
-
-	ADmodel_->Draw(ADworld_, viewProjection_,Vector4{1.0f,1.0f,1.0f,1.0f});
-
-	WSmodel_->Draw(WSworld_, viewProjection_, Vector4{ 1.0f,1.0f,1.0f,1.0f });
-
-	QEmodel_->Draw(QEworld_, viewProjection_, Vector4{ 1.0f,1.0f,1.0f,1.0f });
-
+	ADmodel_->Draw(ADworld_, viewProjection_, Vector4{ 1.0f,1.0f,1.0f,1.0f });
 	Fmodel_->Draw(Fworld_, viewProjection_, Vector4{ 1.0f,1.0f,1.0f,1.0f });
-
 	Rmodel_->Draw(Rworld_, viewProjection_, Vector4{ 1.0f,1.0f,1.0f,1.0f });
 
-	Jumpmodel_->Draw(Jumpworld_, viewProjection_, Vector4{ 1.0f,1.0f,1.0f,1.0f });
-
-	Putmodel_->Draw(Putworld_, viewProjection_, Vector4{ 1.0f,1.0f,1.0f,1.0f });
-
-	PutTextmodel_->Draw(PutTextworld_, viewProjection_, Vector4{ 1.0f,1.0f,1.0f,1.0f });
-
-	PlayerTextmodel_->Draw(PlayerTextworld_, viewProjection_, Vector4{ 1.0f,1.0f,1.0f,1.0f });
+	if (isPlayerOperationModes_ == true) {
+		Jumpmodel_->Draw(Jumpworld_, viewProjection_, Vector4{ 1.0f,1.0f,1.0f,1.0f });
+		PlayerTextmodel_->Draw(PlayerTextworld_, viewProjection_, Vector4{ 1.0f,1.0f,1.0f,1.0f });
+	}
+	else {
+		WSmodel_->Draw(WSworld_, viewProjection_, Vector4{ 1.0f,1.0f,1.0f,1.0f });
+		QEmodel_->Draw(QEworld_, viewProjection_, Vector4{ 1.0f,1.0f,1.0f,1.0f });
+		Putmodel_->Draw(Putworld_, viewProjection_, Vector4{ 1.0f,1.0f,1.0f,1.0f });
+		PutTextmodel_->Draw(PutTextworld_, viewProjection_, Vector4{ 1.0f,1.0f,1.0f,1.0f });
+	}
 
 	//
 	editors_->Draw(viewProjection_);
