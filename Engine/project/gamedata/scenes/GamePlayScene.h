@@ -109,6 +109,9 @@ private:
 	std::unique_ptr<Model> PlayerTextmodel_;
 	WorldTransform PlayerTextworld_;
 
+	std::unique_ptr<Model> FlagTextmodel_;
+	WorldTransform FlagTextworld_;
+
 	//
 	std::unique_ptr <CreateSprite> bgSprite_;
 	std::unique_ptr <CreateSprite> fadeSprite_;

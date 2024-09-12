@@ -107,6 +107,13 @@ void GamePlayScene::Initialize() {
 	PlayerTextworld_.translation_ = { -21.0f,16.0f,0.0f };
 	PlayerTextworld_.scale_ = { 4.0f,4.0f,4.0f };
 
+	FlagTextmodel_.reset(Model::CreateModel("project/gamedata/resources/TextObj", "FlagText.obj"));
+	FlagTextmodel_->SetDirectionalLightFlag(true, 3);
+	FlagTextworld_.Initialize();
+	FlagTextworld_.translation_ = { -21.0f,16.0f,0.0f };
+	FlagTextworld_.rotation_ = { 0.0f,0.0f,0.0f };
+	FlagTextworld_.scale_ = { 4.0f,4.0f,4.0f };
+
 	//配置カーソル用
 	model_.reset(Model::CreateModel("project/gamedata/resources/block", "block.obj"));
 	worldTransformModel_.Initialize();
@@ -208,15 +215,8 @@ void GamePlayScene::Update() {
 	ImGui::Text("PlayerJump:[Space]key");
 	ImGui::Text("TogglePlayerOperationModes:[F]key");
 	ImGui::Text("BlockRotate:[Q]or[E]key");
-	ImGui::DragFloat3("ADworld_", &ADworld_.translation_.num[0]);
-	ImGui::DragFloat3("WSworld_", &WSworld_.translation_.num[0]);
-	ImGui::DragFloat3("QEworld_", &QEworld_.translation_.num[0]);
-	ImGui::DragFloat3("Fworld_", &Fworld_.translation_.num[0]);
-	ImGui::DragFloat3("Rworld_", &Rworld_.translation_.num[0]);
-	ImGui::DragFloat3("Jumpworld_", &Jumpworld_.translation_.num[0]);
-	ImGui::DragFloat3("Putworld_", &Putworld_.translation_.num[0]);
-	ImGui::DragFloat3("PutTextworld_", &PutTextworld_.translation_.num[0]);
-	ImGui::DragFloat3("PlayerTextworld_", &PlayerTextworld_.translation_.num[0]);
+	ImGui::DragFloat3("FlagTextworld_", &FlagTextworld_.translation_.num[0]);
+	ImGui::DragFloat3("FlagTextrotate_", &FlagTextworld_.rotation_.num[0]);
 	if (isPlayerOperationModes_ == true) {
 		ImGui::Text("PlayerOperationModes:True");
 	}
@@ -427,6 +427,8 @@ void GamePlayScene::Update() {
 	PutTextworld_.UpdateMatrix();
 
 	PlayerTextworld_.UpdateMatrix();
+	
+	FlagTextworld_.UpdateMatrix();
 
 	//Player更新
 	player_->Update();
@@ -471,6 +473,7 @@ void GamePlayScene::Draw() {
 	ADmodel_->Draw(ADworld_, viewProjection_, Vector4{ 1.0f,1.0f,1.0f,1.0f });
 	Fmodel_->Draw(Fworld_, viewProjection_, Vector4{ 1.0f,1.0f,1.0f,1.0f });
 	Rmodel_->Draw(Rworld_, viewProjection_, Vector4{ 1.0f,1.0f,1.0f,1.0f });
+	FlagTextmodel_->Draw(FlagTextworld_, viewProjection_, Vector4{ 1.0f,1.0f,1.0f,1.0f });
 
 	if (isPlayerOperationModes_ == true) {
 		Jumpmodel_->Draw(Jumpworld_, viewProjection_, Vector4{ 1.0f,1.0f,1.0f,1.0f });
