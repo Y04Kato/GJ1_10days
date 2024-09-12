@@ -142,6 +142,7 @@ void GamePlayScene::Initialize() {
 	for (int i = 0; i < 2; i++) {
 		worldTransformLine_[i].Initialize();
 	}
+	DemoLoadBlockPopData(selectedBlockType_, RotateType);
 }
 
 void GamePlayScene::Update() {
@@ -159,7 +160,8 @@ void GamePlayScene::Update() {
 		player_->SetVelocity(Vector3{ 0.0f,0.0f,0.0f });
 
 		blocks_.clear();
-	
+		demoblocks_.clear();
+
 		for (int i = 0; i < 12; i++) {
 			blockSetCount_[i] = 0;
 		}
@@ -205,6 +207,8 @@ void GamePlayScene::Update() {
 			blockSetMaxCount_ = 4;
 			selectedBlockType_ = 3;
 		}
+		DemoLoadBlockPopData(selectedBlockType_, RotateType);
+
 	}
 
 	//ImGui
@@ -262,27 +266,43 @@ void GamePlayScene::Update() {
 
 			//配置地点操作
 			if (input_->TriggerKey(DIK_A)) {
+				demoblocks_.clear();
+
 				worldTransformModel_.translation_.num[0] -= 2.0002f;
+				DemoLoadBlockPopData(selectedBlockType_, RotateType);
+
 			}
 			if (input_->TriggerKey(DIK_D)) {
+				demoblocks_.clear();
+
 				worldTransformModel_.translation_.num[0] += 2.0002f;
+				DemoLoadBlockPopData(selectedBlockType_, RotateType);
+
 			}
 
 			if (input_->PressKey(DIK_A)) {
+				demoblocks_.clear();
+
 				pressTimer_++;
 
 				if (pressTimer_ >= pressMaxTime) {
 					worldTransformModel_.translation_.num[0] -= 2.0002f;
 					pressTimer_ = 0;
 				}
+				DemoLoadBlockPopData(selectedBlockType_, RotateType);
+
 			}
 			else if (input_->PressKey(DIK_D)) {
+				demoblocks_.clear();
+
 				pressTimer_++;
 
 				if (pressTimer_ >= pressMaxTime) {
 					worldTransformModel_.translation_.num[0] += 2.0002f;
 					pressTimer_ = 0;
 				}
+				DemoLoadBlockPopData(selectedBlockType_, RotateType);
+
 			}
 			else {
 				pressTimer_ = 0;
@@ -320,20 +340,34 @@ void GamePlayScene::Update() {
 
 			// DIK_Q が押されたときに RotateType を減少させる
 			if (input_->TriggerKey(DIK_Q)) {
+				demoblocks_.clear();
+
 				RotateType = (RotateType - 1 + (maxRotateType + 1)) % (maxRotateType + 1);
+				DemoLoadBlockPopData(selectedBlockType_, RotateType);
+
 			}
 
 			// DIK_E が押されたときに RotateType を増加させる
 			if (input_->TriggerKey(DIK_E)) {
+				demoblocks_.clear();
+
 				RotateType = (RotateType + 1) % (maxRotateType + 1);
+				DemoLoadBlockPopData(selectedBlockType_, RotateType);
+
 			}
 
 			//Type変更
 			if (input_->TriggerKey(DIK_W) && blockSetMaxCount_ > 0) {
 				SelectCounter(selectedBlockType_, 0);
+				demoblocks_.clear();
+
+				DemoLoadBlockPopData(selectedBlockType_, RotateType);
 			}
 			if (input_->TriggerKey(DIK_S) && blockSetMaxCount_ > 0) {
 				SelectCounter(selectedBlockType_, 1);
+				demoblocks_.clear();
+
+				DemoLoadBlockPopData(selectedBlockType_, RotateType);
 			}
 			ImGui::End();
 		}
@@ -356,6 +390,7 @@ void GamePlayScene::Update() {
 		player_->SetVelocity(Vector3{ 0.0f,0.0f,0.0f });
 
 		blocks_.clear();
+		demoblocks_.clear();
 
 		if (datas_->GetStageNum() == 0) {
 			blockSetCount_[0] = 3;
@@ -398,6 +433,8 @@ void GamePlayScene::Update() {
 			blockSetMaxCount_ = 4;
 			selectedBlockType_ = 3;
 		}
+		DemoLoadBlockPopData(selectedBlockType_, RotateType);
+
 	}
 
 	//World更新
@@ -442,6 +479,9 @@ void GamePlayScene::Update() {
 	for (Block& block : blocks_) {
 		block.world.UpdateMatrix();
 	}
+	for (Block& block : demoblocks_) {
+		block.world.UpdateMatrix();
+	}
 
 	//Camera
 	debugCamera_->Update();
@@ -469,6 +509,10 @@ void GamePlayScene::Draw() {
 	for (Block& block : blocks_) {
 		block.model.Draw(block.world, viewProjection_, block.material);
 	}
+	//DemoBlock
+	for (Block& block : demoblocks_) {
+		block.model.Draw(block.world, viewProjection_, block.material);
+	}
 
 	ADmodel_->Draw(ADworld_, viewProjection_, Vector4{ 1.0f,1.0f,1.0f,1.0f });
 	Fmodel_->Draw(Fworld_, viewProjection_, Vector4{ 1.0f,1.0f,1.0f,1.0f });
@@ -493,7 +537,7 @@ void GamePlayScene::Draw() {
 	line_->Draw(worldTransformLine_[0], worldTransformLine_[1], viewProjection_, lineMaterial_);
 
 	//
-	model_->Draw(worldTransformModel_, viewProjection_, modelMaterial_);
+	//model_->Draw(worldTransformModel_, viewProjection_, modelMaterial_);
 
 #pragma endregion
 
@@ -530,6 +574,8 @@ void GamePlayScene::DrawPostEffect() {
 
 void GamePlayScene::Finalize() {
 	blocks_.clear();
+	demoblocks_.clear();
+
 	editors_->Finalize();
 
 }
@@ -599,12 +645,14 @@ void GamePlayScene::GameStartProcessing() {
 			player_->SetTranslate(Vector3{ obj.world.GetWorldPos().num[0],obj.world.GetWorldPos().num[1] + 1.0f,obj.world.GetWorldPos().num[2] });
 		}
 	}
-
+	DemoLoadBlockPopData(selectedBlockType_, RotateType);
 	isGameStart_ = false;
 }
 
 void GamePlayScene::SceneEndProcessing() {
 	blocks_.clear();
+	demoblocks_.clear();
+
 	editors_->Finalize();
 
 	isSetBlock_ = false;
@@ -1085,4 +1133,60 @@ void GamePlayScene::SelectCounter(int selectedBlockType, int countType) {
 	else {
 
 	}
+}
+
+void GamePlayScene::DemoLoadBlockPopData(int type, int RotateType) {
+	auto it = blockDataMap_.find(type);
+	if (it != blockDataMap_.end()) {
+		matrix_ = it->second;
+		//RotateTypeに応じて回転処理を行う
+		for (int i = 0; i < RotateType; ++i) {
+			Rotate90(matrix_);
+		}
+		DemoSelectSpawn(type);
+	}
+	else {
+		//指定されたブロックタイプが存在しない場合の処理
+		assert(false && "Block type not found in CSV data");
+	}
+}
+
+void GamePlayScene::DemoSelectSpawn(int blockType) {
+	EulerTransform trans;
+	trans.translate = Vector3{ worldTransformModel_.translation_.num[0] - 2.0002f ,9.0f ,worldTransformModel_.translation_.num[2] };
+	trans.rotate = worldTransformModel_.rotation_;
+	trans.scale = worldTransformModel_.scale_;
+	Vector4 color = { 1.0f,0.2f,0.2f,0.4f };
+	for (int y = 0; y < 3; ++y) {//行方向
+		for (int x = 0; x < 3; ++x) {//列方向
+			if (matrix_[y][x] == 1) {
+				Vector3 position;
+				position.num[0] = static_cast<float>(x);//X座標
+				position.num[1] = static_cast<float>(2 - y);//Y座標
+				position.num[2] = 0.0f;
+				DemoSpawnCSVBlock(ObjModelData_, ObjTexture_, trans, blockType, position, color);
+			}
+		}
+	}
+}
+
+void GamePlayScene::DemoSpawnCSVBlock(ModelData ObjModelData, uint32_t ObjTexture, EulerTransform transform, int blockType, Vector3 position, Vector4 color) {
+	Block block;
+	block.model.Initialize(ObjModelData_, ObjTexture_);
+	block.model.SetDirectionalLightFlag(true, 3);
+	block.world.Initialize();
+	//オフセットを設定（例: 2.0fを掛けて間隔を広げる）
+	Vector3 offsetPosition = position;
+	offsetPosition.num[0] *= 2.000001f;//X軸方向の間隔を広げる
+	offsetPosition.num[1] *= 2.000001f;//Y軸方向の間隔を広げる
+
+	block.world.translation_ = transform.translate + offsetPosition;//位置を追加
+	block.world.rotation_ = transform.rotate;
+	block.world.scale_ = transform.scale;
+
+	block.material = color;
+
+	block.isFloorOrBlockHit = false;
+	block.blockType = blockType;
+	demoblocks_.push_back(block);
 }

@@ -46,10 +46,15 @@ public:
 	void SceneEndProcessing();
 
 	void LoadAllBlockData();
-	void LoadBlockPopData(int type,int RotateType);
-	void SpawnCSVBlock(ModelData ObjModelData, uint32_t ObjTexture, EulerTransform transform, int blockType, Vector3 position,Vector4 color);
+	void LoadBlockPopData(int type, int RotateType);
+	void SpawnCSVBlock(ModelData ObjModelData, uint32_t ObjTexture, EulerTransform transform, int blockType, Vector3 position, Vector4 color);
 	void SelectSpawn(int blockType);
 	void Rotate90(std::vector<std::vector<int>>& matrix_);
+
+	//Demo
+	void DemoLoadBlockPopData(int type, int RotateType);
+	void DemoSpawnCSVBlock(ModelData ObjModelData, uint32_t ObjTexture, EulerTransform transform, int blockType, Vector3 position, Vector4 color);
+	void DemoSelectSpawn(int blockType);
 	//当たり判定まとめ
 	void CollisionConclusion();
 
@@ -133,6 +138,7 @@ private:
 	std::unordered_map<int, std::vector<std::vector<int>>> blockDataMap_; // ブロックタイプとそのデータを保持
 	int selectedBlockType_ = 1; // デフォルトのブロックタイプ
 	std::list<Block> blocks_;
+	std::list<Block> demoblocks_;
 	ModelData ObjModelData_;
 	uint32_t ObjTexture_;
 	WorldTransform world_;//配置指定用の座標
