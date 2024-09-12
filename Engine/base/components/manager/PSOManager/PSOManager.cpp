@@ -28,7 +28,11 @@ void PSOManager::Initialize(){
 	std::unique_ptr<LensDistortion> lensDistortion = std::make_unique<LensDistortion>();
 	std::unique_ptr<Scanlines> scanlines = std::make_unique<Scanlines>();
 	std::unique_ptr<HSV> hsv = std::make_unique<HSV>();
-
+	
+	std::unique_ptr<ParticleInit>particleInit = std::make_unique<ParticleInit>();
+	std::unique_ptr<ParticleEmit>particleEmit = std::make_unique<ParticleEmit>();
+	std::unique_ptr<ParticleUpdate>particleUpdate = std::make_unique<ParticleUpdate>();
+	std::unique_ptr<ParticleAddDraw>particleAddDraw = std::make_unique<ParticleAddDraw>();
 
 	//Initializeの宣言
 	standard3D->Initialize();
@@ -50,6 +54,10 @@ void PSOManager::Initialize(){
 	scanlines->Initialize();
 	hsv->Initialize();
 
+	particleInit->Initialize();
+	particleUpdate->Initialize();
+	particleEmit->Initialize();
+	particleAddDraw->Initialize();
 
 	//パイプラインを追加する
 	AddPipeline(standard3D->GetPSO(), PipelineType::Standard3D);
@@ -70,4 +78,10 @@ void PSOManager::Initialize(){
 	AddPipeline(lensDistortion->GetPSO(), PipelineType::LensDistortion);
 	AddPipeline(scanlines->GetPSO(), PipelineType::Scanlines);
 	AddPipeline(hsv->GetPSO(), PipelineType::HSV);
+
+	AddPipeline(particleInit->GetPSO(), PipelineType::PARTICLE_Init);
+	AddPipeline(particleEmit->GetPSO(), PipelineType::PARTICLE_EMIT_BOX);
+	AddPipeline(particleUpdate->GetPSO(), PipelineType::PARTICLE_UPDATE);
+	AddPipeline(particleAddDraw->GetPSO(), PipelineType::PARTICLE_DRAW_ADD);
+
 }

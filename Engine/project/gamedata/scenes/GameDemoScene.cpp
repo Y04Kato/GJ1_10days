@@ -166,12 +166,17 @@ void GameDemoScene::Initialize() {
 	GlobalVariables::GetInstance()->CreateGroup(groupName);
 
 	LevelSetObject();
+
+	TestParticle::GetInstance()->Initialize();
 }
 
 void GameDemoScene::Update() {
 	GlobalVariables* globalVariables{};
 	globalVariables = GlobalVariables::GetInstance();
 	ApplyGlobalVariables();
+
+	TestParticle::GetInstance()->ImGuiUpdate();
+	TestParticle::GetInstance()->Update();
 
 	debugCamera_->Update();
 
@@ -546,8 +551,9 @@ void GameDemoScene::Draw() {
 
 	editors_->Draw(viewProjection_);
 
-	for (Obj& obj : levelEditorObjects_) {
-		obj.model.Draw(obj.world, viewProjection_, obj.material);
+	//for (Obj& obj : levelEditorObjects_) 
+	{
+		//obj.model.Draw(obj.world, viewProjection_, obj.material);
 	}
 
 #pragma endregion
@@ -555,7 +561,7 @@ void GameDemoScene::Draw() {
 #pragma region Skinningモデル描画
 	CJEngine_->renderer_->Draw(PipelineType::Skinning);
 	if (isModelDraw_[0]) {//Model描画
-		model_[0]->SkinningDraw(worldTransformModel_[0], viewProjection_, modelMaterial_[0]);
+		//model_[0]->SkinningDraw(worldTransformModel_[0], viewProjection_, modelMaterial_[0]);
 	}
 
 #pragma endregion
@@ -563,7 +569,7 @@ void GameDemoScene::Draw() {
 #pragma region VATモデル描画
 	CJEngine_->renderer_->Draw(PipelineType::VertexAnimationTexture);
 	if (isVATDraw_) {//VATModel描画
-		modelVAT_->Draw(worldTransformModelVAT_, viewProjection_, modelMaterialVAT_);
+		//modelVAT_->Draw(worldTransformModelVAT_, viewProjection_, modelMaterialVAT_);
 	}
 
 #pragma endregion
@@ -576,7 +582,9 @@ void GameDemoScene::Draw() {
 			particle_[i]->Draw(viewProjection_);
 		}
 	}
+	TestParticle::GetInstance()->Draw(viewProjection_);
 
+	
 #pragma endregion
 
 #pragma region 前景スプライト描画
@@ -632,6 +640,7 @@ void GameDemoScene::DrawPostEffect() {
 	if (isHSVDraw_ == true) {
 		CJEngine_->renderer_->Draw(PipelineType::HSV);
 	}
+	
 }
 
 void GameDemoScene::Finalize() {

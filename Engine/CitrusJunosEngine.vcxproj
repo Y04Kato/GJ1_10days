@@ -154,12 +154,19 @@
     <ClCompile Include="base\components\3d\ViewProjection.cpp" />
     <ClCompile Include="base\components\3d\WorldTransform.cpp" />
     <ClCompile Include="base\components\audio\Audio.cpp" />
+    <ClCompile Include="base\components\CreateResource\CreateResource.cpp" />
     <ClCompile Include="base\components\manager\ImGuiManager\ImGuiManager.cpp" />
     <ClCompile Include="base\components\manager\PSOManager\PSOManager.cpp" />
     <ClCompile Include="base\components\manager\RTVManager\RTVManager.cpp" />
     <ClCompile Include="base\components\manager\SRVManager\SRVManager.cpp" />
     <ClCompile Include="base\components\manager\TextureManager\TextureManager.cpp" />
+    <ClCompile Include="base\components\Particle\Emitter\ParticleEmitter.cpp" />
+    <ClCompile Include="base\components\Particle\GpuParticle.cpp" />
     <ClCompile Include="base\components\pipelineState\Gaussian\Gaussian.cpp" />
+    <ClCompile Include="base\components\pipelineState\GpuParticle\ParticleAddDraw.cpp" />
+    <ClCompile Include="base\components\pipelineState\GpuParticle\ParticleEmit.cpp" />
+    <ClCompile Include="base\components\pipelineState\GpuParticle\ParticleInit.cpp" />
+    <ClCompile Include="base\components\pipelineState\GpuParticle\ParticleUpdate.cpp" />
     <ClCompile Include="base\components\pipelineState\Grayscale\Grayscale.cpp" />
     <ClCompile Include="base\components\pipelineState\HSV\HSV.cpp" />
     <ClCompile Include="base\components\pipelineState\LensDistortion\LensDistortion.cpp" />
@@ -179,6 +186,7 @@
     <ClCompile Include="base\components\pipelineState\Vignette\Vignette.cpp" />
     <ClCompile Include="base\components\postEffect\PostEffect.cpp" />
     <ClCompile Include="base\components\renderer\Renderer.cpp" />
+    <ClCompile Include="base\components\RuntimeCounter\RunTimeCounter.cpp" />
     <ClCompile Include="base\components\shaderCompiler\ShaderCompiler.cpp" />
     <ClCompile Include="base\components\utilities\convertString\ConvertString.cpp" />
     <ClCompile Include="base\components\utilities\directionalLight\DirectionalLight.cpp" />
@@ -215,6 +223,7 @@
     <ClCompile Include="base\components\manager\SceneManager\SceneManager.cpp" />
     <ClCompile Include="base\components\utilities\collisionManager\CollisionManager.cpp" />
     <ClCompile Include="base\components\utilities\globalVariables\GlobalVariables.cpp" />
+    <ClCompile Include="project\gamedata\testParticle\testParticle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="project\gamedata\resources\shaders\BoxFilter.PS.hlsl">
@@ -329,6 +338,46 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Demo|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>
+    <FxCompile Include="project\gamedata\resources\shaders\Particle\Draw\Particle_DebugDraw.PS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Demo|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="project\gamedata\resources\shaders\Particle\Draw\Particle_DebugDraw.VS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Demo|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="project\gamedata\resources\shaders\Particle\Emitter\Particle_TypeBox.CS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Demo|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="project\gamedata\resources\shaders\Particle\Emitter\Particle_TypeCircleGoal.CS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Demo|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="project\gamedata\resources\shaders\Particle\Emitter\Particle_TypeShpere.CS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Demo|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="project\gamedata\resources\shaders\Particle\Field\Particle_Field_TypeBox_Suction.CS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Demo|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="project\gamedata\resources\shaders\Particle\Particle_Init.CS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Demo|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="project\gamedata\resources\shaders\Particle\Update\Particle_Update.CS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Demo|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="project\gamedata\resources\shaders\RadialBlur.PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
@@ -417,12 +466,24 @@
     <ClInclude Include="base\components\3d\ViewProjection.h" />
     <ClInclude Include="base\components\3d\WorldTransform.h" />
     <ClInclude Include="base\components\audio\Audio.h" />
+    <ClInclude Include="base\components\CreateResource\BufferResources.h" />
+    <ClInclude Include="base\components\CreateResource\CreateResource.h" />
+    <ClInclude Include="base\components\CreateResource\IBufferResource.h" />
     <ClInclude Include="base\components\manager\ImGuiManager\ImGuiManager.h" />
     <ClInclude Include="base\components\manager\PSOManager\PSOManager.h" />
     <ClInclude Include="base\components\manager\RTVManager\RTVManager.h" />
     <ClInclude Include="base\components\manager\SRVManager\SRVManager.h" />
     <ClInclude Include="base\components\manager\TextureManager\TextureManager.h" />
+    <ClInclude Include="base\components\Particle\Emitter\ParticleEmitter.h" />
+    <ClInclude Include="base\components\Particle\Emitter\StructGpuParticleEmitter.h" />
+    <ClInclude Include="base\components\Particle\Field\ParticleField.h" />
+    <ClInclude Include="base\components\Particle\Field\StructParticleField.h" />
+    <ClInclude Include="base\components\Particle\GpuParticle.h" />
     <ClInclude Include="base\components\pipelineState\Gaussian\Gaussian.h" />
+    <ClInclude Include="base\components\pipelineState\GpuParticle\ParticleAddDraw.h" />
+    <ClInclude Include="base\components\pipelineState\GpuParticle\ParticleEmit.h" />
+    <ClInclude Include="base\components\pipelineState\GpuParticle\ParticleInit.h" />
+    <ClInclude Include="base\components\pipelineState\GpuParticle\ParticleUpdate.h" />
     <ClInclude Include="base\components\pipelineState\Grayscale\Grayscale.h" />
     <ClInclude Include="base\components\math\Structure.h" />
     <ClInclude Include="base\components\pipelineState\HSV\HSV.h" />
@@ -445,6 +506,7 @@
     <ClInclude Include="base\components\pipelineState\Vignette\Vignette.h" />
     <ClInclude Include="base\components\postEffect\PostEffect.h" />
     <ClInclude Include="base\components\renderer\Renderer.h" />
+    <ClInclude Include="base\components\RuntimeCounter\RunTimeCounter.h" />
     <ClInclude Include="base\components\shaderCompiler\ShaderCompiler.h" />
     <ClInclude Include="base\components\utilities\convertString\ConvertString.h" />
     <ClInclude Include="base\components\utilities\directionalLight\DirectionalLight.h" />
@@ -492,6 +554,7 @@
     <ClInclude Include="base\components\utilities\collisionManager\CollisionManager.h" />
     <ClInclude Include="base\components\utilities\globalVariables\GlobalVariables.h" />
     <ClInclude Include="project\gamedata\resources\resource.h" />
+    <ClInclude Include="project\gamedata\testParticle\testParticle.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />
@@ -506,6 +569,9 @@
     <None Include="project\gamedata\resources\shaders\Object2d.hlsli" />
     <None Include="project\gamedata\resources\shaders\Object3d.hlsli" />
     <None Include="project\gamedata\resources\shaders\Particle.hlsli" />
+    <None Include="project\gamedata\resources\shaders\Particle\MatrixFanc.hlsli" />
+    <None Include="project\gamedata\resources\shaders\Particle\Particle.hlsli" />
+    <None Include="project\gamedata\resources\shaders\Particle\RandomGenerator.hlsli" />
     <None Include="project\gamedata\resources\shaders\SkinningObject3d.hlsli" />
     <None Include="project\gamedata\resources\shaders\SkyBox.hlsli" />
     <None Include="project\gamedata\resources\shaders\VAT.hlsli" />

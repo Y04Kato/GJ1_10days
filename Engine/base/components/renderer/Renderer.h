@@ -6,6 +6,7 @@ class Renderer{
 public:
 	void Initialize();
 	void Draw(PipelineType type);
+	void ComputeCommand(PipelineType type);
 
 	PipelineType GetNowPipeLineType() { return nowPipeLineType_; }
 
