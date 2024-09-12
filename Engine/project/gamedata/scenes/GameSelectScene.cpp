@@ -61,7 +61,7 @@ void GameSelectScene::Initialize() {
 	model_[0].reset(Model::CreateModel("project/gamedata/resources/DemoViewStageObj", "DemoViewStage1.obj"));
 	model_[1].reset(Model::CreateModel("project/gamedata/resources/DemoViewStageObj", "DemoViewStage2.obj"));
 	model_[2].reset(Model::CreateModel("project/gamedata/resources/DemoViewStageObj", "DemoViewStage3.obj"));
-	model_[3].reset(Model::CreateModel("project/gamedata/resources/TextObj", "Stage4Text.obj"));
+	model_[3].reset(Model::CreateModel("project/gamedata/resources/DemoViewStageObj", "DemoViewStage4.obj"));
 	model_[4].reset(Model::CreateModel("project/gamedata/resources/TextObj", "Stage5Text.obj"));
 	model_[5].reset(Model::CreateModel("project/gamedata/resources/TextObj", "EXITText.obj"));
 	for (int i = 0; i < 6; i++) {
