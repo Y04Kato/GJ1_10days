@@ -367,6 +367,14 @@ void GamePlayScene::GameStartProcessing() {
 	}
 	if (datas_->GetStageNum() == 2) {
 		editors_->SetGroupName((char*)"Stage3");
+
+		blockSetCount_[0] = 1;
+		blockSetCount_[1] = 1;
+		blockSetCount_[8] = 1;
+		blockSetCount_[9] = 1;
+		blockSetCount_[10] = 2;
+
+		blockSetMaxCount_ = 6;
 	}
 	if (datas_->GetStageNum() == 3) {
 		editors_->SetGroupName((char*)"Stage4");
@@ -399,9 +407,9 @@ void GamePlayScene::SceneEndProcessing() {
 }
 
 void GamePlayScene::CollisionConclusion() {
-	//Playerと床の当たり判定
 	bool isCollisionFloor = false;//衝突があったかどうかを記録するフラグ
 	bool isCollidingFromSideOnFloor = false;//横から衝突しているかどうかを記録するフラグ
+	bool isCollidingFromBelow = false;//下から衝突しているかどうかを記録するフラグ
 
 	OBB playerOBB;
 	playerOBB = CreateOBBFromEulerTransform(EulerTransform(player_->GetWorldTransform().scale_, player_->GetWorldTransform().rotation_, player_->GetWorldTransform().translation_));
@@ -433,10 +441,24 @@ void GamePlayScene::CollisionConclusion() {
 					if (std::abs(pushDirection.num[1]) > std::abs(pushDirection.num[0]) &&
 						std::abs(pushDirection.num[1]) > std::abs(pushDirection.num[2])) {
 
-						player_->SetFloorPos(obj.world);
-						isCollisionFloor = true;
+						if (pushDirection.num[1] > 0.0f) {//上から衝突（床の上にいる）
+							player_->SetFloorPos(obj.world);
+							isCollisionFloor = true;
+						}
+						else {//下から衝突
+							isCollidingFromBelow = true;
+							player_->SetIsReflection(true);
+
+							// 押し戻しと反射処理
+							playerOBB.center += pushAmount;
+							player_->SetTranslate(playerOBB.center);
+
+							player_->SetVelocity(ComputeOBBRepulsion(playerOBB, player_->GetVelocity(), objOBB, 1.0f));
+
+							audio_->SoundPlayWave(jump_, 0.1f, false);
+						}
 					}
-					else { //横方向からの衝突
+					else {//横方向からの衝突
 						isCollidingFromSideOnFloor = true;
 						player_->SetIsReflection(true);
 
@@ -462,9 +484,11 @@ void GamePlayScene::CollisionConclusion() {
 		}
 	}
 
-	// 衝突判定の結果を反映
+	//衝突判定の結果を反映
 	player_->SetIsFloorHit(isCollisionFloor);
 	player_->SetIsCollidingFromSide(isCollidingFromSideOnFloor);
+	//player_->SetIsCollidingFromBelow(isCollidingFromBelow);//下からの衝突の結果を反映
+
 
 
 	//PlayerとBlockの当たり判定
@@ -496,15 +520,28 @@ void GamePlayScene::CollisionConclusion() {
 				if (std::abs(pushDirection.num[1]) > std::abs(pushDirection.num[0]) &&
 					std::abs(pushDirection.num[1]) > std::abs(pushDirection.num[2])) {
 
-					isStandingOnBlock = true;
+					if (pushDirection.num[1] > 0.0f) {//上から衝突（Blockの上にいる）
+						isStandingOnBlock = true;
 
-					//押し戻し処理
-					playerOBB.center += pushAmount;
-					player_->SetTranslate(playerOBB.center);
+						//押し戻し処理
+						playerOBB.center += pushAmount;
+						player_->SetTranslate(playerOBB.center);
 
-					player_->SetVelocity(ComputeOBBRepulsion(playerOBB, player_->GetVelocity(), blockOBB, 0.2f));
+						player_->SetVelocity(ComputeOBBRepulsion(playerOBB, player_->GetVelocity(), blockOBB, 0.2f));
 
-					isCollisionDetected = true;
+						isCollisionDetected = true;
+					}
+					else {//下から衝突
+						player_->SetIsReflection(true);
+
+						//押し戻しと反射処理
+						playerOBB.center += pushAmount;
+						player_->SetTranslate(playerOBB.center);
+
+						player_->SetVelocity(ComputeOBBRepulsion(playerOBB, player_->GetVelocity(), blockOBB, 1.0f));
+
+						audio_->SoundPlayWave(jump_, 0.1f, false);
+					}
 				}
 				else {//横方向からの衝突
 					isCollidingFromSide = true;
