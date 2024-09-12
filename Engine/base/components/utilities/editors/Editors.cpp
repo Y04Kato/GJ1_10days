@@ -123,6 +123,10 @@ void Editors::Draw(ViewProjection view) {
 			obj.model.Draw(obj.world, view, obj.material);
 		}
 
+		if (obj.type == "Jump") {
+			obj.model.Draw(obj.world, view, obj.material);
+		}
+
 		//Guizmo操作
 		if (isDirectInputMode_ == false) {
 			if (objName_ == obj.name) {

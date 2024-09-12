@@ -122,10 +122,16 @@ void Player::Move() {
 	//ジャンプ
 	if (isCollidingFromSide_ == false || isAntiFreeze_ == true) {
 		if (isFloorHit_ == true || isJumpOn == true) {
-			if (input_->TriggerKey(DIK_SPACE)) {
+			if (input_->TriggerKey(DIK_SPACE) && isJumpBlockStanding_ == false) {
 				velocity_.num[1] = 0.3f;
 				isJumpOn = false;
 				audio_->SoundPlayWave(jump_, 0.1f, false);
+			}
+			if (input_->TriggerKey(DIK_SPACE) && isJumpBlockStanding_ == true) {
+				velocity_.num[1] = 0.6f;
+				isJumpOn = false;
+				isJumpBlockStanding_ = false;
+				audio_->SoundPlayWave(jump_, 0.2f, false);
 			}
 		}
 	}

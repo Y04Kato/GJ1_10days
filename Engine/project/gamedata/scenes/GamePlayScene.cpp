@@ -98,6 +98,52 @@ void GamePlayScene::Update() {
 		player_->SetVelocity(Vector3{ 0.0f,0.0f,0.0f });
 
 		blocks_.clear();
+	
+		for (int i = 0; i < 12; i++) {
+			blockSetCount_[i] = 0;
+		}
+
+		if (datas_->GetStageNum() == 0) {
+			blockSetCount_[0] = 3;
+			blockSetCount_[2] = 1;
+			blockSetCount_[9] = 1;
+
+			blockSetMaxCount_ = 5;
+			selectedBlockType_ = 1;
+		}
+		if (datas_->GetStageNum() == 1) {
+			blockSetCount_[4] = 3;
+			blockSetCount_[9] = 2;
+			blockSetCount_[10] = 1;
+
+			blockSetMaxCount_ = 6;
+			selectedBlockType_ = 5;
+		}
+		if (datas_->GetStageNum() == 2) {
+			blockSetCount_[0] = 1;
+			blockSetCount_[1] = 1;
+			blockSetCount_[8] = 1;
+			blockSetCount_[9] = 1;
+			blockSetCount_[10] = 2;
+
+			blockSetMaxCount_ = 6;
+			selectedBlockType_ = 1;
+		}
+		if (datas_->GetStageNum() == 3) {
+			blockSetCount_[2] = 1;
+			blockSetCount_[10] = 2;
+
+			blockSetMaxCount_ = 3;
+			selectedBlockType_ = 3;
+		}
+		if (datas_->GetStageNum() == 4) {
+			blockSetCount_[2] = 2;
+			blockSetCount_[5] = 1;
+			blockSetCount_[9] = 1;
+
+			blockSetMaxCount_ = 4;
+			selectedBlockType_ = 3;
+		}
 	}
 
 	//ImGui
@@ -239,8 +285,56 @@ void GamePlayScene::Update() {
 
 	//Playerが落下した時戻す
 	if (player_->GetWorldTransform().translation_.num[1] <= -30.0f) {
-		player_->SetTranslate(Vector3{ 0.0f,0.0f,0.0f });
+		for (Obj obj : editors_->GetObj()) {
+			if (obj.type == "Spawn") {
+				player_->SetTranslate(Vector3{ obj.world.GetWorldPos().num[0],obj.world.GetWorldPos().num[1] + 1.0f,obj.world.GetWorldPos().num[2] });
+			}
+		}
 		player_->SetVelocity(Vector3{ 0.0f,0.0f,0.0f });
+
+		blocks_.clear();
+
+		if (datas_->GetStageNum() == 0) {
+			blockSetCount_[0] = 3;
+			blockSetCount_[2] = 1;
+			blockSetCount_[9] = 1;
+
+			blockSetMaxCount_ = 5;
+			selectedBlockType_ = 1;
+		}
+		if (datas_->GetStageNum() == 1) {
+			blockSetCount_[4] = 3;
+			blockSetCount_[9] = 2;
+			blockSetCount_[10] = 1;
+
+			blockSetMaxCount_ = 6;
+			selectedBlockType_ = 5;
+		}
+		if (datas_->GetStageNum() == 2) {
+			blockSetCount_[0] = 1;
+			blockSetCount_[1] = 1;
+			blockSetCount_[8] = 1;
+			blockSetCount_[9] = 1;
+			blockSetCount_[10] = 2;
+
+			blockSetMaxCount_ = 6;
+			selectedBlockType_ = 1;
+		}
+		if (datas_->GetStageNum() == 3) {
+			blockSetCount_[2] = 1;
+			blockSetCount_[10] = 2;
+
+			blockSetMaxCount_ = 3;
+			selectedBlockType_ = 3;
+		}
+		if (datas_->GetStageNum() == 4) {
+			blockSetCount_[2] = 2;
+			blockSetCount_[5] = 1;
+			blockSetCount_[9] = 1;
+
+			blockSetMaxCount_ = 4;
+			selectedBlockType_ = 3;
+		}
 	}
 
 	//World更新
@@ -355,6 +449,7 @@ void GamePlayScene::GameStartProcessing() {
 		blockSetCount_[9] = 1;
 
 		blockSetMaxCount_ = 5;
+		selectedBlockType_ = 1;
 	}
 	if (datas_->GetStageNum() == 1) {
 		editors_->SetGroupName((char*)"Stage2");
@@ -364,6 +459,7 @@ void GamePlayScene::GameStartProcessing() {
 		blockSetCount_[10] = 1;
 
 		blockSetMaxCount_ = 6;
+		selectedBlockType_ = 5;
 	}
 	if (datas_->GetStageNum() == 2) {
 		editors_->SetGroupName((char*)"Stage3");
@@ -375,12 +471,26 @@ void GamePlayScene::GameStartProcessing() {
 		blockSetCount_[10] = 2;
 
 		blockSetMaxCount_ = 6;
+		selectedBlockType_ = 1;
 	}
 	if (datas_->GetStageNum() == 3) {
 		editors_->SetGroupName((char*)"Stage4");
+
+		blockSetCount_[2] = 1;
+		blockSetCount_[10] = 2;
+
+		blockSetMaxCount_ = 3;
+		selectedBlockType_ = 3;
 	}
 	if (datas_->GetStageNum() == 4) {
 		editors_->SetGroupName((char*)"Stage5");
+
+		blockSetCount_[2] = 2;
+		blockSetCount_[5] = 1;
+		blockSetCount_[9] = 1;
+
+		blockSetMaxCount_ = 4;
+		selectedBlockType_ = 3;
 	}
 
 	editors_->Update();
@@ -409,12 +519,13 @@ void GamePlayScene::SceneEndProcessing() {
 void GamePlayScene::CollisionConclusion() {
 	bool isCollisionFloor = false;//衝突があったかどうかを記録するフラグ
 	bool isCollidingFromSideOnFloor = false;//横から衝突しているかどうかを記録するフラグ
-	bool isCollidingFromBelow = false;//下から衝突しているかどうかを記録するフラグ
+	bool isJumpBlockStanding = false;//ジャンプ台の上に居るかを記録するフラグ
 
 	OBB playerOBB;
 	playerOBB = CreateOBBFromEulerTransform(EulerTransform(player_->GetWorldTransform().scale_, player_->GetWorldTransform().rotation_, player_->GetWorldTransform().translation_));
 
 	for (Obj obj : editors_->GetObj()) {
+		//床の場合
 		if (obj.type == "Floor") {
 			OBB objOBB;
 			objOBB = CreateOBBFromEulerTransform(EulerTransform(obj.world.scale_, obj.world.rotation_, obj.world.translation_));
@@ -446,7 +557,6 @@ void GamePlayScene::CollisionConclusion() {
 							isCollisionFloor = true;
 						}
 						else {//下から衝突
-							isCollidingFromBelow = true;
 							player_->SetIsReflection(true);
 
 							// 押し戻しと反射処理
@@ -474,6 +584,66 @@ void GamePlayScene::CollisionConclusion() {
 			}
 		}
 
+		if (obj.type == "Jump") {
+			OBB objOBB;
+			objOBB = CreateOBBFromEulerTransform(EulerTransform(obj.world.scale_, obj.world.rotation_, obj.world.translation_));
+
+			if (IsCollision(playerOBB, objOBB)) {
+				Vector3 closestPoint = objOBB.center;
+				Vector3 d = playerOBB.center - objOBB.center;
+
+				//最近接点の計算
+				for (int i = 0; i < 3; ++i) {
+					float dist = Dot(d, objOBB.orientation[i]);
+					dist = std::fmax(-objOBB.size.num[i], std::min(dist, objOBB.size.num[i]));
+					closestPoint += objOBB.orientation[i] * dist;
+				}
+
+				Vector3 difference = playerOBB.center - closestPoint;
+				float distance = Length(difference);
+
+				if (distance > 0.0f) {
+					Vector3 pushDirection = Normalize(difference);
+					Vector3 pushAmount = pushDirection * (playerOBB.size.num[0] - distance) * pushbackMultiplierBlock_;
+
+					//プレイヤーが上に乗っているかどうかを判断
+					if (std::abs(pushDirection.num[1]) > std::abs(pushDirection.num[0]) &&
+						std::abs(pushDirection.num[1]) > std::abs(pushDirection.num[2])) {
+
+						if (pushDirection.num[1] > 0.0f) {//上から衝突（床の上にいる）
+							player_->SetFloorPos(obj.world);
+							isCollisionFloor = true;
+							isJumpBlockStanding = true;
+						}
+						else {//下から衝突
+							player_->SetIsReflection(true);
+
+							// 押し戻しと反射処理
+							playerOBB.center += pushAmount;
+							player_->SetTranslate(playerOBB.center);
+
+							player_->SetVelocity(ComputeOBBRepulsion(playerOBB, player_->GetVelocity(), objOBB, 1.0f));
+
+							audio_->SoundPlayWave(jump_, 0.1f, false);
+						}
+					}
+					else {//横方向からの衝突
+						isCollidingFromSideOnFloor = true;
+						player_->SetIsReflection(true);
+
+						//押し戻し処理
+						playerOBB.center += pushAmount;
+						player_->SetTranslate(playerOBB.center);
+
+						player_->SetVelocity(ComputeOBBRepulsion(playerOBB, player_->GetVelocity(), objOBB, 1.0f));
+
+						audio_->SoundPlayWave(jump_, 0.1f, false);
+					}
+				}
+			}
+		}
+
+		//ゴールの場合
 		if (obj.type == "Goal" && fadeAlpha_ == 0.0f) {
 			OBB objOBB;
 			objOBB = CreateOBBFromEulerTransform(EulerTransform(obj.world.scale_, obj.world.rotation_, obj.world.translation_));
@@ -487,7 +657,7 @@ void GamePlayScene::CollisionConclusion() {
 	//衝突判定の結果を反映
 	player_->SetIsFloorHit(isCollisionFloor);
 	player_->SetIsCollidingFromSide(isCollidingFromSideOnFloor);
-	//player_->SetIsCollidingFromBelow(isCollidingFromBelow);//下からの衝突の結果を反映
+	player_->SetIsJumpBlockStanding(isJumpBlockStanding);
 
 
 

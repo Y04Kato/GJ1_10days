@@ -33,7 +33,10 @@ public:
 	void SetIsBlockHit(bool isBlockHit) { isBlockHit_ = isBlockHit; }
 
 	bool GetIsStandingOnHit() { return isStandingOnHit_; }
-	void SetIsStandingOnHit(bool isStandingOnHit);
+	void SetIsStandingOnHit(bool isStandingOnHit);	
+	
+	bool GetIsJumpBlockStanding() { return isJumpBlockStanding_; }
+	void SetIsJumpBlockStanding(bool isJumpBlockStanding) { isJumpBlockStanding_ = isJumpBlockStanding; }
 
 	bool GetIsCollidingFromSide() { return isCollidingFromSide_; }
 	void SetIsCollidingFromSide(bool isCollidingFromSide) { isCollidingFromSide_ = isCollidingFromSide; }
@@ -74,4 +77,5 @@ private:
 	int antiFreezeTimer_ = 0;
 
 	bool isJumpOn = false;
+	bool isJumpBlockStanding_ = false;
 };
