@@ -158,7 +158,7 @@ void GamePlayScene::Update() {
 		}
 		if (datas_->GetStageNum() == 1) {
 			blockSetCount_[4] = 3;
-			blockSetCount_[9] = 2;
+			blockSetCount_[8] = 2;
 			blockSetCount_[10] = 1;
 
 			blockSetMaxCount_ = 6;
@@ -358,7 +358,7 @@ void GamePlayScene::Update() {
 		}
 		if (datas_->GetStageNum() == 1) {
 			blockSetCount_[4] = 3;
-			blockSetCount_[9] = 2;
+			blockSetCount_[8] = 2;
 			blockSetCount_[10] = 1;
 
 			blockSetMaxCount_ = 6;
@@ -552,7 +552,7 @@ void GamePlayScene::GameStartProcessing() {
 		editors_->SetGroupName((char*)"Stage2");
 
 		blockSetCount_[4] = 3;
-		blockSetCount_[9] = 2;
+		blockSetCount_[8] = 2;
 		blockSetCount_[10] = 1;
 
 		blockSetMaxCount_ = 6;
