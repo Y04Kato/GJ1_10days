@@ -126,4 +126,7 @@ private:
 	//
 	int pressTimer_ = 0;
 	const int pressMaxTime = 10;
+
+	//
+	int blockSetCount_[12];
 };

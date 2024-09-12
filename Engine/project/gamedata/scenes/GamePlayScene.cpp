@@ -56,7 +56,7 @@ void GamePlayScene::Initialize() {
 	//配置カーソル用
 	model_.reset(Model::CreateModel("project/gamedata/resources/block", "block.obj"));
 	worldTransformModel_.Initialize();
-	modelMaterial_ = { 1.0f,0.2f,0.2f,0.2f };
+	modelMaterial_ = { 1.0f,0.2f,0.2f,1.0f };
 	model_->SetDirectionalLightFlag(true, 0);
 	worldTransformModel_.translation_.num[1] = 10.0f;//配置の高さ
 
@@ -80,7 +80,7 @@ void GamePlayScene::Update() {
 		GameStartProcessing();
 	}
 
-	if (input_->TriggerKey(DIK_Q)) {
+	if (input_->TriggerKey(DIK_R)) {
 		for (Obj obj : editors_->GetObj()) {
 			if (obj.type == "Spawn") {
 				player_->SetTranslate(Vector3{ obj.world.GetWorldPos().num[0],obj.world.GetWorldPos().num[1] + 2.0f,obj.world.GetWorldPos().num[2] });
@@ -94,10 +94,11 @@ void GamePlayScene::Update() {
 	//ImGui
 	ImGui::Begin("PlayScene");
 	ImGui::Checkbox("isEditorMode", &isEditorMode_);
-	ImGui::Text("PlayerRespawn:[Q]key");
+	ImGui::Text("PlayerRespawn:[R]key");
 	ImGui::Text("Player & Block Move:[A]or[D]key");
 	ImGui::Text("PlayerJump:[Space]key");
-	ImGui::Text("TogglePlayerOperationModes:[E]key");
+	ImGui::Text("TogglePlayerOperationModes:[F]key");
+	ImGui::Text("BlockRotate:[Q]or[E]key");
 	if (isPlayerOperationModes_ == true) {
 		ImGui::Text("PlayerOperationModes:True");
 	}
@@ -126,7 +127,7 @@ void GamePlayScene::Update() {
 	}
 	else {//EditorsModeではない時
 		//Player操作モードチェンジ
-		if (input_->TriggerKey(DIK_E)) {
+		if (input_->TriggerKey(DIK_F)) {
 			if (isPlayerOperationModes_ == true) {
 				isPlayerOperationModes_ = false;
 			}
@@ -143,17 +144,17 @@ void GamePlayScene::Update() {
 
 			//配置地点操作
 			if (input_->TriggerKey(DIK_A)) {
-				worldTransformModel_.translation_.num[0] -= 1.0001f;
+				worldTransformModel_.translation_.num[0] -= 2.0002f;
 			}
 			if (input_->TriggerKey(DIK_D)) {
-				worldTransformModel_.translation_.num[0] += 1.0001f;
+				worldTransformModel_.translation_.num[0] += 2.0002f;
 			}
 
 			if (input_->PressKey(DIK_A)) {
 				pressTimer_++;
 
 				if (pressTimer_ >= pressMaxTime) {
-					worldTransformModel_.translation_.num[0] -= 1.0001f;
+					worldTransformModel_.translation_.num[0] -= 2.0002f;
 					pressTimer_ = 0;
 				}
 			}
@@ -161,7 +162,7 @@ void GamePlayScene::Update() {
 				pressTimer_++;
 
 				if (pressTimer_ >= pressMaxTime) {
-					worldTransformModel_.translation_.num[0] += 1.0001f;
+					worldTransformModel_.translation_.num[0] += 2.0002f;
 					pressTimer_ = 0;
 				}
 			}
@@ -173,7 +174,7 @@ void GamePlayScene::Update() {
 			ImGui::Text("Reset : R");
 			ImGui::Text("TypeSelect : W,S");
 			ImGui::Text("Rotate : 1(-90),2(+90) \nangle : %d", RotateType * 90);
-			// ドロップダウンでブロックタイプを選択
+			//ドロップダウンでブロックタイプを選択
 			if (ImGui::BeginCombo("Block Type", std::to_string(selectedBlockType).c_str()))
 			{
 				for (int type = 1; type <= maxType; ++type)
@@ -191,33 +192,28 @@ void GamePlayScene::Update() {
 				ImGui::EndCombo();
 			}
 
-			// ブロックタイプに応じてデータをロードするボタン
-			if (ImGui::Button("Load Block || DIK_SPACE")) {
-				LoadBlockPopData(selectedBlockType, RotateType);
-			}
 			//SpaceでそのTypeのブロックをSpawn
 			if (input_->TriggerKey(DIK_SPACE) && isSetBlock_ == false) {
 				LoadBlockPopData(selectedBlockType, RotateType);
-				isSetBlock_ = true;
+				isSetBlock_ = true;  
 			}
-			// DIK_2 が押されたときに RotateType を増加させる
-			if (input_->TriggerKey(DIK_2)) {
-				RotateType = (RotateType + 1) % (maxRotateType + 1);
-			}
-			// DIK_1 が押されたときに RotateType を減少させる
-			if (input_->TriggerKey(DIK_1)) {
+
+			// DIK_Q が押されたときに RotateType を減少させる
+			if (input_->TriggerKey(DIK_Q)) {
 				RotateType = (RotateType - 1 + (maxRotateType + 1)) % (maxRotateType + 1);
 			}
+
+			// DIK_E が押されたときに RotateType を増加させる
+			if (input_->TriggerKey(DIK_E)) {
+				RotateType = (RotateType + 1) % (maxRotateType + 1);
+			}
+
 			//Type変更
 			if (input_->TriggerKey(DIK_W) && selectedBlockType <= maxType - 1) {
 				selectedBlockType++;
 			}
 			if (input_->TriggerKey(DIK_S) && selectedBlockType >= 2) {
 				selectedBlockType--;
-			}
-			//Reset
-			if (input_->TriggerKey(DIK_R)) {
-				blocks_.clear();
 			}
 			ImGui::End();
 		}
@@ -505,7 +501,7 @@ void GamePlayScene::CollisionConclusion() {
 		for (Block& block2 : blocks_) {
 			if (&block1 == &block2 || !block2.isFloorOrBlockHit) continue;
 
-			OBB block2OBB = CreateOBBFromEulerTransform(EulerTransform(block2.world.scale_, block2.world.rotation_, block2.world.translation_));
+			OBB block2OBB = CreateOBBFromEulerTransform(EulerTransform(block2.world.scale_ * 0.98f, block2.world.rotation_, block2.world.translation_));
 
 			if (IsCollision(block1OBB, block2OBB)) {
 				//押し戻し処理
