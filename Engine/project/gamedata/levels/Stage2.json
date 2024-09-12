@@ -48,7 +48,7 @@
         ],
         "obj2Translate": [
             -9.0,
-            2.0,
+            3.0,
             0.0
         ],
         "obj2Type": "Floor",
@@ -65,7 +65,7 @@
         ],
         "obj3Translate": [
             -19.0,
-            2.0,
+            3.0,
             0.0
         ],
         "obj3Type": "Floor",
@@ -82,7 +82,7 @@
         ],
         "obj4Translate": [
             -20.0,
-            3.0,
+            4.0,
             0.0
         ],
         "obj4Type": "Goal",

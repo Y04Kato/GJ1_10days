@@ -82,6 +82,33 @@ private:
 	WorldTransform worldTransformModel_;
 	Vector4 modelMaterial_;
 
+	std::unique_ptr<Model> ADmodel_;
+	WorldTransform ADworld_;
+
+	std::unique_ptr<Model> WSmodel_;
+	WorldTransform WSworld_;
+	
+	std::unique_ptr<Model> QEmodel_;
+	WorldTransform QEworld_;
+	
+	std::unique_ptr<Model> Fmodel_;
+	WorldTransform Fworld_;
+
+	std::unique_ptr<Model> Rmodel_;
+	WorldTransform Rworld_;
+
+	std::unique_ptr<Model> Jumpmodel_;
+	WorldTransform Jumpworld_;
+
+	std::unique_ptr<Model> Putmodel_;
+	WorldTransform Putworld_;
+
+	std::unique_ptr<Model> PutTextmodel_;
+	WorldTransform PutTextworld_;
+
+	std::unique_ptr<Model> PlayerTextmodel_;
+	WorldTransform PlayerTextworld_;
+
 	//
 	std::unique_ptr <CreateSprite> bgSprite_;
 	std::unique_ptr <CreateSprite> fadeSprite_;
