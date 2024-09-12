@@ -14,3 +14,12 @@ void Renderer::Draw(PipelineType type){
 	//PS0を設定
 	commandList->SetPipelineState(PSOManager_->GetPipelineState(type).Get());
 }
+
+void Renderer::ComputeCommand(PipelineType type)
+{
+	nowPipeLineType_ = type;
+	//RootSignatureを設定。PS0とは別途設定が必要
+	commandList->SetComputeRootSignature(PSOManager_->GetRootSignature(type).Get());
+	//PS0を設定
+	commandList->SetPipelineState(PSOManager_->GetPipelineState(type).Get());
+}

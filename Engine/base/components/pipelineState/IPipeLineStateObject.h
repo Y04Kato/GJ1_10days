@@ -46,11 +46,13 @@ protected:
 
 	IDxcBlob* vertexShaderBlob = nullptr;
 	IDxcBlob* pixelShaderBlob = nullptr;
+	IDxcBlob* csShaderBlob = nullptr;
 
 	ID3DBlob* signatureBlob = nullptr;
 	ID3DBlob* errorBlob = nullptr;
 
 	D3D12_INPUT_ELEMENT_DESC inputElementDescs5[5] = {};
+	D3D12_INPUT_ELEMENT_DESC inputElementDescs4[4] = {};
 	D3D12_INPUT_ELEMENT_DESC inputElementDescs3[3] = {};
 	D3D12_INPUT_ELEMENT_DESC inputElementDescs2[2] = {};
 	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc{};

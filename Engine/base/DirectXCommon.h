@@ -32,6 +32,8 @@ public:
 
 	void Finalize();
 
+	void CommandClose();
+
 	//Getter&Setter
 	Microsoft::WRL::ComPtr<ID3D12Device> GetDevice() { return device_; }
 	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> GetCommandList() { return commandList_; }

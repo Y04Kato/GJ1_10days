@@ -16,6 +16,7 @@
 #include "GamePlayScene.h"
 #include "GameClearScene.h"
 #include "GameDemoScene.h"
+#include"RuntimeCounter/RunTimeCounter.h"
 
 class SceneManager {
 public:
