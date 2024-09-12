@@ -93,7 +93,7 @@ void GameTitleScene::Initialize(){
 	fadeSprite_->SetTextureInitialSize();
 
 	//
-	selectedBlockType = 11;
+	selectedBlockType_ = 11;
 }
 
 void GameTitleScene::Update(){
@@ -114,7 +114,7 @@ void GameTitleScene::Update(){
 
 		if (isSetBlock_ == false) {
 			if (input_->TriggerKey(DIK_SPACE)) {
-				LoadBlockPopData(selectedBlockType, RotateType);
+				LoadBlockPopData(selectedBlockType_, RotateType);
 				isSetBlock_ = true;
 				audio_->SoundPlayWave(select_, 0.1f, false);
 			}

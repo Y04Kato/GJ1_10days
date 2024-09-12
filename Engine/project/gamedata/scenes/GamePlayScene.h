@@ -55,6 +55,9 @@ public:
 
 	void StopConnectedBlocks(Block& block1);
 
+	//SelectCountを進める、0で++、1で--
+	void SelectCounter(int selectedBlockType , int countType);
+
 private:
 	CitrusJunosEngine* CJEngine_;
 	DirectXCommon* dxCommon_;
@@ -98,7 +101,7 @@ private:
 	std::vector<std::vector<int>> matrix_;
 	//ブロック
 	std::unordered_map<int, std::vector<std::vector<int>>> blockDataMap_; // ブロックタイプとそのデータを保持
-	int selectedBlockType = 1; // デフォルトのブロックタイプ
+	int selectedBlockType_ = 1; // デフォルトのブロックタイプ
 	std::list<Block> blocks_;
 	ModelData ObjModelData_;
 	uint32_t ObjTexture_;
@@ -129,4 +132,11 @@ private:
 
 	//
 	int blockSetCount_[12];
+	int blockSetMaxCount_ = 0;
+
+	//
+	std::unique_ptr<CreateLine> line_;
+	WorldTransform worldTransformLine_[2];
+	Vector4 lineMaterial_;
+	float lineThickness_ = 0.2f;
 };

@@ -72,6 +72,15 @@ void GamePlayScene::Initialize() {
 	LoadAllBlockData();
 
 	datas_ = Datas::GetInstance();
+
+	//Line
+	line_ = std::make_unique <CreateLine>();
+	line_->Initialize();
+	line_->SetDirectionalLightFlag(false, 0);
+	lineMaterial_ = { 1.0f,1.0f,1.0f,1.0f };
+	for (int i = 0; i < 2; i++) {
+		worldTransformLine_[i].Initialize();
+	}
 }
 
 void GamePlayScene::Update() {
@@ -175,14 +184,14 @@ void GamePlayScene::Update() {
 			ImGui::Text("TypeSelect : W,S");
 			ImGui::Text("Rotate : 1(-90),2(+90) \nangle : %d", RotateType * 90);
 			//ドロップダウンでブロックタイプを選択
-			if (ImGui::BeginCombo("Block Type", std::to_string(selectedBlockType).c_str()))
+			if (ImGui::BeginCombo("Block Type", std::to_string(selectedBlockType_).c_str()))
 			{
 				for (int type = 1; type <= maxType; ++type)
 				{
-					bool isSelected = (selectedBlockType == type);
+					bool isSelected = (selectedBlockType_ == type);
 					if (ImGui::Selectable(std::to_string(type).c_str(), isSelected))
 					{
-						selectedBlockType = type;
+						selectedBlockType_ = type;
 					}
 					if (isSelected)
 					{
@@ -193,9 +202,11 @@ void GamePlayScene::Update() {
 			}
 
 			//SpaceでそのTypeのブロックをSpawn
-			if (input_->TriggerKey(DIK_SPACE) && isSetBlock_ == false) {
-				LoadBlockPopData(selectedBlockType, RotateType);
-				isSetBlock_ = true;  
+			if (input_->TriggerKey(DIK_SPACE) && isSetBlock_ == false && blockSetCount_[selectedBlockType_ - 1] != 0  && blockSetMaxCount_ > 0) {
+				LoadBlockPopData(selectedBlockType_, RotateType);
+				isSetBlock_ = true;
+				blockSetCount_[selectedBlockType_ - 1] -= 1; 
+				blockSetMaxCount_ -= 1;
 			}
 
 			// DIK_Q が押されたときに RotateType を減少させる
@@ -209,11 +220,11 @@ void GamePlayScene::Update() {
 			}
 
 			//Type変更
-			if (input_->TriggerKey(DIK_W) && selectedBlockType <= maxType - 1) {
-				selectedBlockType++;
+			if (input_->TriggerKey(DIK_W) && blockSetMaxCount_ > 0) {
+				SelectCounter(selectedBlockType_, 0);
 			}
-			if (input_->TriggerKey(DIK_S) && selectedBlockType >= 2) {
-				selectedBlockType--;
+			if (input_->TriggerKey(DIK_S) && blockSetMaxCount_ > 0) {
+				SelectCounter(selectedBlockType_, 1);
 			}
 			ImGui::End();
 		}
@@ -234,6 +245,13 @@ void GamePlayScene::Update() {
 
 	//World更新
 	worldTransformModel_.UpdateMatrix();
+
+	worldTransformLine_[0].translation_ = worldTransformModel_.translation_;
+	worldTransformLine_[1].translation_ = worldTransformModel_.translation_;
+	worldTransformLine_[1].translation_.num[1] = -10.0f;
+	for (int i = 0; i < 2; i++) {
+		worldTransformLine_[i].UpdateMatrix();
+	}
 
 	//Player更新
 	player_->Update();
@@ -279,6 +297,9 @@ void GamePlayScene::Draw() {
 	editors_->Draw(viewProjection_);
 
 	//
+	line_->Draw(worldTransformLine_[0], worldTransformLine_[1], viewProjection_, lineMaterial_);
+
+	//
 	model_->Draw(worldTransformModel_, viewProjection_, modelMaterial_);
 
 #pragma endregion
@@ -321,12 +342,28 @@ void GamePlayScene::Finalize() {
 }
 
 void GamePlayScene::GameStartProcessing() {
+	for (int i = 0; i < 12; i++) {
+		blockSetCount_[i] = 0;
+	}
+
 	//ステージ選択を適用
+	//ステージを呼び出した後、使用出来るブロック数を設定する
 	if (datas_->GetStageNum() == 0) {
 		editors_->SetGroupName((char*)"Stage1");
+		blockSetCount_[0] = 3;
+		blockSetCount_[2] = 1;
+		blockSetCount_[9] = 1;
+
+		blockSetMaxCount_ = 5;
 	}
 	if (datas_->GetStageNum() == 1) {
 		editors_->SetGroupName((char*)"Stage2");
+
+		blockSetCount_[4] = 3;
+		blockSetCount_[9] = 2;
+		blockSetCount_[10] = 1;
+
+		blockSetMaxCount_ = 6;
 	}
 	if (datas_->GetStageNum() == 2) {
 		editors_->SetGroupName((char*)"Stage3");
@@ -342,7 +379,7 @@ void GamePlayScene::GameStartProcessing() {
 
 	for (Obj obj : editors_->GetObj()) {
 		if (obj.type == "Spawn") {
-			player_->SetTranslate(Vector3{ obj.world.GetWorldPos().num[0],obj.world.GetWorldPos().num[1] + 1.0f,obj.world.GetWorldPos().num[2]});
+			player_->SetTranslate(Vector3{ obj.world.GetWorldPos().num[0],obj.world.GetWorldPos().num[1] + 1.0f,obj.world.GetWorldPos().num[2] });
 		}
 	}
 
@@ -546,7 +583,7 @@ void GamePlayScene::CollisionConclusion() {
 		for (Obj obj : editors_->GetObj()) {
 			if (obj.type == "Floor") {
 				OBB objOBB;
-				objOBB = CreateOBBFromEulerTransform(EulerTransform(Vector3{ obj.world.scale_.num[0]*0.98f,obj.world.scale_.num[1] *1.005f,obj.world.scale_.num[2] }, obj.world.rotation_, obj.world.translation_));
+				objOBB = CreateOBBFromEulerTransform(EulerTransform(Vector3{ obj.world.scale_.num[0] * 0.98f,obj.world.scale_.num[1] * 1.005f,obj.world.scale_.num[2] }, obj.world.rotation_, obj.world.translation_));
 				if (IsCollision(blockOBB, objOBB)) {
 					//押し戻し処理
 					//blockOBBからobjOBBの最近接点を計算
@@ -715,5 +752,31 @@ void GamePlayScene::StopConnectedBlocks(Block& block1) {
 			block2.world.translation_.num[1] = block2OBB.center.num[1];
 			StopConnectedBlocks(block2);//再帰的に関連ブロックを停止させる
 		}
+	}
+}
+
+void GamePlayScene::SelectCounter(int selectedBlockType, int countType) {
+	if (countType == 0) {
+		selectedBlockType_++;
+		if (blockSetCount_[selectedBlockType_ - 1] == 0) {
+			SelectCounter(selectedBlockType_, 0);
+		}
+		if (selectedBlockType_ >= 13) {
+			selectedBlockType_ = 0;
+			SelectCounter(selectedBlockType_, 0);
+		}
+	}
+	else if (countType == 1) {
+		selectedBlockType_--;
+		if (blockSetCount_[selectedBlockType_ - 1] == 0) {
+			SelectCounter(selectedBlockType_, 1);
+		}
+		if (selectedBlockType_ <= 0) {
+			selectedBlockType_ = 13;
+			SelectCounter(selectedBlockType_, 1);
+		}
+	}
+	else {
+
 	}
 }

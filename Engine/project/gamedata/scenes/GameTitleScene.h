@@ -98,7 +98,7 @@ private:
 	std::vector<std::vector<int>> matrix_;
 	//ブロック
 	std::unordered_map<int, std::vector<std::vector<int>>> blockDataMap_; // ブロックタイプとそのデータを保持
-	int selectedBlockType = 1; // デフォルトのブロックタイプ
+	int selectedBlockType_ = 1; // デフォルトのブロックタイプ
 	std::list<TestBlock> blocks_;
 	ModelData ObjModelData_;
 	uint32_t ObjTexture_;
