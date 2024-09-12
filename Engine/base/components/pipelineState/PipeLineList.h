@@ -22,4 +22,5 @@ enum class PipelineType {
 	PARTICLE_Init,
 	PARTICLE_UPDATE,
 	PARTICLE_EMIT_BOX,
+	PARTICLE_DRAW_ADD
 };

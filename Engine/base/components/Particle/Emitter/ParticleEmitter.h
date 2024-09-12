@@ -76,6 +76,44 @@ namespace ParticleIbu {
 	inline void ParticleEmitter<T>::ImGuiUpdate()
 	{
 
+		if (ImGui::TreeNode(name_.c_str()))
+		{
+			for (size_t index = 0; index < max_; index++)
+			{
+				string paramName = to_string(index);
+				ImGui::Separator();
+				if (ImGui::TreeNode(paramName.c_str()))
+				{
+					if (ImGui::TreeNode("control"))
+					{
+						ImGui::Checkbox("useFlag", &particleControl_[index].useFlag_);
+						ImGui::DragFloat("frequencyTime", &particleControl_[index].frequencyTime);
+
+						ImGui::TreePop();
+					}
+					int count = emitParam_[index].count;
+					ImGui::DragInt("spownCount", &count, 1);
+					emitParam_[index].count = count;
+					ImGui::DragFloat3("translate", &emitParam_[index].translate.x, 0.1f);
+					ImGui::DragFloat3("rotate", &emitParam_[index].rotate.x, 0.1f);
+					ImGui::Separator();
+					ImGui::DragFloat3("sizeMin", &emitParam_[index].sizeMin.x, 0.1f);
+					ImGui::DragFloat3("sizeMax", &emitParam_[index].sizeMax.x, 0.1f);
+					ImGui::Separator();
+					ImGui::DragFloat3("velocityMin", &emitParam_[index].velocityMin.x, 0.1f);
+					ImGui::DragFloat3("velocityMax", &emitParam_[index].velocityMax.x, 0.1f);
+					ImGui::Separator();
+					ImGui::DragFloat4("colorDecayMin", &emitParam_[index].colorDecayMin.x, 0.1f);
+					ImGui::DragFloat4("colorDecayMax", &emitParam_[index].colorDecayMax.x, 0.1f);
+					ImGui::Separator();
+					ImGui::DragFloat3("scaleVelocityMin", &emitParam_[index].scaleVelocityMin.x, 0.1f);
+					ImGui::DragFloat3("scaleVelocityMax", &emitParam_[index].scaleVelocityMax.x, 0.1f);
+					ImGui::TreePop();
+				}
+			}
+			ImGui::TreePop();
+		}
+
 	}
 
 	template<typename T>
@@ -94,24 +132,32 @@ namespace ParticleIbu {
 	template<typename T>
 	inline void ParticleEmitter<T>::Emit(unique_ptr<ParticleIbu::GpuParticle>& particle)
 	{
-		PipelineStateObject pso = {};
-
-		pso.graphicsPipelineState = PSOManager::GetInstance()->GetPipelineState(PipelineType::PARTICLE_EMIT_BOX);
-		pso.rootSignature = PSOManager::GetInstance()->GetRootSignature(PipelineType::PARTICLE_EMIT_BOX);
-
 		ComPtr<ID3D12GraphicsCommandList> list = DirectXCommon::GetInstance()->GetCommandList();
+		ID3D12DescriptorHeap* heap[] = { DirectXCommon::GetInstance()->GetSrvDescriptiorHeap().Get() };
+		list->SetDescriptorHeaps(1, heap);
 
-		list->SetComputeRootSignature(pso.rootSignature.Get());
-		list->SetPipelineState(pso.graphicsPipelineState.Get());
+		CitrusJunosEngine::GetInstance()->renderer_->ComputeCommand(PipelineType::PARTICLE_EMIT_BOX);
 
 		particle->CallUavRootparam(0);
-		//DescriptorManager::GetInstance()->ComputeRootParamerterCommand(1, emitBuf_->GetSrvIndex());
-		RunTimeCounter::GetInstance()->ComputeCommandCall(2);
-		//DescriptorManager::GetInstance()->ComputeRootParamerterCommand(3, particle->GetFreeListIndexBuf()->GetSrvIndex());
-		//DescriptorManager::GetInstance()->ComputeRootParamerterCommand(4, particle->GetFreeListBuf()->GetSrvIndex());
 
-		UINT dispach = UINT(1 / 1024);
+		list->SetComputeRootDescriptorTable(
+			1,
+			emitBuf_->GetHandles().GPU
+		);
+		RunTimeCounter::GetInstance()->ComputeCommandCall(2);
+
+		list->SetComputeRootDescriptorTable(
+			3,
+			particle->GetFreeListIndexBuf()->GetHandles().GPU
+		);
+		list->SetComputeRootDescriptorTable(
+			4,
+			particle->GetFreeListBuf()->GetHandles().GPU
+		);
+
+		UINT dispach = UINT(particle->GetNum() / 1024);
 		list->Dispatch(dispach, 1, 1);
+
 	}
 
 	template<typename T>

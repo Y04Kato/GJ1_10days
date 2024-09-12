@@ -23,9 +23,6 @@ struct TransformationViewMatrix
 {
     float32_t4x4 view;
     float32_t4x4 projection;
-    float32_t4x4 orthographic;
-    float32_t4x4 InverseVp;
-    float32_t4x4 InverseProj;
     float32_t3 CameraPosition;
 };
 

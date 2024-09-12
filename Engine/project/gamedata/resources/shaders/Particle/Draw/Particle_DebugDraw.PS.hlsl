@@ -14,7 +14,7 @@ PixelShaderOutput main(VertexShaderOutput input)
     output.color.a = textureColor.a * gParticle[input.instanceId].color.a;
     if (output.color.a == 0.0f)
     {
-        discard;
+        //discard;
     }
         return output;
 }

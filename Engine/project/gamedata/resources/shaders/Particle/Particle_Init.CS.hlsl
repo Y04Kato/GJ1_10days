@@ -12,9 +12,10 @@ void main(uint3 DTid : SV_DispatchThreadID)
     
     if (particleIndex < kParticleMax)
     {
-
-        gParticle[particleIndex] = (Particle) 0;
+        
         gFreeList[particleIndex] = particleIndex;
+        
+        gParticle[particleIndex] = (Particle) 0;
         gParticle[particleIndex].scale = float32_t3(1.0f, 1.0f, 1.0f);
         gParticle[particleIndex].matWorld = Mat4x4Identity();
         gParticle[particleIndex].color = float32_t4(1.0f, 1.0f, 1.0f, 1.0f);

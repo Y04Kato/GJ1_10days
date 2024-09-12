@@ -8,6 +8,8 @@
 #include<vector>
 #include<memory>
 #include"../../CJEngine.h"
+#include"../debugCamera/DebugCamera.h"
+#include"../manager/TextureManager/TextureManager.h"
 
 struct ParticleCS
 {
@@ -36,7 +38,7 @@ namespace ParticleIbu {
 
 		void Update();
 
-		void Draw();
+		void Draw(const ViewProjection &viewProj);
 
 		void CallBarrier();
 
@@ -84,8 +86,7 @@ namespace ParticleIbu {
 		std::unique_ptr<BufferResource<uint32_t>>freeListBuf_ = nullptr;
 		std::vector<uint32_t>freeList_;
 
-		uint32_t texHandle_ = 1;
-
+		uint32_t texHandle_ = {};
 		CitrusJunosEngine* CJEngine_;
 	};
 

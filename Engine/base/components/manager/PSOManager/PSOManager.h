@@ -21,6 +21,7 @@
 #include"../../pipelineState/GpuParticle/ParticleInit.h"
 #include"../../pipelineState/GpuParticle/ParticleEmit.h"
 #include"../../pipelineState/GpuParticle/ParticleUpdate.h"
+#include"../../pipelineState/GpuParticle/ParticleAddDraw.h"
 
 #include <map>
 

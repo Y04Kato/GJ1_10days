@@ -4,6 +4,19 @@
 
 namespace ParticleIbu
 {
+	struct xyzVector3 final
+	{
+		float x;
+		float y;
+		float z;
+	};
+	struct xyzVector4 final
+	{
+		float x;
+		float y;
+		float z;
+		float w;
+	};
 	struct  ParticleEmitControl
 	{
 		bool useFlag_ = false;
@@ -15,22 +28,22 @@ namespace ParticleIbu
 
 		struct BoxParam
 		{
-			Vector3 translate = {};
-			Vector3 rotate = {};
+			xyzVector3 translate = {};
+			xyzVector3 rotate = {};
 			Matrix4x4 matWorld = MakeIdentity4x4();
 			Matrix4x4 matVPV = MakeIdentity4x4();
 			uint32_t count = 0;
 			uint32_t emit = 0;
-			Vector3 sizeMin = { -1.0f,-1.0f,-1.0f };
-			Vector3 sizeMax = { 1.0f,1.0f,1.0f };
-			Vector3 velocityMin = { 0.0f,0.0f,0.0f };
-			Vector3 velocityMax = { 0.0f,0.0f,0.0f };
+			xyzVector3 sizeMin = { -1.0f,-1.0f,-1.0f };
+			xyzVector3 sizeMax = { 1.0f,1.0f,1.0f };
+			xyzVector3 velocityMin = { 0.0f,0.0f,0.0f };
+			xyzVector3 velocityMax = { 0.0f,0.0f,0.0f };
 
-			Vector4 color = { 1.0f,1.0f,1.0f,1.0f };
-			Vector4 colorDecayMin = { 0.0f,0.0f,0.0f,0.01f };
-			Vector4 colorDecayMax = { 0.0f,0.0f,0.0f,0.01f };
-			Vector3 scaleVelocityMin = { 0.0f,0.0f,0.0f };
-			Vector3 scaleVelocityMax = { 0.0f,0.0f,0.0f };
+			xyzVector4 color = { 1.0f,1.0f,1.0f,1.0f };
+			xyzVector4 colorDecayMin = { 0.0f,0.0f,0.0f,0.01f };
+			xyzVector4 colorDecayMax = { 0.0f,0.0f,0.0f,0.01f };
+			xyzVector3 scaleVelocityMin = { 0.0f,0.0f,0.0f };
+			xyzVector3 scaleVelocityMax = { 0.0f,0.0f,0.0f };
 		};
 		struct Circle
 		{

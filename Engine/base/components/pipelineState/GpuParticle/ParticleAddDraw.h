@@ -3,8 +3,7 @@
 #include "IPipelineStateObject.h"
 #include "PSOManager/PSOManager.h"
 
-
-class ParticleEmit : public IPipelineStateObject {
+class ParticleAddDraw : public IPipelineStateObject {
 public:
 	void ShaderCompile() override;
 	void CreateRootSignature() override;

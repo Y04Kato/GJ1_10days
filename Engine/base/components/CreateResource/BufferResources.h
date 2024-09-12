@@ -234,8 +234,8 @@ inline void BufferResource<T>::CommandVertexBufferViewCall(uint32_t view)
 template<typename T>
 inline void BufferResource<T>::CommandIndexBufferViewCall()
 {
-	//ComPtr<ID3D12GraphicsCommandList>command = DirectXCommon::GetInstance()->GetCommandList();
-	//command->IASetIndexBuffer(&indexBufferView_);
+	ComPtr<ID3D12GraphicsCommandList>command = DirectXCommon::GetInstance()->GetCommandList();
+	command->IASetIndexBuffer(&indexBufferView_);
 }
 
 template<typename T>
@@ -310,7 +310,8 @@ inline void BufferResource<T>::CreateInstancingResource(const uint32_t& instanci
 	paletteSrvDesc.Buffer.NumElements = UINT(instancingNum);
 	paletteSrvDesc.Buffer.StructureByteStride = sizeof(T);
 	dxCommon = DirectXCommon::GetInstance();
-	dxCommon->GetDevice()->CreateShaderResourceView(buffer_.get(), &paletteSrvDesc, SRVhandle.CPU);
+
+	dxCommon->GetDevice()->CreateShaderResourceView(buffer_.Get(), &paletteSrvDesc, SRVhandle.CPU);
 
 }
 

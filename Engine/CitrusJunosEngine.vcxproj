@@ -163,6 +163,7 @@
     <ClCompile Include="base\components\Particle\Emitter\ParticleEmitter.cpp" />
     <ClCompile Include="base\components\Particle\GpuParticle.cpp" />
     <ClCompile Include="base\components\pipelineState\Gaussian\Gaussian.cpp" />
+    <ClCompile Include="base\components\pipelineState\GpuParticle\ParticleAddDraw.cpp" />
     <ClCompile Include="base\components\pipelineState\GpuParticle\ParticleEmit.cpp" />
     <ClCompile Include="base\components\pipelineState\GpuParticle\ParticleInit.cpp" />
     <ClCompile Include="base\components\pipelineState\GpuParticle\ParticleUpdate.cpp" />
@@ -476,6 +477,7 @@
     <ClInclude Include="base\components\Particle\Field\StructParticleField.h" />
     <ClInclude Include="base\components\Particle\GpuParticle.h" />
     <ClInclude Include="base\components\pipelineState\Gaussian\Gaussian.h" />
+    <ClInclude Include="base\components\pipelineState\GpuParticle\ParticleAddDraw.h" />
     <ClInclude Include="base\components\pipelineState\GpuParticle\ParticleEmit.h" />
     <ClInclude Include="base\components\pipelineState\GpuParticle\ParticleInit.h" />
     <ClInclude Include="base\components\pipelineState\GpuParticle\ParticleUpdate.h" />

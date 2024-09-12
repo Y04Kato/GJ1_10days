@@ -40,7 +40,6 @@ void main(uint3 DTid : SV_DispatchThreadID)
         gParticle[particleIndex].scale += gParticle[particleIndex].scaleVelocity;
         
         gParticle[particleIndex].matWorld = AffineMatrix(gParticle[particleIndex].scale, gParticle[particleIndex].rotate, gParticle[particleIndex].translate);
-        
         if (gParticle[particleIndex].color.a <= 0.0f)
         {
             gParticle[particleIndex].scale = float32_t3(0.0f, 0.0f, 0.0f);
