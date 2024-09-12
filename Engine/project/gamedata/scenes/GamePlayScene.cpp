@@ -49,7 +49,7 @@ void GamePlayScene::Initialize() {
 
 	//Player初期化
 	player_ = std::make_unique<Player>();
-	playerModel_.reset(Model::CreateModel("project/gamedata/resources/block", "block.obj"));
+	playerModel_.reset(Model::CreateModel("project/gamedata/resources/block", "Player.obj"));
 	playerModel_->SetDirectionalLightFlag(true, 3);
 	player_->Initialize(playerModel_.get());
 
