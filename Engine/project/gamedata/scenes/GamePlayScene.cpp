@@ -1186,7 +1186,7 @@ void GamePlayScene::ParticlesInitialize()
 void GamePlayScene::ParticlesUpdate()
 {
 	//プレイヤーが動くとき
-	if (isPlayerOperationModes_)
+	if (player_->GetIsMoving())
 	{
 		WalkParticle::GetInstance()->SetPos(player_->GetWorldTransform().translation_);
 	}
