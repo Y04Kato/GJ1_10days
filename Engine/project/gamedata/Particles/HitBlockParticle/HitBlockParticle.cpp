@@ -15,7 +15,7 @@ void HitBlockParticle::Initialize()
 	emitter_->CreateType(particle_);
 
 	//テクスチャ
-	uint32_t handle = TextureManager::GetInstance()->Load("project/gamedata/resources/uvChecker.png");
+	uint32_t handle = TextureManager::GetInstance()->Load("project/gamedata/resources/circle.png");
 	particle_->SetTexhandle(handle);
 }
 
