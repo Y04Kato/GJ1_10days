@@ -109,15 +109,21 @@ void Player::Draw(const ViewProjection& viewProjection) {
 }
 
 void Player::Move() {
+	bool isMoving = false;
+
 	//左右移動
 	if (isReflection_ == false || isAntiFreeze_ == true) {
 		if (input_->PressKey(DIK_A)) {
 			velocity_.num[0] = -0.15f;
+			isMoving = true;
 		}
 		if (input_->PressKey(DIK_D)) {
 			velocity_.num[0] = 0.15f;
+			isMoving = true;
 		}
 	}
+
+	isMoving_ = isMoving;
 
 	//ジャンプ
 	if (isCollidingFromSide_ == false || isAntiFreeze_ == true) {
