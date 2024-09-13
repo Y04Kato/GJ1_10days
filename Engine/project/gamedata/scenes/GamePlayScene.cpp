@@ -180,6 +180,8 @@ void GamePlayScene::Update() {
 		blocks_.clear();
 		demoblocks_.clear();
 
+		isSetBlock_ = false;
+
 		for (int i = 0; i < 12; i++) {
 			blockSetCount_[i] = 0;
 		}
