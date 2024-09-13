@@ -41,6 +41,9 @@ public:
 	bool GetIsCollidingFromSide() { return isCollidingFromSide_; }
 	void SetIsCollidingFromSide(bool isCollidingFromSide) { isCollidingFromSide_ = isCollidingFromSide; }
 
+	bool GetIsMoving() { return isMoving_; }
+	void SetIsMoving(bool isMoving) { isMoving_ = isMoving; }
+
 	void SetIsReflection(bool isReflection) { isReflection_ = isReflection; reflectionRecoveryTimer_ = 0; }
 
 	void SetFloorPos(WorldTransform& worldtransform) { floorTransform_ = worldtransform; }
@@ -78,4 +81,6 @@ private:
 
 	bool isJumpOn = false;
 	bool isJumpBlockStanding_ = false;
+
+	bool isMoving_ = false_;
 };
