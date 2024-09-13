@@ -15,7 +15,7 @@ void WalkParticle::Initialize()
     emitter_->CreateType(particle_);
 
     //テクスチャ
-    uint32_t handle = TextureManager::GetInstance()->Load("project/gamedata/resources/uvChecker.png");
+    uint32_t handle = TextureManager::GetInstance()->Load("project/gamedata/resources/circle.png");
     particle_->SetTexhandle(handle);
 }
 
@@ -44,7 +44,7 @@ void WalkParticle::Update()
         emit.velocityMin = { 0.0f, kvelo, 0.0f};
         emit.velocityMax = { 0.0f,kvelo,0.0f };
 
-        emitControl.frequencyTime = 0.75f;
+        emitControl.frequencyTime = 0.25f;
         emitControl.useFlag_ = true;
     }
     else
