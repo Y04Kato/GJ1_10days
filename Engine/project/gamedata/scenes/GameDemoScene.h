@@ -21,8 +21,6 @@
 
 #include "components/utilities/globalVariables/GlobalVariables.h"
 
-#include"../testParticle/testParticle.h"
-
 class GameDemoScene :public Iscene {
 public:
 	void Initialize() override;

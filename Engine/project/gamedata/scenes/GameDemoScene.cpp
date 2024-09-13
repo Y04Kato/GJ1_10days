@@ -167,16 +167,12 @@ void GameDemoScene::Initialize() {
 
 	LevelSetObject();
 
-	TestParticle::GetInstance()->Initialize();
 }
 
 void GameDemoScene::Update() {
 	GlobalVariables* globalVariables{};
 	globalVariables = GlobalVariables::GetInstance();
 	ApplyGlobalVariables();
-
-	TestParticle::GetInstance()->ImGuiUpdate();
-	TestParticle::GetInstance()->Update();
 
 	debugCamera_->Update();
 
@@ -582,7 +578,6 @@ void GameDemoScene::Draw() {
 			particle_[i]->Draw(viewProjection_);
 		}
 	}
-	TestParticle::GetInstance()->Draw(viewProjection_);
 
 	
 #pragma endregion

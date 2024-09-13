@@ -110,7 +110,6 @@
     <ClCompile Include="base\components\manager\SceneManager\SceneManager.cpp" />
     <ClCompile Include="base\components\utilities\collisionManager\CollisionManager.cpp" />
     <ClCompile Include="base\components\utilities\globalVariables\GlobalVariables.cpp" />
-    <ClCompile Include="project\gamedata\testParticle\testParticle.cpp" />
     <ClCompile Include="project\gamedata\Particles\walkParticle\walkParticle.cpp" />
     <ClCompile Include="project\gamedata\Particles\SetBlockParticle\SetBlockParticle.cpp" />
     <ClCompile Include="project\gamedata\Particles\HitBlockParticle\HitBlockParticle.cpp" />
@@ -206,7 +205,6 @@
     <ClInclude Include="base\components\utilities\collisionManager\CollisionManager.h" />
     <ClInclude Include="base\components\utilities\globalVariables\GlobalVariables.h" />
     <ClInclude Include="project\gamedata\resources\resource.h" />
-    <ClInclude Include="project\gamedata\testParticle\testParticle.h" />
     <ClInclude Include="project\gamedata\Particles\walkParticle\walkParticle.h" />
     <ClInclude Include="project\gamedata\Particles\SetBlockParticle\SetBlockParticle.h" />
     <ClInclude Include="project\gamedata\Particles\HitBlockParticle\HitBlockParticle.h" />
