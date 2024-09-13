@@ -110,9 +110,26 @@ void GamePlayScene::Initialize() {
 	FlagTextmodel_.reset(Model::CreateModel("project/gamedata/resources/TextObj", "FlagText.obj"));
 	FlagTextmodel_->SetDirectionalLightFlag(true, 3);
 	FlagTextworld_.Initialize();
-	FlagTextworld_.translation_ = { -21.0f,16.0f,0.0f };
-	FlagTextworld_.rotation_ = { 0.0f,0.0f,0.0f };
+	FlagTextworld_.translation_ = { 21.0f,16.0f,0.0f };
+	FlagTextworld_.rotation_ = { 0.0f,-6.0f,-0.2f };
 	FlagTextworld_.scale_ = { 4.0f,4.0f,4.0f };
+
+	NumTextmodel_[0].reset(Model::CreateModel("project/gamedata/resources/NumObj", "0.obj"));
+	NumTextmodel_[0]->SetDirectionalLightFlag(true, 3);
+
+	NumTextmodel_[1].reset(Model::CreateModel("project/gamedata/resources/NumObj", "1.obj"));
+	NumTextmodel_[1]->SetDirectionalLightFlag(true, 3);
+
+	NumTextmodel_[2].reset(Model::CreateModel("project/gamedata/resources/NumObj", "2.obj"));
+	NumTextmodel_[2]->SetDirectionalLightFlag(true, 3);
+
+	NumTextmodel_[3].reset(Model::CreateModel("project/gamedata/resources/NumObj", "3.obj"));
+	NumTextmodel_[3]->SetDirectionalLightFlag(true, 3);
+	
+	NumTextworld_.Initialize();
+	NumTextworld_.translation_ = { 2.0f,13.0f,-1.0f };
+	NumTextworld_.rotation_ = { 0.0f,0.0f,0.0f };
+	NumTextworld_.scale_ = { 4.0f,4.0f,4.0f };
 
 	//配置カーソル用
 	model_.reset(Model::CreateModel("project/gamedata/resources/block", "block.obj"));
@@ -219,8 +236,8 @@ void GamePlayScene::Update() {
 	ImGui::Text("PlayerJump:[Space]key");
 	ImGui::Text("TogglePlayerOperationModes:[F]key");
 	ImGui::Text("BlockRotate:[Q]or[E]key");
-	ImGui::DragFloat3("FlagTextworld_", &FlagTextworld_.translation_.num[0]);
-	ImGui::DragFloat3("FlagTextrotate_", &FlagTextworld_.rotation_.num[0]);
+	ImGui::DragFloat3("FlagTextworld_", &NumTextworld_.translation_.num[0]);
+	ImGui::DragFloat3("FlagTextrotate_", &NumTextworld_.rotation_.num[0]);
 	if (isPlayerOperationModes_ == true) {
 		ImGui::Text("PlayerOperationModes:True");
 	}
@@ -269,6 +286,7 @@ void GamePlayScene::Update() {
 				demoblocks_.clear();
 
 				worldTransformModel_.translation_.num[0] -= 2.0002f;
+				NumTextworld_.translation_.num[0] -= 2.0002f;
 				DemoLoadBlockPopData(selectedBlockType_, RotateType);
 
 			}
@@ -276,6 +294,7 @@ void GamePlayScene::Update() {
 				demoblocks_.clear();
 
 				worldTransformModel_.translation_.num[0] += 2.0002f;
+				NumTextworld_.translation_.num[0] += 2.0002f;
 				DemoLoadBlockPopData(selectedBlockType_, RotateType);
 
 			}
@@ -287,6 +306,7 @@ void GamePlayScene::Update() {
 
 				if (pressTimer_ >= pressMaxTime) {
 					worldTransformModel_.translation_.num[0] -= 2.0002f;
+					NumTextworld_.translation_.num[0] -= 2.0002f;
 					pressTimer_ = 0;
 				}
 				DemoLoadBlockPopData(selectedBlockType_, RotateType);
@@ -299,6 +319,7 @@ void GamePlayScene::Update() {
 
 				if (pressTimer_ >= pressMaxTime) {
 					worldTransformModel_.translation_.num[0] += 2.0002f;
+					NumTextworld_.translation_.num[0] += 2.0002f;
 					pressTimer_ = 0;
 				}
 				DemoLoadBlockPopData(selectedBlockType_, RotateType);
@@ -467,6 +488,8 @@ void GamePlayScene::Update() {
 	
 	FlagTextworld_.UpdateMatrix();
 
+	NumTextworld_.UpdateMatrix();
+
 	//Player更新
 	player_->Update();
 
@@ -528,6 +551,19 @@ void GamePlayScene::Draw() {
 		QEmodel_->Draw(QEworld_, viewProjection_, Vector4{ 1.0f,1.0f,1.0f,1.0f });
 		Putmodel_->Draw(Putworld_, viewProjection_, Vector4{ 1.0f,1.0f,1.0f,1.0f });
 		PutTextmodel_->Draw(PutTextworld_, viewProjection_, Vector4{ 1.0f,1.0f,1.0f,1.0f });
+	}
+
+	if (blockSetCount_[selectedBlockType_ - 1] == 3) {
+		NumTextmodel_[3]->Draw(NumTextworld_, viewProjection_, Vector4{1.0f,1.0f,1.0f,1.0f});
+	}
+	if (blockSetCount_[selectedBlockType_ - 1] == 2) {
+		NumTextmodel_[2]->Draw(NumTextworld_, viewProjection_, Vector4{ 1.0f,1.0f,1.0f,1.0f });
+	}
+	if (blockSetCount_[selectedBlockType_ - 1] == 1) {
+		NumTextmodel_[1]->Draw(NumTextworld_, viewProjection_, Vector4{ 1.0f,1.0f,1.0f,1.0f });
+	}
+	if (blockSetCount_[selectedBlockType_ - 1] == 0) {
+		NumTextmodel_[0]->Draw(NumTextworld_, viewProjection_, Vector4{ 1.0f,1.0f,1.0f,1.0f });
 	}
 
 	//

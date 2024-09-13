@@ -117,6 +117,9 @@ private:
 	std::unique_ptr<Model> FlagTextmodel_;
 	WorldTransform FlagTextworld_;
 
+	std::unique_ptr<Model> NumTextmodel_[4];
+	WorldTransform NumTextworld_;
+
 	//
 	std::unique_ptr <CreateSprite> bgSprite_;
 	std::unique_ptr <CreateSprite> fadeSprite_;
