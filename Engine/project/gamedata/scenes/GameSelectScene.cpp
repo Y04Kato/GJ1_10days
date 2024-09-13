@@ -99,12 +99,19 @@ void GameSelectScene::Initialize() {
 	datas_->Initialize();
 
 	lastFrameTime = std::chrono::high_resolution_clock::now();
+
+	ADmodel_.reset(Model::CreateModel("project/gamedata/resources/KeyObj", "ADkey.obj"));
+	ADmodel_->SetDirectionalLightFlag(true, 3);
+	ADworld_.Initialize();
+	ADworld_.translation_ = { 0.0f,2.0f,0.0f };
+	ADworld_.scale_ = { 1.0f,1.0f,1.0f };
 }
 
 void GameSelectScene::Update() {
 	ImGui::Begin("SelectScene");
 	ImGui::Text("CurrentVertexIndex %d", currentVertexIndex);
-	ImGui::DragFloat3("", &worldTransformModel_[0].rotation_.num[0]);
+	ImGui::DragFloat3("FlagTextworld_", &ADworld_.translation_.num[0]);
+	ImGui::DragFloat3("FlagTextrotate_", &ADworld_.rotation_.num[0]);
 	ImGui::End();
 
 	//シーン初期設定
@@ -193,6 +200,15 @@ void GameSelectScene::Update() {
 		worldTransformModel_[i].UpdateMatrix();
 	}
 
+	Vector3 direction = debugCamera_->GetViewProjection()->translation_ - ADworld_.translation_;
+	Normalize(direction);//正規化して単位ベクトルにする
+
+	float angleY = atan2(direction.num[0], direction.num[2]) + (float)M_PI;
+
+	ADworld_.rotation_.num[1] = angleY;//Y軸の回転に反映
+
+	ADworld_.UpdateMatrix();
+
 	//Camera
 	debugCamera_->Update();
 
@@ -215,6 +231,8 @@ void GameSelectScene::Draw() {
 	for (int i = 0; i < 6; i++) {
 		model_[i]->Draw(worldTransformModel_[i], viewProjection_, modelMaterial_);
 	}
+
+	ADmodel_->Draw(ADworld_, viewProjection_, Vector4{ 1.0f,1.0f,1.0f,1.0f });
 
 #pragma endregion
 }

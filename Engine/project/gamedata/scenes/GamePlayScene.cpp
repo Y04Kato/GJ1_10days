@@ -236,8 +236,6 @@ void GamePlayScene::Update() {
 	ImGui::Text("PlayerJump:[Space]key");
 	ImGui::Text("TogglePlayerOperationModes:[F]key");
 	ImGui::Text("BlockRotate:[Q]or[E]key");
-	ImGui::DragFloat3("FlagTextworld_", &NumTextworld_.translation_.num[0]);
-	ImGui::DragFloat3("FlagTextrotate_", &NumTextworld_.rotation_.num[0]);
 	if (isPlayerOperationModes_ == true) {
 		ImGui::Text("PlayerOperationModes:True");
 	}

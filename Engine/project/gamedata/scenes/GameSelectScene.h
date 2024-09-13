@@ -99,4 +99,7 @@ private:
 	Datas* datas_;
 
 	bool isGameStart_ = true;//ゲームスタート時の処理
+
+	std::unique_ptr<Model> ADmodel_;
+	WorldTransform ADworld_;
 };
