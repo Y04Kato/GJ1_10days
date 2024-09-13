@@ -22,11 +22,17 @@
 #include "player/Player.h"
 #include "datas/datas.h"
 
+#include"../Particles/walkParticle/walkParticle.h"
+#include"../Particles/SetBlockParticle/SetBlockParticle.h"
+#include"../Particles/HitBlockParticle/HitBlockParticle.h"
+
 struct Block {
 	Model model;
 	WorldTransform world;
 	Vector4 material;
 	bool isFloorOrBlockHit;
+	bool spownParticle = false;
+
 	int blockType;
 };
 
@@ -61,9 +67,15 @@ public:
 	void StopConnectedBlocks(Block& block1);
 
 	//SelectCountを進める、0で++、1で--
-	void SelectCounter(int selectedBlockType , int countType);
+	void SelectCounter(int selectedBlockType, int countType);
 
 private:
+
+	void ParticlesInitialize();;
+	void ParticlesUpdate();
+	void ParticlesDraw(const ViewProjection& viewProj);
+	void ParticleClear();
+
 	CitrusJunosEngine* CJEngine_;
 	DirectXCommon* dxCommon_;
 	ViewProjection viewProjection_;
@@ -92,10 +104,10 @@ private:
 
 	std::unique_ptr<Model> WSmodel_;
 	WorldTransform WSworld_;
-	
+
 	std::unique_ptr<Model> QEmodel_;
 	WorldTransform QEworld_;
-	
+
 	std::unique_ptr<Model> Fmodel_;
 	WorldTransform Fworld_;
 

@@ -160,6 +160,7 @@ void GamePlayScene::Initialize() {
 		worldTransformLine_[i].Initialize();
 	}
 	DemoLoadBlockPopData(selectedBlockType_, RotateType);
+	ParticlesInitialize();
 }
 
 void GamePlayScene::Update() {
@@ -506,6 +507,8 @@ void GamePlayScene::Update() {
 		block.world.UpdateMatrix();
 	}
 
+	ParticlesUpdate();
+
 	//Camera
 	debugCamera_->Update();
 
@@ -586,6 +589,7 @@ void GamePlayScene::Draw() {
 
 #pragma region パーティクル描画
 	CJEngine_->renderer_->Draw(PipelineType::Particle);
+	ParticlesDraw(viewProjection_);
 
 #pragma endregion
 
@@ -613,7 +617,7 @@ void GamePlayScene::Finalize() {
 	demoblocks_.clear();
 
 	editors_->Finalize();
-
+	
 }
 
 void GamePlayScene::GameStartProcessing() {
@@ -683,6 +687,7 @@ void GamePlayScene::GameStartProcessing() {
 	}
 	DemoLoadBlockPopData(selectedBlockType_, RotateType);
 	isGameStart_ = false;
+
 }
 
 void GamePlayScene::SceneEndProcessing() {
@@ -695,6 +700,8 @@ void GamePlayScene::SceneEndProcessing() {
 	isfadeIn_ = false;
 	isGameStart_ = true;
 	fadeAlpha_ = 256.0f;
+
+	ParticleClear();
 
 	sceneNo = CLEAR_SCENE;
 }
@@ -1169,6 +1176,56 @@ void GamePlayScene::SelectCounter(int selectedBlockType, int countType) {
 	else {
 
 	}
+}
+
+void GamePlayScene::ParticlesInitialize()
+{
+	WalkParticle::GetInstance()->Initialize();
+	SetBlockParticle::GetInstance()->Initialize();
+	HitBlockParticle::GetInstance()->Initialize();
+}
+
+void GamePlayScene::ParticlesUpdate()
+{
+	//プレイヤーが動くとき
+	if (isPlayerOperationModes_)
+	{
+		WalkParticle::GetInstance()->SetPos(player_->GetWorldTransform().translation_);
+	}
+	else
+	{
+		WalkParticle::GetInstance()->ClearPos();
+	}
+	//block
+	for (auto& block : blocks_)
+	{
+		if (block.isFloorOrBlockHit && !block.spownParticle)
+		{
+			HitBlockParticle::GetInstance()->SetPos(block.world.translation_);
+			HitBlockParticle::GetInstance()->Spown();
+			block.spownParticle = true;
+		}
+	}
+	//設置
+	SetBlockParticle::GetInstance()->SetPos(worldTransformModel_.translation_);
+
+	HitBlockParticle::GetInstance()->Update();
+	WalkParticle::GetInstance()->Update();
+	SetBlockParticle::GetInstance()->Update();
+}
+
+void GamePlayScene::ParticlesDraw(const ViewProjection& viewProj)
+{
+	WalkParticle::GetInstance()->Draw(viewProj);
+	SetBlockParticle::GetInstance()->Draw(viewProj);
+	HitBlockParticle::GetInstance()->Draw(viewProj);
+}
+
+void GamePlayScene::ParticleClear()
+{
+	WalkParticle::GetInstance()->Clear();
+	SetBlockParticle::GetInstance()->Clear();
+	HitBlockParticle::GetInstance()->Clear();
 }
 
 void GamePlayScene::DemoLoadBlockPopData(int type, int RotateType) {

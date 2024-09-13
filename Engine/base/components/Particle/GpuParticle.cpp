@@ -100,7 +100,7 @@ void GpuParticle::Create(const size_t kNum, std::string Name)
 		UINT dispach = UINT(GetNum() / 1024);
 		list->Dispatch(dispach, 1, 1);
 	}
-	DirectXCommon::GetInstance()->CommandClose();
+	//DirectXCommon::GetInstance()->CommandClose();
 }
 
 void GpuParticle::Update()
@@ -187,22 +187,25 @@ void GpuParticle::CallUavRootparam(uint32_t rootParamIndex)
 
 void GpuParticle::Clear()
 {
+	ComPtr<ID3D12GraphicsCommandList>list = DirectXCommon::GetInstance()->GetCommandList();
+	ID3D12DescriptorHeap* heap[] = { DirectXCommon::GetInstance()->GetSrvDescriptiorHeap().Get() };
+	list->SetDescriptorHeaps(1, heap);
 
-	{//初期化CS_Dispatch
-		//SPSOProperty pso = GraphicsPipelineManager::GetInstance()->GetPiplines(Pipline::PARTICLE_INIT, "None");;
-		ComPtr<ID3D12GraphicsCommandList>commandList = DirectXCommon::GetInstance()->GetCommandList();
-		/*ID3D12DescriptorHeap* heap[] = { DirectXCommon::GetInstance()->GetSrvHeap() };
-		commandList->SetDescriptorHeaps(1, heap);
+	CJEngine_->renderer_->ComputeCommand(PipelineType::PARTICLE_Init);
 
-		commandList->SetComputeRootSignature(pso.rootSignature.Get());
-		commandList->SetPipelineState(pso.GraphicsPipelineState.Get());
+	list->SetComputeRootDescriptorTable(
+		0,
+		writeParticleBuf_->GetHandles().GPU
+	);
+	list->SetComputeRootDescriptorTable(
+		1,
+		freeListIndexBuf_->GetHandles().GPU
+	);
+	list->SetComputeRootDescriptorTable(
+		2,
+		freeListBuf_->GetHandles().GPU
+	);
 
-		DescriptorManager::GetInstance()->ComputeRootParamerterCommand(0, writeParticleBuf_->GetSrvIndex());
-		DescriptorManager::GetInstance()->ComputeRootParamerterCommand(1, freeListIndexBuf_->GetSrvIndex());
-		DescriptorManager::GetInstance()->ComputeRootParamerterCommand(2, freeListBuf_->GetSrvIndex());*/
-
-		UINT dispach = UINT(GetNum() / 1024);
-		commandList->Dispatch(dispach, 1, 1);
-	}
-	DirectXCommon::GetInstance()->CommandClose();
+	UINT dispach = UINT(GetNum() / 1024);
+	list->Dispatch(dispach, 1, 1);
 }
