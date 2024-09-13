@@ -82,5 +82,5 @@ private:
 	bool isJumpOn = false;
 	bool isJumpBlockStanding_ = false;
 
-	bool isMoving_ = false_;
+	bool isMoving_ = false;
 };
