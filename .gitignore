@@ -367,3 +367,4 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/Engine/project/gamedata/resources/TextObj/White2x2.png
